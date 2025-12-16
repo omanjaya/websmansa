@@ -1,0 +1,29 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Requests\Extra;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+final class ShowExtraRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    public function rules(): array
+    {
+        return [
+            'include' => 'nullable|string|in:user,members',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'include.in' => 'Include harus salah satu dari: user, members',
+        ];
+    }
+}

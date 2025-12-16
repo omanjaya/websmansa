@@ -1,0 +1,26 @@
+parameters:
+    level: 8
+    paths:
+        - app
+        - config
+        - database
+        - routes
+    excludePaths:
+        - app/Console/Kernel.php (?)
+        - app/Exceptions/Handler.php (?)
+        - app/Http/Kernel.php (?)
+    ignoreErrors:
+        - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Builder.*#'
+        - '#Cannot call method toArray\(\) on array.#'  # False positive for Laravel Input toArray()
+    checkFunctionNameCase: true
+    checkInternalClassCaseSensitivity: true
+    checkExplicitMixed: true
+    checkNullables: true
+    checkThisOnly: false
+    checkClassCaseSensitivity: true
+    checkUnionTypes: true
+    checkBenevolentUnionTypes: true
+    checkTooWideReturnTypesInProtectedAndPublicMethods: true
+    checkUninitializedProperties: true
+    checkMissingCallableSignature: true
+    checkMissingVarTagTypehint: true
