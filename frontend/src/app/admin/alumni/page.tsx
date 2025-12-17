@@ -6,6 +6,7 @@ import { getAdminAlumni, deleteAlumni, toggleAlumniFeatured } from '@/lib/api'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Plus, Search, Edit, Trash2, Star, GraduationCap } from 'lucide-react'
 import { toast } from 'sonner'
+import Image from 'next/image'
 
 const CATEGORIES = [
     { value: '', label: 'Semua Kategori' },
@@ -150,9 +151,11 @@ export default function AlumniPage() {
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
                                                 {alumni.photo_url ? (
-                                                    <img
+                                                    <Image
                                                         src={alumni.photo_url}
                                                         alt={alumni.name}
+                                                        width={48}
+                                                        height={48}
                                                         className="w-12 h-12 rounded-full object-cover"
                                                     />
                                                 ) : (

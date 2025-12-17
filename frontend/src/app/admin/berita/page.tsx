@@ -2,16 +2,13 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { getAdminPosts, deletePost } from '@/lib/api'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Plus, Search, Edit, Trash2, Eye } from 'lucide-react'
 import { toast } from 'sonner'
-import { format } from 'date-fns'
-import { id as idLocale } from 'date-fns/locale'
 
 export default function BeritaPage() {
-    const router = useRouter()
     const queryClient = useQueryClient()
     const [search, setSearch] = useState('')
     const [page, setPage] = useState(1)
@@ -110,9 +107,11 @@ export default function BeritaPage() {
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
                                                 {post.featured_image_url && (
-                                                    <img
+                                                    <Image
                                                         src={post.featured_image_url}
                                                         alt={post.title}
+                                                        width={64}
+                                                        height={64}
                                                         className="w-16 h-16 rounded-lg object-cover"
                                                     />
                                                 )}

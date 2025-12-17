@@ -6,8 +6,7 @@ import { getAdminAchievements, deleteAchievement, toggleAchievementFeatured, tog
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Plus, Search, Edit, Trash2, Star, Award, Eye, EyeOff } from 'lucide-react'
 import { toast } from 'sonner'
-import { format } from 'date-fns'
-import { id as idLocale } from 'date-fns/locale'
+import Image from 'next/image'
 
 const CATEGORIES = [
     { value: '', label: 'Semua Kategori' },
@@ -204,9 +203,11 @@ export default function AchievementsPage() {
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
                                                 {achievement.image_url ? (
-                                                    <img
+                                                    <Image
                                                         src={achievement.image_url}
                                                         alt={achievement.title}
+                                                        width={64}
+                                                        height={64}
                                                         className="w-16 h-16 rounded-xl object-cover"
                                                     />
                                                 ) : (

@@ -157,6 +157,7 @@ export default function CreateAlumniPage() {
                     <div className="flex items-start gap-6">
                         {photoPreview ? (
                             <div className="relative">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img
                                     src={photoPreview}
                                     alt="Preview"

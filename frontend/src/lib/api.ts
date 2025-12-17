@@ -1195,6 +1195,7 @@ export async function reorderSliders(sliders: Array<{ id: number; order: number 
 // ============ Public Settings API ============
 
 import { SiteSettings, SettingItem } from '@/types/settings'
+import { ApiResponse, PaginatedResponse, SettingValue, SettingResponse, SettingsListResponse, UploadResponse, SuccessResponse, CreatedResponse, UpdatedResponse, DeletedResponse, ToggleResponse } from '@/types/api'
 
 /**
  * Get all public settings (no auth required)
@@ -1258,11 +1259,11 @@ export async function updateSettings(
  */
 export async function updateSetting(
   key: string,
-  value: any,
+  value: unknown,
   type?: string,
   group?: string
-): Promise<{ message: string; data: { key: string; value: any } }> {
-  return fetchAdminApi<{ message: string; data: { key: string; value: any } }>(`/settings/${key}`, {
+): Promise<UpdatedResponse<{ key: string; value: unknown }>> {
+  return fetchAdminApi<UpdatedResponse<{ key: string; value: unknown }>>(`/settings/${key}`, {
     method: 'PUT',
     body: JSON.stringify({ value, type, group }),
   })
@@ -1274,12 +1275,12 @@ export async function updateSetting(
 export async function uploadSettingFile(
   key: string,
   file: File
-): Promise<{ message: string; data: { key: string; url: string } }> {
+): Promise<UpdatedResponse<{ key: string; url: string }>> {
   const formData = new FormData()
   formData.append('file', file)
   formData.append('key', key)
 
-  return fetchAdminApi<{ message: string; data: { key: string; url: string } }>('/settings/upload', {
+  return fetchAdminApi<UpdatedResponse<{ key: string; url: string }>>('/settings/upload', {
     method: 'POST',
     body: formData,
   })

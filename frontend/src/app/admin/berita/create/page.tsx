@@ -7,6 +7,7 @@ import { ArrowLeft } from 'lucide-react'
 import { RichTextEditor } from '@/components/ui/rich-text-editor'
 import { createPost } from '@/lib/api'
 import { toast } from 'sonner'
+import { getErrorMessage } from '@/lib/utils'
 
 export default function CreateBeritaPage() {
     const router = useRouter()
@@ -38,9 +39,9 @@ export default function CreateBeritaPage() {
 
             toast.success('Berita berhasil dibuat!')
             router.push('/admin/berita')
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Error creating berita:', error)
-            toast.error(error.message || 'Gagal membuat berita')
+            toast.error(getErrorMessage(error))
         } finally {
             setLoading(false)
         }
@@ -128,6 +129,7 @@ export default function CreateBeritaPage() {
 
                             {imagePreview && (
                                 <div className="mt-4">
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
                                     <img
                                         src={imagePreview}
                                         alt="Preview"

@@ -10,7 +10,7 @@ const typeLabels: Record<string, string> = {
     staff: 'Staff',
 }
 
-function StaffCard({ item, index, isLeadership = false }: { item: any; index: number; isLeadership?: boolean }) {
+function StaffCard({ item, index, isLeadership = false }: { item: Staff; index: number; isLeadership?: boolean }) {
     return (
         <Link
             href={`/staff/${item.attributes?.slug || item.slug}`}
@@ -124,16 +124,20 @@ function StaffCard({ item, index, isLeadership = false }: { item: any; index: nu
     )
 }
 
-export function DesktopView({ staff, categories, currentCategory }: any) {
+export function DesktopView({ staff, categories, currentCategory }: { 
+    staff: Staff[] 
+    categories: string[] 
+    currentCategory?: string 
+}) {
     const filteredStaff = currentCategory
-        ? staff.filter((s: any) => s.attributes?.type === currentCategory || s.attributes?.department === currentCategory)
+        ? staff.filter((s: Staff) => s.attributes?.type === currentCategory || s.attributes?.department === currentCategory)
         : staff
 
     // Separate leadership from regular staff
-    const leadership = filteredStaff.filter((s: any) =>
+    const leadership = filteredStaff.filter((s: Staff) =>
         s.attributes?.type === 'principal' || s.attributes?.type === 'vice_principal'
     )
-    const regularStaff = filteredStaff.filter((s: any) =>
+    const regularStaff = filteredStaff.filter((s: Staff) =>
         s.attributes?.type !== 'principal' && s.attributes?.type !== 'vice_principal'
     )
 
@@ -205,7 +209,7 @@ export function DesktopView({ staff, categories, currentCategory }: any) {
                                 Pimpinan Sekolah
                             </h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                                {leadership.map((item: any, index: number) => (
+                                {leadership.map((item: Staff, index: number) => (
                                     <StaffCard key={item.id} item={item} index={index} isLeadership />
                                 ))}
                             </div>
@@ -221,7 +225,7 @@ export function DesktopView({ staff, categories, currentCategory }: any) {
                                 </h2>
                             )}
                             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 md:gap-6">
-                                {(currentCategory ? filteredStaff : regularStaff).map((item: any, index: number) => (
+                                {(currentCategory ? filteredStaff : regularStaff).map((item: Staff, index: number) => (
                                     <StaffCard key={item.id} item={item} index={index} />
                                 ))}
                             </div>

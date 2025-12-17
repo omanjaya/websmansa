@@ -176,6 +176,7 @@ export function MobileView() {
 
                             {imagePreview && (
                                 <div className="mt-4">
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
                                     <img
                                         src={imagePreview}
                                         alt="Preview"

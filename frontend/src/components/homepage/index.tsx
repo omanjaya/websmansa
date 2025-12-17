@@ -5,13 +5,26 @@ import { MobileView } from './MobileView'
 import { DesktopView } from './DesktopView'
 import { useState, useEffect } from 'react'
 
+import { Post, Slider, Achievement, Alumni, Gallery } from '@/lib/api'
+
+interface Announcement {
+    id: number
+    type: string
+    attributes: {
+        title: string
+        slug: string
+        type: string
+        published_at: string
+    }
+}
+
 interface HomePageProps {
-    posts: any[]
-    announcements: any[]
-    slides?: any[]
-    achievements?: any[]
-    alumni?: any[]
-    galleries?: any[]
+    posts: Post[]
+    announcements: Announcement[]
+    slides?: Slider[]
+    achievements?: Achievement[]
+    alumni?: Alumni[]
+    galleries?: Gallery[]
 }
 
 // Skeleton Loading Component with Glassmorphism

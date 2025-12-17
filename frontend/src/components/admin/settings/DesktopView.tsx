@@ -169,6 +169,7 @@ export function DesktopView() {
                     </div>
                     {value && value.startsWith('/') && (
                         <div className="mt-2">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                                 src={value}
                                 alt={setting.label || setting.key}

@@ -10,7 +10,7 @@ const typeLabels: Record<string, string> = {
     staff: 'Staff',
 }
 
-function MobileStaffCard({ item, index }: { item: any; index: number }) {
+function MobileStaffCard({ item, index }: { item: Staff; index: number }) {
     return (
         <Link
             href={`/staff/${item.attributes?.slug || item.slug}`}
@@ -106,9 +106,13 @@ function MobileStaffCard({ item, index }: { item: any; index: number }) {
     )
 }
 
-export function MobileView({ staff, categories, currentCategory }: any) {
+export function MobileView({ staff, categories, currentCategory }: { 
+    staff: Staff[] 
+    categories: string[] 
+    currentCategory?: string 
+}) {
     const filteredStaff = currentCategory
-        ? staff.filter((s: any) => s.attributes?.type === currentCategory || s.attributes?.department === currentCategory)
+        ? staff.filter((s: Staff) => s.attributes?.type === currentCategory || s.attributes?.department === currentCategory)
         : staff
 
     return (
@@ -167,7 +171,7 @@ export function MobileView({ staff, categories, currentCategory }: any) {
             {filteredStaff.length > 0 ? (
                 <div className="px-4 mb-6">
                     <div className="grid grid-cols-2 gap-3">
-                        {filteredStaff.map((item: any, index: number) => (
+                        {filteredStaff.map((item: Staff, index: number) => (
                             <MobileStaffCard key={item.id} item={item} index={index} />
                         ))}
                     </div>

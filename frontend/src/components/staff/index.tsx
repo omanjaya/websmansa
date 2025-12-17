@@ -5,7 +5,11 @@ import { MobileView } from './MobileView'
 import { DesktopView } from './DesktopView'
 import { useState, useEffect } from 'react'
 
-export function StaffPage({ staff, categories, currentCategory }: any) {
+export function StaffPage({ staff, categories, currentCategory }: { 
+    staff: Staff[] 
+    categories: string[] 
+    currentCategory?: string 
+}) {
     const isMobile = useIsMobile()
     const [mounted, setMounted] = useState(false)
 

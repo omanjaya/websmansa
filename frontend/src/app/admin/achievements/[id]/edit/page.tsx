@@ -371,6 +371,7 @@ export default function EditAchievementPage() {
                     <div className="flex items-start gap-6">
                         {imagePreview ? (
                             <div className="relative">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img
                                     src={imagePreview}
                                     alt="Preview"

@@ -1,17 +1,90 @@
 'use client'
 
+import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Badge } from '@/components/ui'
-import { ScrollReveal, StaggerContainer, StaggerItem } from '@/components/ui/Motion'
+import { Users, GraduationCap, Award, Building, ArrowRight, MapPin, Phone, Mail } from 'lucide-react'
+import { SectionHeader, StatsBar, NewsCard } from '@/components/shared'
 import { GalleryPreview } from './components/GalleryPreview'
 import { AchievementsCarousel } from './components/AchievementsCarousel'
-import { PartnershipLogos } from './components/PartnershipLogos'
-import { LocationMap } from './components/LocationMap'
-import { HeroSection } from './components/HeroSection'
-import { WhyChooseUs } from './components/WhyChooseUs'
 import { AlumniCarousel } from './components/AlumniCarousel'
+import { HeroSection } from './components/HeroSection'
 import { useSiteConfig } from '@/contexts/SiteConfigContext'
+
+// Smooth easing function
+const easeOutExpo = [0.16, 1, 0.3, 1] as const
+
+// Smooth animation variants
+const fadeInUp = {
+    hidden: { opacity: 0, y: 60 },
+    visible: {
+        opacity: 1,
+        y: 0,
+        transition: {
+            duration: 0.8,
+            ease: easeOutExpo
+        }
+    }
+}
+
+const fadeInScale = {
+    hidden: { opacity: 0, scale: 0.95 },
+    visible: {
+        opacity: 1,
+        scale: 1,
+        transition: {
+            duration: 0.7,
+            ease: easeOutExpo
+        }
+    }
+}
+
+const staggerContainer = {
+    hidden: { opacity: 0 },
+    visible: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.12,
+            delayChildren: 0.1
+        }
+    }
+}
+
+const staggerItem = {
+    hidden: { opacity: 0, y: 40 },
+    visible: {
+        opacity: 1,
+        y: 0,
+        transition: {
+            duration: 0.6,
+            ease: easeOutExpo
+        }
+    }
+}
+
+const slideInLeft = {
+    hidden: { opacity: 0, x: -60 },
+    visible: {
+        opacity: 1,
+        x: 0,
+        transition: {
+            duration: 0.8,
+            ease: easeOutExpo
+        }
+    }
+}
+
+const slideInRight = {
+    hidden: { opacity: 0, x: 60 },
+    visible: {
+        opacity: 1,
+        x: 0,
+        transition: {
+            duration: 0.8,
+            ease: easeOutExpo
+        }
+    }
+}
 
 const typeLabels: Record<string, string> = {
     general: 'Umum',
@@ -21,234 +94,450 @@ const typeLabels: Record<string, string> = {
 }
 
 interface DesktopViewProps {
-    posts: any[]
-    announcements: any[]
-    slides?: any[]
-    achievements?: any[]
-    alumni?: any[]
-    galleries?: any[]
+    posts: Post[]
+    announcements: Array<{
+        id: number
+        type: string
+        attributes: {
+            title: string
+            slug: string
+            type: string
+            published_at: string
+        }
+    }>
+    slides?: Slider[]
+    achievements?: Achievement[]
+    alumni?: Alumni[]
+    galleries?: Gallery[]
 }
 
 export function DesktopView({ posts, announcements, slides, achievements, alumni, galleries }: DesktopViewProps) {
     const { settings } = useSiteConfig()
 
-    // Build principal data from settings
-    const principalData = {
-        name: settings.principal_name,
-        title: `${settings.principal_title} ${settings.site_name}`,
-        message: `"${settings.principal_message}"`,
-        description: settings.principal_description,
-        image: settings.principal_photo || '/principal.png',
-        since: settings.principal_since
-    }
+    const stats = [
+        { value: parseInt(settings.total_students) || 1200, label: 'Siswa', icon: Users },
+        { value: parseInt(settings.total_teachers) || 120, label: 'Guru', icon: GraduationCap },
+        { value: 45, label: 'Ekstrakurikuler', icon: Award },
+        { value: parseInt(settings.total_alumni) || 50000, label: 'Alumni', icon: Building },
+    ]
 
     return (
-        <main id="main-content" className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
-            {/* Hero Section with Slider */}
+        <main id="main-content" className="min-h-screen bg-white dark:bg-slate-950 overflow-hidden">
+            {/* Hero Section */}
             <HeroSection slides={slides} />
 
-            {/* Why Choose Us removed */}
+            {/* Floating Stats Bar */}
+            <section className="relative z-20 -mt-20">
+                <div className="container mx-auto px-4">
+                    <StatsBar stats={stats} variant="floating" />
+                </div>
+            </section>
 
-            {/* Principal Section */}
-            <section className="py-24 pb-32 bg-slate-50 dark:bg-slate-900 relative overflow-visible">
-                <div className="absolute top-0 right-0 w-1/3 h-full bg-blue-50 dark:bg-blue-900/10 skew-x-12 translate-x-20" />
+            {/* Principal Welcome Section - Centered & Symmetrical */}
+            <section className="py-24 md:py-32 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-950 relative overflow-hidden">
+                {/* Subtle Pattern Background */}
+                <motion.div
+                    className="absolute inset-0 pattern-dots opacity-50"
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 0.5 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 1.5 }}
+                />
 
                 <div className="container mx-auto px-4 relative">
-                    <div className="grid md:grid-cols-2 gap-12 lg:gap-20 items-center">
-                        <ScrollReveal direction="left" delay={0.1} className="order-2 md:order-1 space-y-8">
-                            <div className="relative">
-                                <span className="text-blue-600 font-bold tracking-wider uppercase text-sm flex items-center gap-2">
-                                    <span className="w-10 h-[2px] bg-blue-600"></span>
-                                    Sambutan Kepala Sekolah
-                                </span>
-                                <h2 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mt-4 mb-6 leading-tight">
-                                    Membangun Generasi <br />
-                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">
-                                        Masa Depan
-                                    </span>
-                                </h2>
-                            </div>
+                    <div className="max-w-5xl mx-auto">
+                        {/* Section Header */}
+                        <motion.div
+                            variants={fadeInUp}
+                            initial="hidden"
+                            whileInView="visible"
+                            viewport={{ once: true, margin: "-100px" }}
+                        >
+                            <SectionHeader
+                                label="Sambutan"
+                                title="Kepala Sekolah"
+                                align="center"
+                            />
+                        </motion.div>
 
-                            <div className="prose prose-lg dark:prose-invert text-slate-600 dark:text-slate-300 relative z-10">
-                                <div className="relative pl-6 border-l-4 border-blue-200 dark:border-blue-900 italic text-xl text-slate-700 dark:text-slate-200 mb-6">
-                                    {principalData.message}
-                                </div>
-                                <p className="text-base leading-relaxed">
-                                    {principalData.description}
-                                </p>
-                            </div>
-
-                            <div className="pt-6 flex items-center gap-5">
-                                <div className="relative">
-                                    <div className="w-14 h-14 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400">
-                                        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
-                                    </div>
-                                </div>
-                                <div>
-                                    <h4 className="font-bold text-xl text-slate-900 dark:text-white">{principalData.name}</h4>
-                                    <p className="text-slate-500 dark:text-slate-400 font-medium text-sm">{principalData.title}</p>
-                                </div>
-                            </div>
-                        </ScrollReveal>
-
-                        <ScrollReveal direction="right" delay={0.2} className="order-1 md:order-2 relative mt-10 md:mt-0">
-                            <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-[2.5rem] transform rotate-3 scale-95 opacity-20 blur-sm translate-y-4"></div>
-
-                            <div className="relative z-10 bg-white dark:bg-slate-800 rounded-[2rem] p-4 shadow-2xl border border-white/20">
-                                <div className="relative rounded-3xl overflow-visible aspect-[4/5] md:aspect-[3/4]">
-                                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-gradient-to-tr from-blue-100/50 to-indigo-100/50 rounded-full blur-3xl -z-10 dark:from-blue-900/20 dark:to-indigo-900/20"></div>
-
-                                    <div className="absolute bottom-0 left-0 right-0 top-0 overflow-hidden rounded-2xl">
+                        {/* Principal Card - Centered */}
+                        <motion.div
+                            variants={fadeInScale}
+                            initial="hidden"
+                            whileInView="visible"
+                            viewport={{ once: true, margin: "-50px" }}
+                            className="principal-card p-8 md:p-12"
+                        >
+                            <div className="grid md:grid-cols-5 gap-8 md:gap-12 items-center">
+                                {/* Photo - 2 columns */}
+                                <div className="md:col-span-2">
+                                    <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl">
                                         <Image
-                                            src={principalData.image}
-                                            alt={`${principalData.name} - ${principalData.title}`}
+                                            src={settings.principal_photo || '/principal.png'}
+                                            alt={settings.principal_name}
                                             fill
-                                            className="object-cover object-top hover:scale-105 transition-transform duration-700"
-                                            sizes="(max-width: 768px) 100vw, 50vw"
-                                            loading="lazy"
+                                            className="object-cover object-top"
+                                            sizes="(max-width: 768px) 100vw, 40vw"
                                         />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/20 to-transparent pointer-events-none"></div>
-                                    </div>
-
-                                    <div className="absolute -bottom-6 -right-6">
-                                        <div className="bg-white dark:bg-slate-700 p-4 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-600 flex items-center gap-3">
-                                            <div className="bg-yellow-100 dark:bg-yellow-900/50 p-2 rounded-full text-yellow-600 dark:text-yellow-400">
-                                                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
-                                            </div>
-                                            <div>
-                                                <p className="text-xs font-bold text-slate-400 dark:text-slate-400 uppercase">Sejak</p>
-                                                <p className="text-lg font-bold text-slate-800 dark:text-white">{principalData.since}</p>
-                                            </div>
-                                        </div>
+                                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/30 to-transparent" />
                                     </div>
                                 </div>
-                            </div>
-                        </ScrollReveal>
-                    </div>
-                </div>
-            </section>
 
-            {/* News & Announcements */}
-            <section className="py-20 bg-white dark:bg-slate-950">
-                <div className="container mx-auto px-4">
-                    <ScrollReveal>
-                        <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-4">
-                            <div>
-                                <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900 dark:text-white">Berita & Informasi</h2>
-                                <p className="text-gray-500 dark:text-gray-400 text-lg">Update terkini seputar kegiatan sekolah</p>
-                            </div>
-                            <Link href="/informasi" className="text-blue-600 dark:text-blue-400 font-semibold flex items-center gap-2 hover:underline">
-                                Lihat Semua Berita
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
-                            </Link>
-                        </div>
-                    </ScrollReveal>
+                                {/* Content - 3 columns */}
+                                <div className="md:col-span-3 space-y-6">
+                                    <div className="elegant-quote">
+                                        {settings.principal_message}
+                                    </div>
 
-                    <div className="grid lg:grid-cols-3 gap-8">
-                        <StaggerContainer staggerDelay={0.1} className="lg:col-span-2 grid md:grid-cols-2 gap-6">
-                            {posts.slice(0, 4).map((post) => (
-                                <StaggerItem key={post.id}>
-                                    <Link
-                                        href={`/informasi/${post.attributes.slug}`}
-                                        className="group block bg-white dark:bg-slate-900 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 dark:border-slate-800 hover:-translate-y-2"
-                                    >
-                                        <div className="h-56 bg-gray-200 dark:bg-slate-700 relative overflow-hidden">
-                                            {post.attributes.featured_image ? (
-                                                <Image
-                                                    src={post.attributes.featured_image}
-                                                    alt={post.attributes.title}
-                                                    fill
-                                                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                                                    className="object-cover group-hover:scale-110 transition-transform duration-500"
-                                                    loading="lazy"
-                                                />
-                                            ) : (
-                                                <div className="w-full h-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
-                                                    <svg className="w-12 h-12 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                                                </div>
-                                            )}
-                                            <div className="absolute top-4 left-4">
-                                                {post.relationships.categories && post.relationships.categories[0] && (
-                                                    <Badge className="bg-white/90 text-blue-800 backdrop-blur shadow-sm hover:bg-white">
-                                                        {post.relationships.categories[0].name}
-                                                    </Badge>
-                                                )}
-                                            </div>
+                                    <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
+                                        {settings.principal_description}
+                                    </p>
+
+                                    <div className="flex items-center gap-4 pt-4 border-t border-slate-100 dark:border-slate-700">
+                                        <div className="w-14 h-14 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                                            <GraduationCap className="w-7 h-7 text-blue-600 dark:text-blue-400" />
                                         </div>
-                                        <div className="p-6">
-                                            <div className="flex items-center gap-2 text-xs text-gray-500 mb-3">
-                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                                                {new Date(post.attributes.published_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
-                                            </div>
-                                            <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
-                                                {post.attributes.title}
-                                            </h3>
-                                            <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-2 border-l-4 border-gray-200 dark:border-slate-700 pl-3">
-                                                {post.attributes.excerpt}
+                                        <div>
+                                            <h4 className="font-display text-xl font-semibold text-slate-900 dark:text-white">
+                                                {settings.principal_name}
+                                            </h4>
+                                            <p className="text-slate-500 dark:text-slate-400 text-sm">
+                                                {settings.principal_title} {settings.site_name}
                                             </p>
                                         </div>
-                                    </Link>
-                                </StaggerItem>
-                            ))}
-                        </StaggerContainer>
-
-                        <ScrollReveal delay={0.3} className="space-y-6">
-                            <div className="glass-card-strong p-6">
-                                <div className="flex justify-between items-center mb-6 pb-4 border-b border-slate-200 dark:border-slate-700">
-                                    <h3 className="font-bold text-xl text-slate-900 dark:text-white">Pengumuman</h3>
-                                    <Link href="/pengumuman" className="text-xs font-bold uppercase text-blue-600 dark:text-blue-400 hover:underline">Lihat Semua</Link>
-                                </div>
-
-                                <div className="space-y-4">
-                                    {announcements.slice(0, 3).map((announcement) => (
-                                        <Link key={announcement.id} href={`/pengumuman/${announcement.attributes.slug}`} className="block group">
-                                            <div className="flex gap-4 p-3 rounded-xl hover:bg-white dark:hover:bg-slate-800 hover:shadow-md dark:hover:shadow-slate-900/50 transition-all">
-                                                <div className="flex-shrink-0 w-14 h-14 bg-blue-100 dark:bg-blue-900/50 rounded-xl flex flex-col items-center justify-center text-blue-700 dark:text-blue-300 font-bold border border-blue-200 dark:border-blue-800">
-                                                    <span className="text-xl leading-none">{new Date(announcement.attributes.published_at).getDate()}</span>
-                                                    <span className="text-[10px] uppercase">{new Date(announcement.attributes.published_at).toLocaleDateString('id-ID', { month: 'short' })}</span>
-                                                </div>
-                                                <div>
-                                                    <Badge variant={announcement.attributes.type === 'urgent' ? 'destructive' : 'secondary'} className="mb-1 text-[10px] px-1.5 py-0.5 h-auto">
-                                                        {typeLabels[announcement.attributes.type] || announcement.attributes.type}
-                                                    </Badge>
-                                                    <h4 className="text-sm font-semibold leading-snug text-slate-800 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
-                                                        {announcement.attributes.title}
-                                                    </h4>
-                                                </div>
-                                            </div>
-                                        </Link>
-                                    ))}
+                                    </div>
                                 </div>
                             </div>
-
-                            <div className="bg-gradient-to-br from-primary-600 to-indigo-700 rounded-3xl p-8 text-center text-white relative overflow-hidden group">
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl -mr-16 -mt-16 transition-all group-hover:scale-150" />
-                                <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full blur-2xl -ml-8 -mb-8" />
-                                <h3 className="text-2xl font-bold mb-2 relative z-10">Siap bergabung?</h3>
-                                <p className="text-primary-100 mb-6 text-sm relative z-10">Jadilah bagian dari keluarga besar {settings.site_short_name}.</p>
-                                <Link href="/ppdb" className="inline-block w-full py-3 bg-white text-primary-600 rounded-xl font-bold hover:bg-primary-50 transition-all duration-300 shadow-lg relative z-10 hover:shadow-xl hover:-translate-y-0.5">
-                                    Info PPDB
-                                </Link>
-                            </div>
-                        </ScrollReveal>
+                        </motion.div>
                     </div>
                 </div>
             </section>
 
-            {/* Achievements Carousel */}
-            <AchievementsCarousel achievements={achievements} />
+            {/* Divider */}
+            <div className="section-divider" />
 
-            {/* Gallery Preview with Lightbox */}
-            <GalleryPreview galleries={galleries} />
+            {/* News & Announcements Section - Symmetrical Grid */}
+            <section className="py-20 md:py-28 bg-white dark:bg-slate-950">
+                <div className="container mx-auto px-4">
+                    <motion.div
+                        className="flex flex-col md:flex-row md:items-end md:justify-between mb-12"
+                        variants={staggerContainer}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, margin: "-100px" }}
+                    >
+                        <motion.div variants={slideInLeft}>
+                            <SectionHeader
+                                label="Terbaru"
+                                title="Berita & Informasi"
+                                subtitle="Update terkini seputar kegiatan dan prestasi sekolah"
+                                align="left"
+                                className="mb-0"
+                            />
+                        </motion.div>
+                        <motion.div variants={slideInRight}>
+                            <Link
+                                href="/informasi"
+                                className="btn-elegant-outline mt-6 md:mt-0 magnetic-hover"
+                            >
+                                Lihat Semua
+                                <ArrowRight className="w-4 h-4" />
+                            </Link>
+                        </motion.div>
+                    </motion.div>
 
-            {/* Alumni Carousel */}
-            <AlumniCarousel alumni={alumni} />
+                    {/* News Grid - 3 columns symmetrical with stagger */}
+                    <motion.div
+                        className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8"
+                        variants={staggerContainer}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, margin: "-50px" }}
+                    >
+                        {posts.slice(0, 6).map((post, index) => (
+                            <motion.div key={post.id} variants={staggerItem}>
+                                <NewsCard
+                                    title={post.attributes.title}
+                                    excerpt={post.attributes.excerpt}
+                                    image={post.attributes.featured_image}
+                                    category={post.relationships?.categories?.[0]?.name}
+                                    date={post.attributes.published_at}
+                                    href={`/informasi/${post.attributes.slug}`}
+                                    variant="featured"
+                                    index={index}
+                                />
+                            </motion.div>
+                        ))}
+                    </motion.div>
 
-            {/* Partnership & Alumni Universities */}
-            <PartnershipLogos />
+                    {/* Announcements Bar */}
+                    {announcements.length > 0 && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 40, scale: 0.98 }}
+                            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                            viewport={{ once: true, margin: "-50px" }}
+                            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                            className="mt-12 p-6 md:p-8 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl text-white relative overflow-hidden"
+                        >
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-32 -mt-32" />
+                            <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                                <div>
+                                    <h3 className="font-display text-xl font-semibold mb-1">Pengumuman Terbaru</h3>
+                                    <p className="text-blue-100 text-sm">
+                                        {announcements[0]?.attributes?.title}
+                                    </p>
+                                </div>
+                                <Link
+                                    href="/pengumuman"
+                                    className="inline-flex items-center gap-2 px-6 py-3 bg-white text-blue-600 rounded-full font-medium hover:bg-blue-50 transition-colors"
+                                >
+                                    Lihat Pengumuman
+                                    <ArrowRight className="w-4 h-4" />
+                                </Link>
+                            </div>
+                        </motion.div>
+                    )}
+                </div>
+            </section>
 
-            {/* Location & Contact Map */}
-            <LocationMap />
+            {/* Divider */}
+            <div className="section-divider" />
+
+            {/* Achievements Section */}
+            <section className="py-20 md:py-28 bg-slate-50 dark:bg-slate-900">
+                <div className="container mx-auto px-4">
+                    <motion.div
+                        variants={fadeInUp}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, margin: "-100px" }}
+                    >
+                        <SectionHeader
+                            label="Prestasi"
+                            title="Kebanggaan Kami"
+                            subtitle="Berbagai pencapaian gemilang siswa-siswi dalam bidang akademik, olahraga, dan seni"
+                            align="center"
+                        />
+                    </motion.div>
+                </div>
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true, margin: "-50px" }}
+                    transition={{ duration: 0.8, delay: 0.2 }}
+                >
+                    <AchievementsCarousel achievements={achievements} />
+                </motion.div>
+            </section>
+
+            {/* Gallery Section */}
+            <section className="py-20 md:py-28 bg-white dark:bg-slate-950">
+                <div className="container mx-auto px-4">
+                    <motion.div
+                        variants={fadeInUp}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, margin: "-100px" }}
+                    >
+                        <SectionHeader
+                            label="Galeri"
+                            title="Momen Berharga"
+                            subtitle="Dokumentasi kegiatan dan momen spesial di lingkungan sekolah"
+                            align="center"
+                        />
+                    </motion.div>
+                </div>
+                <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-50px" }}
+                    transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
+                >
+                    <GalleryPreview galleries={galleries} />
+                </motion.div>
+            </section>
+
+            {/* Divider */}
+            <div className="section-divider" />
+
+            {/* Alumni Section */}
+            <section className="py-20 md:py-28 bg-slate-50 dark:bg-slate-900">
+                <div className="container mx-auto px-4">
+                    <motion.div
+                        variants={fadeInUp}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, margin: "-100px" }}
+                    >
+                        <SectionHeader
+                            label="Alumni"
+                            title="Jejak Sukses Alumni"
+                            subtitle="Kisah inspiratif alumni yang telah berkontribusi di berbagai bidang"
+                            align="center"
+                        />
+                    </motion.div>
+                </div>
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true, margin: "-50px" }}
+                    transition={{ duration: 0.8, delay: 0.2 }}
+                >
+                    <AlumniCarousel alumni={alumni} />
+                </motion.div>
+            </section>
+
+            {/* CTA Section - Symmetrical */}
+            <section className="py-20 md:py-28 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 relative overflow-hidden">
+                {/* Decorative Elements */}
+                <motion.div
+                    className="absolute inset-0 pattern-grid opacity-10"
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 0.1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 1.5 }}
+                />
+                <motion.div
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-600/20 rounded-full blur-[120px]"
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    whileInView={{ scale: 1, opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+                />
+
+                <div className="container mx-auto px-4 relative">
+                    <div className="max-w-3xl mx-auto text-center">
+                        <motion.div
+                            variants={staggerContainer}
+                            initial="hidden"
+                            whileInView="visible"
+                            viewport={{ once: true, margin: "-100px" }}
+                            className="space-y-6"
+                        >
+                            <motion.span
+                                variants={staggerItem}
+                                className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-white/80 text-sm"
+                            >
+                                <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+                                Pendaftaran Dibuka
+                            </motion.span>
+
+                            <motion.h2
+                                variants={staggerItem}
+                                className="font-display text-4xl md:text-5xl lg:text-6xl font-semibold text-white"
+                            >
+                                Bergabunglah Bersama Kami
+                            </motion.h2>
+
+                            <motion.p
+                                variants={staggerItem}
+                                className="text-xl text-slate-300 max-w-xl mx-auto"
+                            >
+                                Jadilah bagian dari keluarga besar {settings.site_short_name} dan raih masa depan cemerlang
+                            </motion.p>
+
+                            <motion.div
+                                variants={staggerItem}
+                                className="flex flex-col sm:flex-row gap-4 justify-center pt-4"
+                            >
+                                <Link
+                                    href="/ppdb"
+                                    className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-slate-900 rounded-full font-semibold hover:bg-slate-100 transition-all duration-500 hover:shadow-xl hover:shadow-white/20 hover:-translate-y-1"
+                                >
+                                    Info Pendaftaran
+                                    <ArrowRight className="w-5 h-5" />
+                                </Link>
+                                <Link
+                                    href="/kontak"
+                                    className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-transparent border border-white/30 text-white rounded-full font-semibold hover:bg-white/10 transition-all duration-500 hover:-translate-y-1"
+                                >
+                                    Hubungi Kami
+                                </Link>
+                            </motion.div>
+                        </motion.div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Contact & Location Section - Symmetrical Grid */}
+            <section className="py-20 md:py-28 bg-white dark:bg-slate-950">
+                <div className="container mx-auto px-4">
+                    <motion.div
+                        variants={fadeInUp}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, margin: "-100px" }}
+                    >
+                        <SectionHeader
+                            label="Kontak"
+                            title="Hubungi Kami"
+                            align="center"
+                        />
+                    </motion.div>
+
+                    <motion.div
+                        className="grid md:grid-cols-3 gap-6 lg:gap-8 max-w-4xl mx-auto"
+                        variants={staggerContainer}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, margin: "-50px" }}
+                    >
+                        {/* Location */}
+                        <motion.div variants={staggerItem} className="stat-card smooth-hover">
+                            <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center">
+                                <MapPin className="w-7 h-7 text-blue-600 dark:text-blue-400" />
+                            </div>
+                            <h3 className="font-display text-lg font-semibold text-slate-900 dark:text-white mb-2">Alamat</h3>
+                            <p className="text-sm text-slate-500 dark:text-slate-400">
+                                {settings.address || 'Jl. Kamboja No. 4, Dangin Puri Kangin, Denpasar Utara'}
+                            </p>
+                        </motion.div>
+
+                        {/* Phone */}
+                        <motion.div variants={staggerItem} className="stat-card smooth-hover">
+                            <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-green-50 dark:bg-green-900/30 flex items-center justify-center">
+                                <Phone className="w-7 h-7 text-green-600 dark:text-green-400" />
+                            </div>
+                            <h3 className="font-display text-lg font-semibold text-slate-900 dark:text-white mb-2">Telepon</h3>
+                            <p className="text-sm text-slate-500 dark:text-slate-400">
+                                {settings.phone || '(0361) 226311'}
+                            </p>
+                        </motion.div>
+
+                        {/* Email */}
+                        <motion.div variants={staggerItem} className="stat-card smooth-hover">
+                            <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-purple-50 dark:bg-purple-900/30 flex items-center justify-center">
+                                <Mail className="w-7 h-7 text-purple-600 dark:text-purple-400" />
+                            </div>
+                            <h3 className="font-display text-lg font-semibold text-slate-900 dark:text-white mb-2">Email</h3>
+                            <p className="text-sm text-slate-500 dark:text-slate-400">
+                                {settings.email || 'info@sman1denpasar.sch.id'}
+                            </p>
+                        </motion.div>
+                    </motion.div>
+
+                    {/* Map */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 40, scale: 0.98 }}
+                        whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                        viewport={{ once: true, margin: "-50px" }}
+                        transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
+                        className="mt-12 rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-800 shadow-lg"
+                    >
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3944.363619842848!2d115.21894261478454!3d-8.657694793803037!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd240ff4c5bb32d%3A0x6e68c5bfa9d2a6e6!2sSMA%20Negeri%201%20Denpasar!5e0!3m2!1sen!2sid!4v1640000000000!5m2!1sen!2sid"
+                            width="100%"
+                            height="400"
+                            style={{ border: 0 }}
+                            allowFullScreen
+                            loading="lazy"
+                            referrerPolicy="no-referrer-when-downgrade"
+                            title="Lokasi SMA Negeri 1 Denpasar"
+                            className="grayscale hover:grayscale-0 transition-all duration-500"
+                        />
+                    </motion.div>
+                </div>
+            </section>
         </main>
     )
 }

@@ -36,13 +36,6 @@ export const metadata: Metadata = {
 }
 
 // Default fallback data
-const defaultStats = [
-    { label: 'Tahun Berdiri', value: '1950' },
-    { label: 'Siswa Aktif', value: '1,200+' },
-    { label: 'Guru & Staff', value: '120+' },
-    { label: 'Alumni', value: '50,000+' },
-]
-
 const defaultVisiMisi = {
     visi: 'Menjadi sekolah unggul yang menghasilkan lulusan berprestasi, berkarakter Pancasila, berwawasan global, dan berbudaya lingkungan.',
     misi: [
