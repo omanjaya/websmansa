@@ -1195,7 +1195,18 @@ export async function reorderSliders(sliders: Array<{ id: number; order: number 
 // ============ Public Settings API ============
 
 import { SiteSettings, SettingItem } from '@/types/settings'
-import { ApiResponse, PaginatedResponse, SettingValue, SettingResponse, SettingsListResponse, UploadResponse, SuccessResponse, CreatedResponse, UpdatedResponse, DeletedResponse, ToggleResponse } from '@/types/api'
+import { 
+  PaginatedResponse, 
+  SettingValue, 
+  SettingResponse, 
+  SettingsListResponse, 
+  UploadResponse, 
+  SuccessResponse, 
+  CreatedResponse, 
+  UpdatedResponse, 
+  DeletedResponse, 
+  ToggleResponse 
+} from '@/types/api'
 
 /**
  * Get all public settings (no auth required)
