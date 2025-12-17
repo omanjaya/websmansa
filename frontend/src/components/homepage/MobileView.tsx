@@ -335,7 +335,22 @@ function MobileAlumni({ alumni }: { alumni?: Alumni[] }) {
         { name: 'Ni Made Dewi', profession: 'CEO Startup', year: '2012', quote: 'Fondasi yang kuat untuk meraih mimpi besar.' },
     ]
 
-    const displayAlumni = alumni && alumni.length > 0 ? alumni.slice(0, 4) : defaultAlumni
+    const displayAlumni = alumni && alumni.length > 0 
+        ? alumni.slice(0, 4) 
+        : defaultAlumni.map((item, index) => ({
+            id: index + 1,
+            uuid: `default-${index}`,
+            name: item.name,
+            profession: item.profession,
+            graduation_year: parseInt(item.year),
+            quote: item.quote,
+            is_public: true,
+            image_url: undefined,
+            company: '',
+            linkedin_url: '',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+        }))
 
     return (
         <div className="mb-8">
