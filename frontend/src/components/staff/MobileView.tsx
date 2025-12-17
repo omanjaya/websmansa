@@ -14,7 +14,7 @@ const typeLabels: Record<string, string> = {
 function MobileStaffCard({ item, index }: { item: Staff; index: number }) {
     return (
         <Link
-            href={`/staff/${item.attributes?.slug || item.slug}`}
+            href={`/staff/${item.attributes?.slug || item.id}`}
             className="group block active:scale-[0.98] transition-transform"
         >
             <div
@@ -42,7 +42,7 @@ function MobileStaffCard({ item, index }: { item: Staff; index: number }) {
                     {item.attributes?.photo_url ? (
                         <Image
                             src={item.attributes.photo_url}
-                            alt={item.attributes?.name || item.name}
+                            alt={item.attributes?.name}
                             fill
                             sizes="45vw"
                             loading={index < 4 ? "eager" : "lazy"}
@@ -70,7 +70,7 @@ function MobileStaffCard({ item, index }: { item: Staff; index: number }) {
                     {/* Name Row */}
                     <div className="flex items-center gap-1.5 mb-1">
                         <h3 className="text-sm font-medium text-gray-900 tracking-tight line-clamp-1 flex-1" style={{ letterSpacing: '-0.3px' }}>
-                            {item.attributes?.name || item.name}
+                            {item.attributes?.name}
                         </h3>
                         {/* Verified Badge */}
                         <div className="flex-shrink-0 w-5 h-5 flex items-center justify-center">
@@ -88,7 +88,7 @@ function MobileStaffCard({ item, index }: { item: Staff; index: number }) {
 
                     {/* Position */}
                     <p className="text-xs text-gray-500 line-clamp-1 mb-2" style={{ letterSpacing: '0.1px' }}>
-                        {item.attributes?.position || item.position}
+                        {item.attributes?.position}
                     </p>
 
                     {/* Type Badge */}
