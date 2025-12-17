@@ -14,26 +14,27 @@ class RolesAndPermissionsSeeder extends Seeder
         // Reset cached roles and permissions
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-        // Create permissions
-        Permission::create(['name' => 'admin-panel']);
-        Permission::create(['name' => 'manage-posts']);
-        Permission::create(['name' => 'manage-users']);
-        Permission::create(['name' => 'manage-settings']);
-
-        // Create roles and assign permissions
-        $adminRole = Role::create(['name' => 'admin']);
-        $adminRole->givePermissionTo(Permission::all());
-
-        $editorRole = Role::create(['name' => 'editor']);
-        $editorRole->givePermissionTo(['admin-panel', 'manage-posts']);
-
-        // Assign admin role to first user (admin user)
-        $adminUser = User::where('email', 'admin@smansa.sch.id')->first();
-        if ($adminUser) {
-            $adminUser->assignRole('admin');
-            $this->command->info('✅ Admin role assigned to: ' . $adminUser->email);
+        // Create permissions (if not exists)
+        $permissions = ['admin-panel', 'manage-posts', 'manage-users', 'manage-settings'];
+        foreach ($permissions as $permission) {
+            Permission::firstOrCreate(['name' => $permission]);
         }
 
-        $this->command->info('✅ Roles and permissions seeded successfully!');
+        // Create admin role (if not exists)
+        $adminRole = Role::firstOrCreate(['name' => 'admin']);
+        $adminRole->syncPermissions(Permission::all());
+
+        // Create editor role (if not exists)
+        $editorRole = Role::firstOrCreate(['name' => 'editor']);
+        $editorRole->syncPermissions(['admin-panel', 'manage-posts']);
+
+        // Assign admin role to admin user
+        $adminUser = User::where('email', 'admin@smansa.sch.id')->first();
+        if ($adminUser && !$adminUser->hasRole('admin')) {
+            $adminUser->assignRole('admin');
+            $this->command->info('Admin role assigned to: ' . $adminUser->email);
+        }
+
+        $this->command->info('Roles and permissions seeded successfully!');
     }
 }

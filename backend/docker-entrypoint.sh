@@ -34,6 +34,12 @@ run_setup() {
     echo "[Setup] Running migrations..."
     php artisan migrate --force 2>&1 || echo "[Setup] Migration warning (may need manual review)"
 
+    # Run seeders for admin user and permissions
+    echo "[Setup] Running seeders..."
+    php artisan db:seed --class=AdminUserSeeder --force 2>&1 || echo "[Setup] AdminUserSeeder skipped"
+    php artisan db:seed --class=RolesAndPermissionsSeeder --force 2>&1 || echo "[Setup] RolesAndPermissionsSeeder skipped"
+    php artisan db:seed --class=SettingsSeeder --force 2>&1 || echo "[Setup] SettingsSeeder skipped"
+
     # Create storage link if not exists
     php artisan storage:link 2>/dev/null || true
 

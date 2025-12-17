@@ -10,16 +10,24 @@ class AdminUserSeeder extends Seeder
 {
     public function run(): void
     {
+        // Check if admin already exists
+        $existingAdmin = User::where('email', 'admin@smansa.sch.id')->first();
+
+        if ($existingAdmin) {
+            $this->command->info('Admin user already exists, skipping...');
+            return;
+        }
+
         // Create super admin user
-        User::create([
+        $admin = User::create([
             'name' => 'Super Admin',
             'email' => 'admin@smansa.sch.id',
-            'password' => Hash::make('password'),
+            'password' => Hash::make('SmansaDps2024!'),
             'email_verified_at' => now(),
         ]);
 
-        $this->command->info('✅ Admin user created successfully!');
-        $this->command->info('📧 Email: admin@smansa.sch.id');
-        $this->command->info('🔑 Password: password');
+        $this->command->info('Admin user created successfully!');
+        $this->command->info('Email: admin@smansa.sch.id');
+        $this->command->info('Password: SmansaDps2024!');
     }
 }
