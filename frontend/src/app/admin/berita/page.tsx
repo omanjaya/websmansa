@@ -8,7 +8,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Plus, Search, Edit, Trash2, Eye } from 'lucide-react'
 import { toast } from 'sonner'
 import { format } from 'date-fns'
-import { id } from 'date-fns/locale'
+import { id as idLocale } from 'date-fns/locale'
 
 export default function BeritaPage() {
     const queryClient = useQueryClient()
