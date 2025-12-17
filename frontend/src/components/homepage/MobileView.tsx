@@ -386,7 +386,7 @@ function MobileAlumni({ alumni }: { alumni?: Alumni[] }) {
                                         {person.name}
                                     </h4>
                                     <p className="text-xs text-slate-500 dark:text-slate-400">
-                                        {person.current_occupation || person.profession} • Alumni {person.graduation_year || person.year}
+                                        {person.current_occupation} • Alumni {person.graduation_year}
                                     </p>
                                 </div>
                             </div>
