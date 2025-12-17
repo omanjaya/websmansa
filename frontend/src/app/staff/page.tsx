@@ -309,8 +309,16 @@ export default async function Page({ searchParams }: PageProps) {
     // Using dummy data for staff
   }
 
-  // Sort by order
-  staff.sort((a, b) => a.attributes.order - b.attributes.order)
+  // Sort by order and handle null photo
+  staff = staff
+    .map(item => ({
+      ...item,
+      attributes: {
+        ...item.attributes,
+        photo: item.attributes.photo || undefined
+      }
+    }))
+    .sort((a, b) => a.attributes.order - b.attributes.order)
 
   const types = Object.keys(typeLabels)
   const departments = Object.keys(departmentLabels)
