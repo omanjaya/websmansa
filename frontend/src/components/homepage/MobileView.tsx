@@ -275,7 +275,7 @@ function MobileAchievements({ achievements }: { achievements?: Achievement[] }) 
             slug: `default-${index}`,
             title: item.title,
             category: item.category,
-            level: item.level,
+            level: item.level as 'school' | 'regional' | 'national' | 'international',
             description: '',
             image_url: null,
             year: new Date().getFullYear(),
