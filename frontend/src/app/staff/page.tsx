@@ -310,7 +310,7 @@ export default async function Page({ searchParams }: PageProps) {
   }
 
   // Sort by order and handle null photo
-  staff = staff
+  const processedStaff = staff
     .map(item => ({
       ...item,
       attributes: {
@@ -325,7 +325,7 @@ export default async function Page({ searchParams }: PageProps) {
 
   return (
     <StaffPageWrapper
-      staff={staff}
+      staff={processedStaff}
       categories={[...types, ...departments]}
       currentCategory={params.type || params.department}
       pagination={pagination}
