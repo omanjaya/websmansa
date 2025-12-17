@@ -73,7 +73,13 @@ class PostRepository extends BaseRepository
 
     public function incrementViews(int $postId): void
     {
-        $this->model->where('id', $postId)->increment('views');
+        // Use post_views table to track views
+        \DB::table('post_views')->insert([
+            'post_id' => $postId,
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+            'viewed_at' => now(),
+        ]);
     }
 
     public function incrementLikes(int $postId): void

@@ -7,7 +7,7 @@ namespace App\Policies;
 use App\Models\Slider;
 use App\Models\User;
 
-class SliderPolicy
+final class SliderPolicy
 {
     /**
      * Determine whether the user can view any sliders.
@@ -31,7 +31,7 @@ class SliderPolicy
      */
     public function create(User $user): bool
     {
-        return $user->hasPermissionTo('manage-sliders') || $user->hasRole('admin');
+        return $user->hasRole('admin') || $user->hasRole('super-admin');
     }
 
     /**
@@ -39,7 +39,7 @@ class SliderPolicy
      */
     public function update(User $user, Slider $slider): bool
     {
-        return $user->hasPermissionTo('manage-sliders') || $user->hasRole('admin');
+        return $user->hasRole('admin') || $user->hasRole('super-admin');
     }
 
     /**
@@ -47,6 +47,6 @@ class SliderPolicy
      */
     public function delete(User $user, Slider $slider): bool
     {
-        return $user->hasPermissionTo('manage-sliders') || $user->hasRole('admin');
+        return $user->hasRole('admin') || $user->hasRole('super-admin');
     }
 }

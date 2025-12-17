@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -47,6 +48,8 @@ class Post extends Model implements HasMedia
 
     protected $appends = [
         'featured_image_url',
+        'views',
+        'likes',
     ];
 
     public function user(): BelongsTo
@@ -57,6 +60,26 @@ class Post extends Model implements HasMedia
     public function categories(): BelongsToMany
     {
         return $this->belongsToMany(Category::class, 'post_category');
+    }
+
+    public function postViews(): HasMany
+    {
+        return $this->hasMany(PostView::class);
+    }
+
+    public function postLikes(): HasMany
+    {
+        return $this->hasMany(PostLike::class);
+    }
+
+    public function getViewsAttribute(): int
+    {
+        return $this->postViews()->count();
+    }
+
+    public function getLikesAttribute(): int
+    {
+        return $this->postLikes()->count();
     }
 
     public function scopePublished(Builder $query): Builder
@@ -97,11 +120,16 @@ class Post extends Model implements HasMedia
 
     public function getFeaturedImageUrlAttribute(): string
     {
+        return $this->getFeaturedImageUrl('small');
+    }
+
+    public function getFeaturedImageUrl(string $size = 'small'): string
+    {
         $media = $this->getFirstMedia('featured_image');
-        
+
         if ($media) {
-            return $media->hasGeneratedConversion('large') 
-                ? $media->getUrl('large')
+            return $media->hasGeneratedConversion($size)
+                ? $media->getUrl($size)
                 : $media->getUrl();
         }
 

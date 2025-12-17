@@ -26,9 +26,18 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// Health check endpoint (no middleware for fastest response)
+Route::get('/v1/health', function () {
+    return response()->json([
+        'status' => 'ok',
+        'timestamp' => now()->toIso8601String(),
+        'service' => 'SMANSA API',
+    ]);
+})->name('health');
+
 Route::middleware(['api', 'throttle:api'])->group(function () {
-    // Public routes
-    Route::prefix('v1')->group(function () {
+    // Public routes with caching
+    Route::prefix('v1')->middleware([\App\Http\Middleware\CacheResponse::class])->group(function () {
         // Authentication
         Route::prefix('auth')->group(function () {
             Route::post('/login', [AuthController::class, 'login'])->name('auth.login')->middleware('throttle:login');
@@ -111,6 +120,13 @@ Route::middleware(['api', 'throttle:api'])->group(function () {
         // Testimonials
         Route::get('/testimonials', [TestimonialController::class, 'index'])->name('testimonials.index');
 
+        // Settings - Public endpoints
+        Route::prefix('settings')->group(function () {
+            Route::get('/', [SettingController::class, 'index'])->name('settings.index');
+            Route::get('/group/{group}', [SettingController::class, 'getByGroup'])->name('settings.by-group');
+            Route::get('/{key}', [SettingController::class, 'getByKey'])->name('settings.by-key');
+        });
+
         // Analytics - Public endpoint for tracking
         Route::post('/analytics/track', [\App\Http\Controllers\Api\AnalyticsController::class, 'trackPageView'])->name('analytics.track');
 
@@ -118,7 +134,6 @@ Route::middleware(['api', 'throttle:api'])->group(function () {
         // - Alumni
         // - Tracer Study
         // - Contact
-        // - Settings
     });
 });
 
@@ -270,10 +285,13 @@ Route::middleware(['api', 'auth:sanctum', 'permission:admin-panel', 'throttle:ad
     });
 
     // Settings
-    Route::get('/settings', [SettingController::class, 'index'])->name('admin.settings.index');
-    Route::get('/settings/group/{group}', [SettingController::class, 'getByGroup'])->name('admin.settings.by-group');
-    Route::put('/settings', [SettingController::class, 'updateBatch'])->name('admin.settings.update-batch');
-    Route::put('/settings/{key}', [SettingController::class, 'update'])->name('admin.settings.update');
+    Route::prefix('settings')->group(function () {
+        Route::get('/', [SettingController::class, 'adminIndex'])->name('admin.settings.index');
+        Route::get('/groups', [SettingController::class, 'getGroups'])->name('admin.settings.groups');
+        Route::put('/', [SettingController::class, 'updateBatch'])->name('admin.settings.update-batch');
+        Route::put('/{key}', [SettingController::class, 'update'])->name('admin.settings.update');
+        Route::post('/upload', [SettingController::class, 'upload'])->name('admin.settings.upload');
+    });
 
     // Will add more admin endpoints later:
     // - Users management

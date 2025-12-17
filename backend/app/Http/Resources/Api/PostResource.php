@@ -29,10 +29,7 @@ final class PostResource extends JsonResource
                 'slug' => $this->slug,
                 'excerpt' => $this->excerpt,
                 'content' => $this->when($shouldShowFullContent, $this->content),
-                'featured_image' => $this->when(
-                    $this->featured_image,
-                    fn () => asset("storage/{$this->featured_image}")
-                ),
+                'featured_image' => $this->featured_image_url,
                 'status' => $this->status,
                 'type' => $this->type,
                 'views' => (int) $this->views,
@@ -104,10 +101,10 @@ final class PostResource extends JsonResource
      */
     private function isLikedBy($user): bool
     {
-        if (! $this->relationLoaded('likes') || ! $user) {
+        if (! $this->relationLoaded('postLikes') || ! $user) {
             return false;
         }
 
-        return $this->likes->contains('user_id', $user->id);
+        return $this->postLikes->contains('user_id', $user->id);
     }
 }

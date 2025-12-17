@@ -12,6 +12,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Support\Facades\Cache;
 
 abstract class BaseApiController extends Controller
 {
@@ -30,10 +31,37 @@ abstract class BaseApiController extends Controller
     }
 
     /**
+     * Get cache key for this controller
+     */
+    protected function getCacheKey(Request $request): string
+    {
+        $class = class_basename(static::class);
+        $params = $request->query();
+        ksort($params);
+        return $class . '_' . md5(json_encode($params));
+    }
+
+    /**
+     * Get cache TTL in seconds (default 5 minutes)
+     */
+    protected function getCacheTTL(): int
+    {
+        return 300; // 5 minutes
+    }
+
+    /**
      * Display a listing of resources
      */
     public function index(Request $request): JsonResponse
     {
+        $cacheKey = $this->getCacheKey($request);
+
+        // Try to get from cache first
+        $cachedResponse = Cache::get($cacheKey);
+        if ($cachedResponse) {
+            return response()->json($cachedResponse);
+        }
+
         $requestClass = $this->getIndexRequest();
         $validated = app($requestClass)->validated();
 
@@ -49,14 +77,21 @@ abstract class BaseApiController extends Controller
         $collectionClass = $this->getCollectionClass();
         $resourceClass = $this->getResourceClass();
 
-        return $shouldPaginate
-            ? (new $collectionClass($entities))->toResponse($request)
-            : response()->json([
-                'data' => $resourceClass::collection($entities),
-                'meta' => [
-                    'count' => $entities->count(),
-                ],
-            ]);
+        if ($shouldPaginate) {
+            $response = (new $collectionClass($entities))->toResponse($request);
+            $responseData = json_decode($response->getContent(), true);
+            Cache::put($cacheKey, $responseData, $this->getCacheTTL());
+            return $response;
+        }
+
+        $responseData = [
+            'data' => $resourceClass::collection($entities),
+            'meta' => [
+                'count' => $entities->count(),
+            ],
+        ];
+        Cache::put($cacheKey, $responseData, $this->getCacheTTL());
+        return response()->json($responseData);
     }
 
     /**

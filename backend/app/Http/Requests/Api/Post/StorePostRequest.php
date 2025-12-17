@@ -30,7 +30,7 @@ final class StorePostRequest extends FormRequest
             'content' => ['required', 'string'],
             'featured_image' => ['nullable', 'image', 'mimes:jpeg,png,webp', 'max:5120'],
             'status' => ['sometimes', 'string', 'in:draft,published,archived'],
-            'type' => ['sometimes', 'string', 'in:post,page,announcement'],
+            'type' => ['sometimes', 'string', 'in:news,announcement,achievement,page'],
             'is_featured' => ['sometimes', 'boolean'],
             'is_pinned' => ['sometimes', 'boolean'],
             'published_at' => ['nullable', 'date'],

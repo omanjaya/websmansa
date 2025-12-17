@@ -14,8 +14,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Skip for SQLite (in-memory testing) - SQLite doesn't support MODIFY
-        if (DB::connection()->getDriverName() === 'sqlite') {
+        // Skip for SQLite and PostgreSQL - this migration uses MySQL-specific syntax
+        // For fresh PostgreSQL deployments, the schema is already correct from create_extras_table
+        $driver = DB::connection()->getDriverName();
+        if ($driver === 'sqlite' || $driver === 'pgsql') {
             return;
         }
 

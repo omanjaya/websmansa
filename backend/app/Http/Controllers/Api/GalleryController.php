@@ -25,26 +25,26 @@ final class GalleryController extends Controller
     {
         $query = Gallery::query()->with('items.media');
 
-        // Filter by type
-        if ($request->has('type')) {
-            $query->where('type', $request->type);
-        }
+        // Filter by type (not supported in current schema, skip)
+        // if ($request->has('type')) {
+        //     $query->where('type', $request->type);
+        // }
 
-        // Filter by featured
-        if ($request->boolean('featured')) {
-            $query->featured();
-        }
+        // Filter by featured (not supported in current schema, skip)
+        // if ($request->boolean('featured')) {
+        //     $query->featured();
+        // }
 
-        // Search by title
+        // Search by name
         if ($request->has('search')) {
-            $query->where('title', 'like', "%{$request->search}%");
+            $query->where('name', 'like', "%{$request->search}%");
         }
 
         // Sorting
         $sort = $request->get('sort', 'latest');
         match ($sort) {
-            'oldest' => $query->orderBy('event_date', 'asc')->orderBy('created_at', 'asc'),
-            'title' => $query->orderBy('title', 'asc'),
+            'oldest' => $query->orderBy('created_at', 'asc'),
+            'name' => $query->orderBy('name', 'asc'),
             default => $query->latest(),
         };
 

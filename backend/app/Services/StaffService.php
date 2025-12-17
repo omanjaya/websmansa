@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Collection;
 
 final class StaffService extends BaseModelService
 {
-    protected array $defaultRelations = ['user'];
+    protected array $defaultRelations = ['user', 'media'];
     protected string $slugSourceField = 'name';
 
     public function __construct(StaffRepository $repository)
@@ -173,24 +173,28 @@ final class StaffService extends BaseModelService
     }
 
     /**
-     * Get staff statistics
+     * Get staff statistics with caching
      */
     public function getStaffStatistics(): array
     {
-        $total = Staff::query()->active()->count();
-        $teachers = Staff::query()->active()->byType('teacher')->count();
-        $admin = Staff::query()->active()->whereIn('type', ['admin', 'staff'])->count();
-        $withPhoto = Staff::query()->active()->whereNotNull('photo')->where('photo', '!=', '')->count();
+        $cacheKey = $this->getCacheKey('statistics', []);
 
-        return [
-            'total_staff' => $total,
-            'teachers' => $teachers,
-            'administrative_staff' => $admin,
-            'with_photo' => $withPhoto,
-            'teachers_percentage' => $total > 0 ? round(($teachers / $total) * 100, 1) : 0,
-            'admin_percentage' => $total > 0 ? round(($admin / $total) * 100, 1) : 0,
-            'with_photo_percentage' => $total > 0 ? round(($withPhoto / $total) * 100, 1) : 0,
-        ];
+        return \Illuminate\Support\Facades\Cache::remember($cacheKey, $this->cacheTTL, function () {
+            $total = Staff::query()->active()->count();
+            $teachers = Staff::query()->active()->byType('teacher')->count();
+            $admin = Staff::query()->active()->whereIn('type', ['admin', 'staff'])->count();
+            $withPhoto = Staff::query()->active()->whereNotNull('photo')->where('photo', '!=', '')->count();
+
+            return [
+                'total_staff' => $total,
+                'teachers' => $teachers,
+                'administrative_staff' => $admin,
+                'with_photo' => $withPhoto,
+                'teachers_percentage' => $total > 0 ? round(($teachers / $total) * 100, 1) : 0,
+                'admin_percentage' => $total > 0 ? round(($admin / $total) * 100, 1) : 0,
+                'with_photo_percentage' => $total > 0 ? round(($withPhoto / $total) * 100, 1) : 0,
+            ];
+        });
     }
 
     /**

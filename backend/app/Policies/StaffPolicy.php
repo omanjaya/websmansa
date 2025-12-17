@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Policies;
 
 use App\Models\Staff;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
-class StaffPolicy
+final class StaffPolicy
 {
     /**
      * Determine whether the user can view any models.
@@ -29,7 +30,8 @@ class StaffPolicy
      */
     public function create(User $user): bool
     {
-        return $user->hasPermissionTo('create-staff') || $user->hasRole('admin');
+        // Admin role or authenticated user with appropriate permissions
+        return $user->hasRole('admin') || $user->hasRole('super-admin');
     }
 
     /**
@@ -37,7 +39,8 @@ class StaffPolicy
      */
     public function update(User $user, Staff $staff): bool
     {
-        return $user->hasPermissionTo('update-staff') || $user->hasRole('admin');
+        // Admin role can update any staff
+        return $user->hasRole('admin') || $user->hasRole('super-admin');
     }
 
     /**
@@ -45,7 +48,8 @@ class StaffPolicy
      */
     public function delete(User $user, Staff $staff): bool
     {
-        return $user->hasPermissionTo('delete-staff') || $user->hasRole('admin');
+        // Admin role can delete staff
+        return $user->hasRole('admin') || $user->hasRole('super-admin');
     }
 
     /**
@@ -53,7 +57,7 @@ class StaffPolicy
      */
     public function restore(User $user, Staff $staff): bool
     {
-        return $user->hasRole('admin');
+        return $user->hasRole('admin') || $user->hasRole('super-admin');
     }
 
     /**
@@ -61,6 +65,6 @@ class StaffPolicy
      */
     public function forceDelete(User $user, Staff $staff): bool
     {
-        return $user->hasRole('admin');
+        return $user->hasRole('admin') || $user->hasRole('super-admin');
     }
 }

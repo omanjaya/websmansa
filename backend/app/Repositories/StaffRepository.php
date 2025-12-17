@@ -61,6 +61,7 @@ class StaffRepository extends BaseRepository
     public function getByType(string $type, int $limit = null): Collection
     {
         $query = $this->model->newQuery()
+            ->with(['media'])
             ->byType($type)
             ->active()
             ->ordered();
@@ -74,6 +75,7 @@ class StaffRepository extends BaseRepository
     public function getByDepartment(string $department): Collection
     {
         return $this->model->newQuery()
+            ->with(['media'])
             ->byDepartment($department)
             ->active()
             ->ordered()

@@ -10,33 +10,28 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
+// use Illuminate\Database\Eloquent\SoftDeletes; // Not available in current schema
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class Gallery extends Model implements HasMedia
 {
-    use HasFactory, HasUuid, SoftDeletes, InteractsWithMedia;
+    use HasFactory, HasUuid, InteractsWithMedia;
 
     protected $fillable = [
-        'title',
+        'name',
         'slug',
         'description',
-        'thumbnail',
-        'type',
-        'event_date',
-        'is_featured',
+        'created_by',
     ];
 
-    protected $casts = [
-        'is_featured' => 'boolean',
-        'event_date' => 'date',
-    ];
+    protected $casts = [];
 
     protected $appends = [
         'thumbnail_url',
         'items_count',
+        'title', // Alias for name
     ];
 
     /**
@@ -48,19 +43,19 @@ class Gallery extends Model implements HasMedia
     }
 
     /**
-     * Scope for featured galleries.
+     * Scope for featured galleries (returns all for now since is_featured column doesn't exist).
      */
     public function scopeFeatured(Builder $query): Builder
     {
-        return $query->where('is_featured', true);
+        return $query; // No is_featured column in current schema
     }
 
     /**
-     * Scope for galleries by type.
+     * Scope for galleries by type (not supported in current schema).
      */
     public function scopeOfType(Builder $query, string $type): Builder
     {
-        return $query->where('type', $type);
+        return $query; // No type column in current schema
     }
 
     /**
@@ -68,8 +63,15 @@ class Gallery extends Model implements HasMedia
      */
     public function scopeLatest(Builder $query): Builder
     {
-        return $query->orderBy('event_date', 'desc')
-            ->orderBy('created_at', 'desc');
+        return $query->orderBy('created_at', 'desc');
+    }
+
+    /**
+     * Get title attribute (alias for name).
+     */
+    public function getTitleAttribute(): ?string
+    {
+        return $this->name;
     }
 
     /**
@@ -207,10 +209,10 @@ class Gallery extends Model implements HasMedia
     {
         parent::boot();
 
-        // Auto-generate slug from title if not provided
+        // Auto-generate slug from name if not provided
         static::creating(function ($gallery) {
             if (!$gallery->slug) {
-                $gallery->slug = \Illuminate\Support\Str::slug($gallery->title);
+                $gallery->slug = \Illuminate\Support\Str::slug($gallery->name);
             }
         });
     }

@@ -68,6 +68,10 @@ class Slider extends Model implements HasMedia
 
         // Fallback to old image field (backward compatibility)
         if ($this->image) {
+            // Check if it's already an external URL
+            if (str_starts_with($this->image, 'http://') || str_starts_with($this->image, 'https://')) {
+                return $this->image;
+            }
             return asset("storage/{$this->image}");
         }
 

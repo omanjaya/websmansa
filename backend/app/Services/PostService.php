@@ -34,7 +34,7 @@ final class PostService
         $filtersCopy = $filters;
         unset($filtersCopy['per_page'], $filtersCopy['paginate'], $filtersCopy['page']);
 
-        return Cache::tags(['posts'])->remember(
+        return Cache::remember(
             $cacheKey,
             now()->addMinutes(15),
             fn () => $this->postRepository->getFiltered(
@@ -50,7 +50,7 @@ final class PostService
     {
         $cacheKey = "post.{$slug}";
 
-        return Cache::tags(['posts'])->remember(
+        return Cache::remember(
             $cacheKey,
             now()->addMinutes(30),
             fn () => $this->postRepository->findBySlug($slug)
@@ -154,7 +154,7 @@ final class PostService
 
         // Update cache with fresh data
         $post->refresh();
-        Cache::tags(['posts'])->put("post.{$post->slug}", $post, now()->addMinutes(30));
+        Cache::put("post.{$post->slug}", $post, now()->addMinutes(30));
     }
 
     public function incrementLikes(int $postId): void
@@ -169,7 +169,7 @@ final class PostService
 
     public function getFeaturedPosts(int $limit = 6)
     {
-        return Cache::tags(['posts'])->remember(
+        return Cache::remember(
             "featured.posts.{$limit}",
             now()->addMinutes(30),
             fn () => $this->postRepository->getFeatured($limit)
@@ -178,7 +178,7 @@ final class PostService
 
     public function getLatestPosts(int $limit = 10)
     {
-        return Cache::tags(['posts'])->remember(
+        return Cache::remember(
             "latest.posts.{$limit}",
             now()->addMinutes(15),
             fn () => $this->postRepository->getLatest($limit)
@@ -192,15 +192,15 @@ final class PostService
     private function clearPostCache(Post $post): void
     {
         // Clear specific post cache
-        Cache::tags(['posts'])->forget("post.{$post->slug}");
+        Cache::forget("post.{$post->slug}");
 
         // Clear list caches that might include this post
-        Cache::tags(['posts'])->forget('posts.featured');
-        Cache::tags(['posts'])->forget('posts.latest');
+        Cache::forget('posts.featured');
+        Cache::forget('posts.latest');
 
         // Clear paginated lists (limit to first few pages)
         for ($page = 1; $page <= 5; $page++) {
-            Cache::tags(['posts'])->forget("posts.page.{$page}");
+            Cache::forget("posts.page.{$page}");
         }
 
         // Note: We don't flush the entire tag, preserving other cached data

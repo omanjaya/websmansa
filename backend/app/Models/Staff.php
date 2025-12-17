@@ -203,13 +203,13 @@ final class Staff extends Model implements HasMedia
         return ! empty($this->photo);
     }
 
-    public function getPhotoUrl(): ?string
+    public function getPhotoUrl(string $size = 'thumb'): ?string
     {
         $media = $this->getFirstMedia('photo');
-        
+
         if ($media) {
-            return $media->hasGeneratedConversion('large') 
-                ? $media->getUrl('large')
+            return $media->hasGeneratedConversion($size)
+                ? $media->getUrl($size)
                 : $media->getUrl();
         }
 

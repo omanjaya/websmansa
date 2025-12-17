@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\ApplyApiRateLimiting::class,
             \App\Http\Middleware\EnsureApiRequest::class,
             \Illuminate\Http\Middleware\HandleCors::class,
+            \App\Http\Middleware\CacheResponse::class,
         ]);
 
         $middleware->web(append: [
