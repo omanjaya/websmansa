@@ -33,27 +33,38 @@ class SliderController extends Controller
      */
     public function store(StoreSliderRequest $request): JsonResponse
     {
-        $validated = $request->validated();
+        try {
+            $validated = $request->validated();
 
-        // Don't set image field - will use Media Library instead
-        unset($validated['image']);
+            // Don't set image field - will use Media Library instead
+            unset($validated['image']);
 
-        $slider = Slider::create($validated);
+            $slider = Slider::create($validated);
 
-        // Handle image upload with auto-optimization
-        if ($request->hasFile('image')) {
-            \App\Services\MediaProcessingService::processAndUpload(
-                $slider,
-                $request->file('image'),
-                'slider_image',
-                ['alt' => $validated['title']]
-            );
+            // Handle image upload with auto-optimization
+            if ($request->hasFile('image')) {
+                \App\Services\MediaProcessingService::processAndUpload(
+                    $slider,
+                    $request->file('image'),
+                    'slider_image',
+                    ['alt' => $validated['title']]
+                );
+            }
+
+            return response()->json([
+                'message' => 'Slider berhasil dibuat',
+                'data' => $slider->fresh()->load('media'),
+            ], 201);
+        } catch (\Exception $e) {
+            // Log error for debugging
+            \Log::error('Slider creation failed: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'message' => 'Gagal membuat slider: ' . $e->getMessage(),
+            ], 500);
         }
-
-        return response()->json([
-            'message' => 'Slider berhasil dibuat',
-            'data' => $slider->fresh()->load('media'),
-        ], 201);
     }
 
     /**
