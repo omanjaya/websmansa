@@ -18,6 +18,7 @@ import {
 } from 'lucide-react'
 import { useCountUp } from '@/hooks/useCountUp'
 import { useSiteConfig } from '@/contexts/SiteConfigContext'
+import { Post, Slider, Achievement, Alumni, Gallery } from '@/lib/api'
 import { Badge } from '@/components/ui/badge'
 
 // Mobile Hero - Clean & Minimal
