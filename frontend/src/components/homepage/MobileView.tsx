@@ -282,6 +282,11 @@ function MobileAchievements({ achievements }: { achievements?: Achievement[] }) 
             published_at: new Date().toISOString(),
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
+            is_featured: false,
+            is_active: true,
+            order: index,
+            color: '#3B82F6',
+            glow_color: '#DBEAFE',
         }))
 
     return (
