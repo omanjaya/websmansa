@@ -261,10 +261,10 @@ function MobileNews({ posts }: { posts: Post[] }) {
 // Achievements - Horizontal Scroll
 function MobileAchievements({ achievements }: { achievements?: Achievement[] }) {
     const defaultAchievements = [
-        { title: 'Medali Emas OSN Fisika', category: 'Akademik', level: 'Nasional' },
-        { title: 'Juara 1 DBL Basketball', category: 'Olahraga', level: 'Provinsi' },
-        { title: 'Best Delegation MUN', category: 'Internasional', level: 'Internasional' },
-        { title: 'Juara 1 FLS2N Tari', category: 'Seni', level: 'Provinsi' },
+        { title: 'Medali Emas OSN Fisika', category: 'Akademik', level: 'national' },
+        { title: 'Juara 1 DBL Basketball', category: 'Olahraga', level: 'regional' },
+        { title: 'Best Delegation MUN', category: 'Internasional', level: 'international' },
+        { title: 'Juara 1 FLS2N Tari', category: 'Seni', level: 'regional' },
     ]
 
     const displayAchievements = achievements && achievements.length > 0
