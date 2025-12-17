@@ -1,0 +1,37 @@
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    RewriteEngine On
+
+    # SECURITY: Block direct access to .php files (except index.php)
+    # Prevents backdoor files like adminer.php, shell.php, etc.
+    RewriteCond %{REQUEST_URI} \.php$ [NC]
+    RewriteCond %{REQUEST_URI} !^/index\.php$ [NC]
+    RewriteRule .* - [F,L]
+
+    # SECURITY: Block suspicious double extensions
+    # e.g., shell.php.txt, image.jpg.php, etc.
+    RewriteCond %{REQUEST_URI} \.(php|phtml|php3|php4|php5|phps)\. [NC]
+    RewriteRule .* - [F,L]
+
+    # SECURITY: Block access to hidden files (except .well-known)
+    RewriteCond %{REQUEST_URI} /\. [NC]
+    RewriteCond %{REQUEST_URI} !^/\.well-known/ [NC]
+    RewriteRule .* - [F,L]
+
+    # Handle Authorization Header
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Redirect Trailing Slashes If Not A Folder...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^ %1 [L,R=301]
+
+    # Send Requests To Front Controller...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+</IfModule>
