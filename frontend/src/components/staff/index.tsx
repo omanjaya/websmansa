@@ -4,6 +4,7 @@ import { useIsMobile } from '@/hooks/useDeviceType'
 import { MobileView } from './MobileView'
 import { DesktopView } from './DesktopView'
 import { useState, useEffect } from 'react'
+import { Staff } from '@/lib/api'
 
 export function StaffPage({ staff, categories, currentCategory, pagination }: { 
     staff: Staff[] 
