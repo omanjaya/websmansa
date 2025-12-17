@@ -42,7 +42,7 @@ function StaffCard({ item, index, isLeadership = false }: { item: Staff; index: 
                     {item.attributes?.photo_url ? (
                         <Image
                             src={item.attributes.photo_url}
-                            alt={item.attributes?.name || item.name}
+                            alt={item.attributes?.name}
                             fill
                             sizes={isLeadership ? "(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw" : "(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw"}
                             priority={index < 4}
@@ -71,7 +71,7 @@ function StaffCard({ item, index, isLeadership = false }: { item: Staff; index: 
                     {/* Name Row */}
                     <div className="flex items-center gap-2 mb-2">
                         <h3 className="text-lg font-medium text-gray-900 tracking-tight line-clamp-1" style={{ letterSpacing: '-0.5px' }}>
-                            {item.attributes?.name || item.name}
+                            {item.attributes?.name}
                         </h3>
                         {/* Verified/Type Badge */}
                         <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center">
@@ -89,7 +89,7 @@ function StaffCard({ item, index, isLeadership = false }: { item: Staff; index: 
 
                     {/* Position/Bio */}
                     <p className="text-sm text-gray-500 leading-relaxed mb-4 line-clamp-2" style={{ letterSpacing: '0.1px' }}>
-                        {item.attributes?.position || item.position}
+                        {item.attributes?.position}
                     </p>
 
                     {/* Stats Row */}
