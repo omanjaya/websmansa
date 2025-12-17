@@ -277,7 +277,7 @@ function MobileAchievements({ achievements }: { achievements?: Achievement[] }) 
             category: item.category,
             level: item.level as 'school' | 'regional' | 'national' | 'international',
             description: '',
-            image_url: null,
+            image_url: undefined,
             year: new Date().getFullYear(),
             published_at: new Date().toISOString(),
             created_at: new Date().toISOString(),
