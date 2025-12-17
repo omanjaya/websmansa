@@ -1,0 +1,114 @@
+/* Tiptap Editor Styles */
+.ProseMirror {
+  outline: none;
+}
+
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #adb5bd;
+  pointer-events: none;
+  height: 0;
+}
+
+.ProseMirror .is-empty::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #adb5bd;
+  pointer-events: none;
+  height: 0;
+}
+
+/* YouTube embed responsive */
+.ProseMirror iframe {
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+}
+
+/* Image styling */
+.ProseMirror img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  display: block;
+  margin: 1rem 0;
+}
+
+/* Code block styling */
+.ProseMirror pre {
+  background: #1e293b;
+  color: #e2e8f0;
+  font-family: 'JetBrainsMono', 'Courier New', Courier, monospace;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+}
+
+.ProseMirror pre code {
+  color: inherit;
+  padding: 0;
+  background: none;
+  font-size: 0.875rem;
+}
+
+/* Blockquote styling */
+.ProseMirror blockquote {
+  border-left: 3px solid #2563eb;
+  padding-left: 1rem;
+  margin: 1rem 0;
+  color: #64748b;
+  font-style: italic;
+}
+
+/* Link styling */
+.ProseMirror a {
+  color: #2563eb;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.ProseMirror a:hover {
+  color: #1d4ed8;
+}
+
+/* List styling */
+.ProseMirror ul,
+.ProseMirror ol {
+  padding: 0 1.5rem;
+  margin: 1rem 0;
+}
+
+.ProseMirror ul {
+  list-style-type: disc;
+}
+
+.ProseMirror ol {
+  list-style-type: decimal;
+}
+
+.ProseMirror li {
+  margin: 0.25rem 0;
+}
+
+/* Heading spacing */
+.ProseMirror h1,
+.ProseMirror h2,
+.ProseMirror h3 {
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.ProseMirror h1 {
+  font-size: 2rem;
+}
+
+.ProseMirror h2 {
+  font-size: 1.5rem;
+}
+
+.ProseMirror h3 {
+  font-size: 1.25rem;
+}
