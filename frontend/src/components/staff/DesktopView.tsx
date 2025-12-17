@@ -14,7 +14,7 @@ const typeLabels: Record<string, string> = {
 function StaffCard({ item, index, isLeadership = false }: { item: Staff; index: number; isLeadership?: boolean }) {
     return (
         <Link
-            href={`/staff/${item.attributes?.slug || item.slug}`}
+            href={`/staff/${item.attributes?.slug || item.id}`}
             className="group block"
         >
             <div
