@@ -278,7 +278,7 @@ function MobileAchievements({ achievements }: { achievements?: Achievement[] }) 
             level: item.level,
             description: '',
             image_url: null,
-            year: new Date().getFullYear().toString(),
+            year: new Date().getFullYear(),
             published_at: new Date().toISOString(),
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
