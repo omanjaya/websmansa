@@ -42,6 +42,13 @@ export function safeJsonParse<T>(json: string, fallback: T): T {
 }
 
 /**
+ * Utility function to combine class names with Tailwind CSS
+ */
+export function cn(...inputs: (string | undefined | null | false)[]): string {
+  return inputs.filter(Boolean).join(' ')
+}
+
+/**
  * Safe localStorage operations with error handling
  */
 export function safeLocalStorageGet(key: string): string | null {
