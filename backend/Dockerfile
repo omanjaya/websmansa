@@ -43,17 +43,20 @@ COPY . .
 # Run post-install scripts
 RUN composer dump-autoload --optimize
 
-# Set permissions
-RUN chmod -R 775 storage bootstrap/cache \
-    && mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views \
-    && chmod -R 775 storage
+# Create storage directories and set permissions
+RUN mkdir -p storage/logs \
+    storage/framework/cache/data \
+    storage/framework/sessions \
+    storage/framework/views \
+    storage/app/public \
+    bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
 
-# Expose port (Railway uses $PORT)
+# Make entrypoint executable
+RUN chmod +x docker-entrypoint.sh
+
+# Expose port
 EXPOSE 8000
 
-# Start command - use PORT from Railway or default to 8000
-CMD php artisan config:cache && \
-    php artisan route:cache && \
-    php artisan view:cache && \
-    php artisan migrate --force && \
-    php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
+# Use entrypoint script
+ENTRYPOINT ["./docker-entrypoint.sh"]

@@ -275,7 +275,13 @@ Route::middleware(['api', 'auth:sanctum', 'permission:admin-panel', 'throttle:ad
     Route::post('/sliders/reorder', [SliderController::class, 'reorder'])->name('admin.sliders.reorder');
 
     // Admin testimonials management
-    Route::apiResource('testimonials', TestimonialController::class);
+    Route::apiResource('testimonials', TestimonialController::class)->names([
+        'index' => 'admin.testimonials.index',
+        'store' => 'admin.testimonials.store',
+        'show' => 'admin.testimonials.show',
+        'update' => 'admin.testimonials.update',
+        'destroy' => 'admin.testimonials.destroy',
+    ]);
 
     // Analytics
     Route::prefix('analytics')->group(function () {
