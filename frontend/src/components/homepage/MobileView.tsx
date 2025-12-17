@@ -269,7 +269,20 @@ function MobileAchievements({ achievements }: { achievements?: Achievement[] }) 
 
     const displayAchievements = achievements && achievements.length > 0
         ? achievements.slice(0, 6)
-        : defaultAchievements
+        : defaultAchievements.map((item, index) => ({
+            id: `default-${index}`,
+            uuid: `default-${index}`,
+            slug: `default-${index}`,
+            title: item.title,
+            category: item.category,
+            level: item.level,
+            description: '',
+            image_url: null,
+            year: new Date().getFullYear().toString(),
+            published_at: new Date().toISOString(),
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+        }))
 
     return (
         <div className="mb-8">
