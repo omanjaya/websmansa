@@ -12,13 +12,23 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('posts', function (Blueprint $table) {
-            // Composite indexes for common query patterns
-            $table->index(['status', 'published_at', 'is_featured'], 'posts_status_published_featured_idx');
-            $table->index(['type', 'status', 'published_at'], 'posts_type_status_published_idx');
-            $table->index(['is_featured', 'published_at'], 'posts_featured_published_idx');
-            $table->index(['is_pinned', 'published_at'], 'posts_pinned_published_idx');
-        });
+        // Add composite indexes with try-catch for safety
+        $indexes = [
+            ['columns' => ['status', 'published_at', 'is_featured'], 'name' => 'posts_status_published_featured_idx'],
+            ['columns' => ['type', 'status', 'published_at'], 'name' => 'posts_type_status_published_idx'],
+            ['columns' => ['is_featured', 'published_at'], 'name' => 'posts_featured_published_idx'],
+            ['columns' => ['is_pinned', 'published_at'], 'name' => 'posts_pinned_published_idx'],
+        ];
+
+        foreach ($indexes as $index) {
+            try {
+                Schema::table('posts', function (Blueprint $table) use ($index) {
+                    $table->index($index['columns'], $index['name']);
+                });
+            } catch (\Exception $e) {
+                // Index may already exist
+            }
+        }
 
         $driver = DB::connection()->getDriverName();
 
@@ -82,11 +92,21 @@ return new class extends Migration
             DB::statement('ALTER TABLE posts DROP COLUMN IF EXISTS search_vector');
         }
 
-        Schema::table('posts', function (Blueprint $table) {
-            $table->dropIndex('posts_status_published_featured_idx');
-            $table->dropIndex('posts_type_status_published_idx');
-            $table->dropIndex('posts_featured_published_idx');
-            $table->dropIndex('posts_pinned_published_idx');
-        });
+        $indexes = [
+            'posts_status_published_featured_idx',
+            'posts_type_status_published_idx',
+            'posts_featured_published_idx',
+            'posts_pinned_published_idx',
+        ];
+
+        foreach ($indexes as $indexName) {
+            try {
+                Schema::table('posts', function (Blueprint $table) use ($indexName) {
+                    $table->dropIndex($indexName);
+                });
+            } catch (\Exception $e) {
+                // Index may not exist
+            }
+        }
     }
 };
