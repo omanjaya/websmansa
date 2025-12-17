@@ -315,7 +315,8 @@ export default async function Page({ searchParams }: PageProps) {
       ...item,
       attributes: {
         ...item.attributes,
-        photo: item.attributes.photo || undefined
+        photo: item.attributes.photo || undefined,
+        photo_url: item.attributes.photo_url || undefined
       }
     }))
     .sort((a, b) => a.attributes.order - b.attributes.order)
