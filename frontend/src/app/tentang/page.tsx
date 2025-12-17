@@ -154,7 +154,7 @@ export default async function Page() {
             ]
         }
     } catch (error) {
-        console.log('Using default leadership data')
+        // Using default leadership data
     }
 
     return (

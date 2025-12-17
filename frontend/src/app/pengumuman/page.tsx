@@ -161,7 +161,7 @@ export default async function Page({ searchParams }: PageProps) {
     }
   } catch {
     // Use dummy data on error
-    console.log('Using dummy data for announcements')
+    // Using dummy data for announcements
   }
 
   const types = ['general', 'academic', 'event', 'urgent']

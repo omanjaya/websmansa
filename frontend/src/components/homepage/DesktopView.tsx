@@ -10,6 +10,7 @@ import { PartnershipLogos } from './components/PartnershipLogos'
 import { LocationMap } from './components/LocationMap'
 import { HeroSection } from './components/HeroSection'
 import { WhyChooseUs } from './components/WhyChooseUs'
+import { AlumniCarousel } from './components/AlumniCarousel'
 import { useSiteConfig } from '@/contexts/SiteConfigContext'
 
 const typeLabels: Record<string, string> = {
@@ -23,9 +24,12 @@ interface DesktopViewProps {
     posts: any[]
     announcements: any[]
     slides?: any[]
+    achievements?: any[]
+    alumni?: any[]
+    galleries?: any[]
 }
 
-export function DesktopView({ posts, announcements, slides }: DesktopViewProps) {
+export function DesktopView({ posts, announcements, slides, achievements, alumni, galleries }: DesktopViewProps) {
     const { settings } = useSiteConfig()
 
     // Build principal data from settings
@@ -39,12 +43,11 @@ export function DesktopView({ posts, announcements, slides }: DesktopViewProps) 
     }
 
     return (
-        <main className="min-h-screen bg-gray-50 dark:bg-slate-950">
+        <main id="main-content" className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
             {/* Hero Section with Slider */}
             <HeroSection slides={slides} />
 
-            {/* Why Choose Us */}
-            <WhyChooseUs />
+            {/* Why Choose Us removed */}
 
             {/* Principal Section */}
             <section className="py-24 pb-32 bg-slate-50 dark:bg-slate-900 relative overflow-visible">
@@ -143,47 +146,47 @@ export function DesktopView({ posts, announcements, slides }: DesktopViewProps) 
 
                     <div className="grid lg:grid-cols-3 gap-8">
                         <StaggerContainer staggerDelay={0.1} className="lg:col-span-2 grid md:grid-cols-2 gap-6">
-                            {posts.map((post) => (
+                            {posts.slice(0, 4).map((post) => (
                                 <StaggerItem key={post.id}>
                                     <Link
                                         href={`/informasi/${post.attributes.slug}`}
                                         className="group block bg-white dark:bg-slate-900 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 dark:border-slate-800 hover:-translate-y-2"
                                     >
-                                    <div className="h-56 bg-gray-200 dark:bg-slate-700 relative overflow-hidden">
-                                        {post.attributes.featured_image ? (
-                                            <Image
-                                                src={post.attributes.featured_image}
-                                                alt={post.attributes.title}
-                                                fill
-                                                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                                                className="object-cover group-hover:scale-110 transition-transform duration-500"
-                                                loading="lazy"
-                                            />
-                                        ) : (
-                                            <div className="w-full h-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
-                                                <svg className="w-12 h-12 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                                            </div>
-                                        )}
-                                        <div className="absolute top-4 left-4">
-                                            {post.relationships.categories && post.relationships.categories[0] && (
-                                                <Badge className="bg-white/90 text-blue-800 backdrop-blur shadow-sm hover:bg-white">
-                                                    {post.relationships.categories[0].name}
-                                                </Badge>
+                                        <div className="h-56 bg-gray-200 dark:bg-slate-700 relative overflow-hidden">
+                                            {post.attributes.featured_image ? (
+                                                <Image
+                                                    src={post.attributes.featured_image}
+                                                    alt={post.attributes.title}
+                                                    fill
+                                                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                                                    className="object-cover group-hover:scale-110 transition-transform duration-500"
+                                                    loading="lazy"
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+                                                    <svg className="w-12 h-12 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                                                </div>
                                             )}
+                                            <div className="absolute top-4 left-4">
+                                                {post.relationships.categories && post.relationships.categories[0] && (
+                                                    <Badge className="bg-white/90 text-blue-800 backdrop-blur shadow-sm hover:bg-white">
+                                                        {post.relationships.categories[0].name}
+                                                    </Badge>
+                                                )}
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="p-6">
-                                        <div className="flex items-center gap-2 text-xs text-gray-500 mb-3">
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                                            {new Date(post.attributes.published_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+                                        <div className="p-6">
+                                            <div className="flex items-center gap-2 text-xs text-gray-500 mb-3">
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                                                {new Date(post.attributes.published_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+                                            </div>
+                                            <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
+                                                {post.attributes.title}
+                                            </h3>
+                                            <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-2 border-l-4 border-gray-200 dark:border-slate-700 pl-3">
+                                                {post.attributes.excerpt}
+                                            </p>
                                         </div>
-                                        <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
-                                            {post.attributes.title}
-                                        </h3>
-                                        <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-2 border-l-4 border-gray-200 dark:border-slate-700 pl-3">
-                                            {post.attributes.excerpt}
-                                        </p>
-                                    </div>
                                     </Link>
                                 </StaggerItem>
                             ))}
@@ -197,7 +200,7 @@ export function DesktopView({ posts, announcements, slides }: DesktopViewProps) 
                                 </div>
 
                                 <div className="space-y-4">
-                                    {announcements.map((announcement) => (
+                                    {announcements.slice(0, 3).map((announcement) => (
                                         <Link key={announcement.id} href={`/pengumuman/${announcement.attributes.slug}`} className="block group">
                                             <div className="flex gap-4 p-3 rounded-xl hover:bg-white dark:hover:bg-slate-800 hover:shadow-md dark:hover:shadow-slate-900/50 transition-all">
                                                 <div className="flex-shrink-0 w-14 h-14 bg-blue-100 dark:bg-blue-900/50 rounded-xl flex flex-col items-center justify-center text-blue-700 dark:text-blue-300 font-bold border border-blue-200 dark:border-blue-800">
@@ -233,35 +236,19 @@ export function DesktopView({ posts, announcements, slides }: DesktopViewProps) 
             </section>
 
             {/* Achievements Carousel */}
-            <AchievementsCarousel />
+            <AchievementsCarousel achievements={achievements} />
 
             {/* Gallery Preview with Lightbox */}
-            <GalleryPreview />
+            <GalleryPreview galleries={galleries} />
+
+            {/* Alumni Carousel */}
+            <AlumniCarousel alumni={alumni} />
 
             {/* Partnership & Alumni Universities */}
             <PartnershipLogos />
 
             {/* Location & Contact Map */}
             <LocationMap />
-
-            {/* Footer CTA */}
-            <section className="py-24 hero-gradient text-white relative overflow-hidden">
-                <div className="hero-pattern" />
-                <div className="decorative-grid" />
-                <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary-400/20 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2" />
-                <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2" />
-                <div className="container mx-auto px-4 relative z-10 text-center">
-                    <ScrollReveal>
-                        <h2 className="text-4xl md:text-5xl font-bold mb-6">{settings.cta_title}</h2>
-                        <p className="text-xl text-primary-100 mb-10 max-w-2xl mx-auto">{settings.cta_subtitle}</p>
-                        <div className="flex justify-center gap-4">
-                            <Link href={settings.cta_button_link} className="px-8 py-4 bg-white text-primary-600 hover:bg-primary-50 rounded-full font-bold transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1">
-                                {settings.cta_button_text}
-                            </Link>
-                        </div>
-                    </ScrollReveal>
-                </div>
-            </section>
         </main>
     )
 }

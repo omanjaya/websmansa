@@ -28,14 +28,12 @@ export default function Footer() {
   ].filter(Boolean) as Array<{ name: string; icon: any; href: string; color: string }>
 
   return (
-    <footer className="bg-slate-900 dark:bg-slate-950 text-gray-300 relative overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary-500/5 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-500/5 rounded-full blur-3xl" />
-      </div>
+    <footer className="relative overflow-hidden text-gray-300">
+      {/* Linear gradient background from top center */}
+      <div className="absolute inset-0 bg-gradient-to-b from-slate-50 via-slate-300 to-slate-900 
+          dark:from-[#111827] dark:via-slate-700 dark:to-slate-900" />
 
-      <div className="relative container mx-auto px-4 py-16">
+      <div className="relative container mx-auto px-4 pt-24 pb-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* About */}
           <motion.div

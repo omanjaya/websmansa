@@ -217,7 +217,7 @@ export default async function Page({ searchParams }: PageProps) {
       extras = response.data
     }
   } catch {
-    console.log('Using dummy data for extras')
+    // Using dummy data for extras
   }
 
   const categories = Object.keys(categoryLabels)

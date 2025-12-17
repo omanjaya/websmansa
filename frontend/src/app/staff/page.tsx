@@ -305,7 +305,7 @@ export default async function Page({ searchParams }: PageProps) {
       }
     }
   } catch {
-    console.log('Using dummy data for staff')
+    // Using dummy data for staff
   }
 
   // Sort by order

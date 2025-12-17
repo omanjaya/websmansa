@@ -131,11 +131,11 @@ export const defaultSettings: SiteSettings = {
   sunday_hours: 'Tutup',
 
   // Homepage
-  principal_name: 'Drs. I Made Sumarta, M.Pd',
+  principal_name: 'M. Rida, S.Pd., M.Pd.',
   principal_title: 'Kepala Sekolah',
-  principal_message: 'Pendidikan bukan hanya tentang transfer ilmu, tetapi juga membentuk karakter dan membangun fondasi untuk masa depan yang gemilang.',
+  principal_message: 'Selamat datang di website resmi SMA Negeri 1 Denpasar. Melalui website ini, kami menyediakan berbagai informasi terkait kegiatan dan perkembangan di sekolah kami. Kami harap informasi yang kami sajikan dapat memberi gambaran yang jelas mengenai SMA Negeri 1 Denpasar. Untuk informasi lebih lanjut, jangan ragu untuk menghubungi kami melalui kontak yang tersedia di halaman ini. Terima kasih atas kunjungan Anda!',
   principal_description: 'Kami berkomitmen untuk memberikan pendidikan berkualitas tinggi yang tidak hanya fokus pada akademis tetapi juga pengembangan karakter, kreativitas, dan kompetensi abad 21. Bersama-sama, kita akan membentuk generasi yang cerdas, berkarakter, dan siap menghadapi tantangan global.',
-  principal_photo: '/images/principal.jpg',
+  principal_photo: '/principal.png',
   principal_since: '2020',
   cta_title: 'Mulai Langkah Besar Anda Disini',
   cta_subtitle: 'Kami membuka pintu untuk masa depan yang cerah dan penuh prestasi',

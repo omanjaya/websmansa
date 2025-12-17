@@ -9,7 +9,7 @@ const cspHeader = `
   img-src 'self' https: data: blob: ${apiHost};
   font-src 'self' data:;
   connect-src 'self' ${apiHost} ${apiHost}/api/v1 ${apiHost}/api/admin/v1 ws://localhost:3000;
-  frame-src 'self' https://www.youtube.com https://youtube.com;
+  frame-src 'self' https://www.youtube.com https://youtube.com https://www.google.com;
   frame-ancestors 'self';
   form-action 'self';
   base-uri 'self';

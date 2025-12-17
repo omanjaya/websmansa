@@ -249,7 +249,7 @@ export default async function Page({ searchParams }: PageProps) {
       facilities = response.data
     }
   } catch {
-    console.log('Using dummy data for facilities')
+    // Using dummy data for facilities
   }
 
   const categories = Object.keys(categoryLabels)

@@ -617,6 +617,151 @@ export async function getGallery(slug: string): Promise<{ data: Gallery }> {
   return fetchApi<{ data: Gallery }>(`/galleries/${slug}`)
 }
 
+// ============ Alumni API ============
+
+export interface Alumni {
+  id: number
+  uuid: string
+  name: string
+  graduation_year: number
+  class?: string
+  photo?: string
+  photo_url?: string
+  email?: string
+  phone?: string
+  current_occupation?: string
+  current_institution?: string
+  achievements?: string
+  bio?: string
+  quote?: string
+  category?: string
+  is_public: boolean
+  is_verified: boolean
+  is_featured: boolean
+  order: number
+  color: string
+  glow_color: string
+  created_at: string
+  updated_at: string
+}
+
+export interface AlumniListResponse {
+  data: Alumni[]
+  meta?: {
+    current_page: number
+    last_page: number
+    per_page: number
+    total: number
+  }
+}
+
+export async function getAlumni(params?: {
+  year?: number
+  category?: string
+  featured?: boolean
+  search?: string
+  sort?: 'latest' | 'oldest' | 'name' | 'order'
+  page?: number
+  per_page?: number
+}): Promise<AlumniListResponse> {
+  const query = buildQueryString({
+    year: params?.year,
+    category: params?.category,
+    featured: params?.featured,
+    search: params?.search,
+    sort: params?.sort,
+    page: params?.page,
+    per_page: params?.per_page,
+  })
+
+  return fetchApi<AlumniListResponse>(`/alumni${query}`)
+}
+
+export async function getFeaturedAlumni(limit?: number): Promise<{ data: Alumni[] }> {
+  const query = buildQueryString({ limit })
+  return fetchApi<{ data: Alumni[] }>(`/alumni/featured${query}`)
+}
+
+export async function getAlumniMember(id: string): Promise<{ data: Alumni }> {
+  return fetchApi<{ data: Alumni }>(`/alumni/${id}`)
+}
+
+// ============ Achievements API ============
+
+export interface Achievement {
+  id: number
+  uuid: string
+  title: string
+  slug: string
+  description?: string
+  category: string
+  year: number
+  level: 'school' | 'regional' | 'national' | 'international'
+  organizer?: string
+  image?: string
+  image_url?: string
+  participants?: string[]
+  coach?: string
+  medal_type?: 'gold' | 'silver' | 'bronze' | 'winner' | 'finalist'
+  rank?: number
+  achievement_date?: string
+  is_featured: boolean
+  is_active: boolean
+  order: number
+  color: string
+  glow_color: string
+  created_at: string
+  updated_at: string
+}
+
+export interface AchievementListResponse {
+  data: Achievement[]
+  meta?: {
+    current_page: number
+    last_page: number
+    per_page: number
+    total: number
+  }
+}
+
+export async function getAchievements(params?: {
+  category?: string
+  year?: number
+  level?: string
+  featured?: boolean
+  search?: string
+  sort?: 'latest' | 'oldest' | 'title' | 'order'
+  page?: number
+  per_page?: number
+}): Promise<AchievementListResponse> {
+  const query = buildQueryString({
+    category: params?.category,
+    year: params?.year,
+    level: params?.level,
+    featured: params?.featured,
+    search: params?.search,
+    sort: params?.sort,
+    page: params?.page,
+    per_page: params?.per_page,
+  })
+
+  return fetchApi<AchievementListResponse>(`/achievements${query}`)
+}
+
+export async function getFeaturedAchievements(limit?: number): Promise<{ data: Achievement[] }> {
+  const query = buildQueryString({ limit })
+  return fetchApi<{ data: Achievement[] }>(`/achievements/featured${query}`)
+}
+
+export async function getLatestAchievements(limit?: number): Promise<{ data: Achievement[] }> {
+  const query = buildQueryString({ limit })
+  return fetchApi<{ data: Achievement[] }>(`/achievements/latest${query}`)
+}
+
+export async function getAchievement(slug: string): Promise<{ data: Achievement }> {
+  return fetchApi<{ data: Achievement }>(`/achievements/${slug}`)
+}
+
 // ============ Sliders API ============
 
 export interface Slider {
@@ -1137,5 +1282,161 @@ export async function uploadSettingFile(
   return fetchAdminApi<{ message: string; data: { key: string; url: string } }>('/settings/upload', {
     method: 'POST',
     body: formData,
+  })
+}
+
+// ============ Admin Alumni API ============
+
+export interface CreateAlumniData {
+  name: string
+  graduation_year: number
+  class?: string
+  email?: string
+  phone?: string
+  current_occupation?: string
+  current_institution?: string
+  achievements?: string
+  bio?: string
+  quote?: string
+  category?: string
+  is_public?: boolean
+  is_featured?: boolean
+  order?: number
+}
+
+export type UpdateAlumniData = Partial<CreateAlumniData>
+
+export async function getAdminAlumni(params?: {
+  search?: string
+  year?: number
+  category?: string
+  featured?: boolean
+  page?: number
+  per_page?: number
+}): Promise<AlumniListResponse> {
+  const query = buildQueryString({
+    search: params?.search,
+    year: params?.year,
+    category: params?.category,
+    featured: params?.featured,
+    page: params?.page,
+    per_page: params?.per_page,
+  })
+
+  return fetchAdminApi<AlumniListResponse>(`/alumni${query}`)
+}
+
+export async function getAdminAlumniMember(id: string | number): Promise<{ data: Alumni }> {
+  return fetchAdminApi<{ data: Alumni }>(`/alumni/${id}`)
+}
+
+export async function createAlumni(data: FormData): Promise<{ data: Alumni; message: string }> {
+  return fetchAdminApi<{ data: Alumni; message: string }>('/alumni', {
+    method: 'POST',
+    body: data,
+  })
+}
+
+export async function updateAlumni(id: string | number, data: FormData): Promise<{ data: Alumni; message: string }> {
+  return fetchAdminApi<{ data: Alumni; message: string }>(`/alumni/${id}`, {
+    method: 'POST',
+    body: data,
+  })
+}
+
+export async function deleteAlumni(id: string | number): Promise<{ message: string }> {
+  return fetchAdminApi<{ message: string }>(`/alumni/${id}`, {
+    method: 'DELETE',
+  })
+}
+
+export async function toggleAlumniFeatured(id: string | number): Promise<{ data: Alumni }> {
+  return fetchAdminApi<{ data: Alumni }>(`/alumni/${id}/toggle-featured`, {
+    method: 'POST',
+  })
+}
+
+export async function toggleAlumniPublic(id: string | number): Promise<{ data: Alumni }> {
+  return fetchAdminApi<{ data: Alumni }>(`/alumni/${id}/toggle-public`, {
+    method: 'POST',
+  })
+}
+
+// ============ Admin Achievements API ============
+
+export interface CreateAchievementData {
+  title: string
+  description?: string
+  category: string
+  year: number
+  level: 'school' | 'regional' | 'national' | 'international'
+  organizer?: string
+  participants?: string[]
+  coach?: string
+  medal_type?: 'gold' | 'silver' | 'bronze' | 'winner' | 'finalist'
+  rank?: number
+  achievement_date?: string
+  is_featured?: boolean
+  is_active?: boolean
+  order?: number
+}
+
+export type UpdateAchievementData = Partial<CreateAchievementData>
+
+export async function getAdminAchievements(params?: {
+  search?: string
+  category?: string
+  year?: number
+  level?: string
+  featured?: boolean
+  page?: number
+  per_page?: number
+}): Promise<AchievementListResponse> {
+  const query = buildQueryString({
+    search: params?.search,
+    category: params?.category,
+    year: params?.year,
+    level: params?.level,
+    featured: params?.featured,
+    page: params?.page,
+    per_page: params?.per_page,
+  })
+
+  return fetchAdminApi<AchievementListResponse>(`/achievements${query}`)
+}
+
+export async function getAdminAchievement(id: string | number): Promise<{ data: Achievement }> {
+  return fetchAdminApi<{ data: Achievement }>(`/achievements/${id}`)
+}
+
+export async function createAchievement(data: FormData): Promise<{ data: Achievement; message: string }> {
+  return fetchAdminApi<{ data: Achievement; message: string }>('/achievements', {
+    method: 'POST',
+    body: data,
+  })
+}
+
+export async function updateAchievement(id: string | number, data: FormData): Promise<{ data: Achievement; message: string }> {
+  return fetchAdminApi<{ data: Achievement; message: string }>(`/achievements/${id}`, {
+    method: 'POST',
+    body: data,
+  })
+}
+
+export async function deleteAchievement(id: string | number): Promise<{ message: string }> {
+  return fetchAdminApi<{ message: string }>(`/achievements/${id}`, {
+    method: 'DELETE',
+  })
+}
+
+export async function toggleAchievementFeatured(id: string | number): Promise<{ data: Achievement }> {
+  return fetchAdminApi<{ data: Achievement }>(`/achievements/${id}/toggle-featured`, {
+    method: 'POST',
+  })
+}
+
+export async function toggleAchievementActive(id: string | number): Promise<{ data: Achievement }> {
+  return fetchAdminApi<{ data: Achievement }>(`/achievements/${id}/toggle-active`, {
+    method: 'POST',
   })
 }

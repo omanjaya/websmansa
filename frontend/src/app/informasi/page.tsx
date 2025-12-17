@@ -224,7 +224,7 @@ export default async function Page({ searchParams }: PageProps) {
       categories = categoriesResponse.data
     }
   } catch {
-    console.log('Using dummy data for categories')
+    // Using dummy data for categories
   }
 
   try {
@@ -237,7 +237,7 @@ export default async function Page({ searchParams }: PageProps) {
       posts = postsResponse.data
     }
   } catch {
-    console.log('Using dummy data for posts')
+    // Using dummy data for posts
   }
 
   return (

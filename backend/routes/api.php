@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Api\AchievementController;
+use App\Http\Controllers\Api\AlumniController;
 use App\Http\Controllers\Api\AnnouncementController;
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\CategoryController;
@@ -121,6 +123,25 @@ Route::middleware(['api', 'throttle:api'])->group(function () {
         // Testimonials
         Route::get('/testimonials', [TestimonialController::class, 'index'])->name('testimonials.index');
 
+        // Alumni
+        Route::prefix('alumni')->group(function () {
+            Route::get('/', [AlumniController::class, 'index'])->name('alumni.index');
+            Route::get('/featured', [AlumniController::class, 'featured'])->name('alumni.featured');
+            Route::get('/categories', [AlumniController::class, 'categories'])->name('alumni.categories');
+            Route::get('/years', [AlumniController::class, 'years'])->name('alumni.years');
+            Route::get('/{id}', [AlumniController::class, 'show'])->name('alumni.show');
+        });
+
+        // Achievements
+        Route::prefix('achievements')->group(function () {
+            Route::get('/', [AchievementController::class, 'index'])->name('achievements.index');
+            Route::get('/featured', [AchievementController::class, 'featured'])->name('achievements.featured');
+            Route::get('/latest', [AchievementController::class, 'latest'])->name('achievements.latest');
+            Route::get('/categories', [AchievementController::class, 'categories'])->name('achievements.categories');
+            Route::get('/years', [AchievementController::class, 'years'])->name('achievements.years');
+            Route::get('/{slug}', [AchievementController::class, 'show'])->name('achievements.show');
+        });
+
         // Settings - Public endpoints
         Route::prefix('settings')->group(function () {
             Route::get('/', [SettingController::class, 'index'])->name('settings.index');
@@ -130,11 +151,6 @@ Route::middleware(['api', 'throttle:api'])->group(function () {
 
         // Analytics - Public endpoint for tracking
         Route::post('/analytics/track', [\App\Http\Controllers\Api\AnalyticsController::class, 'trackPageView'])->name('analytics.track');
-
-        // Will add more public endpoints later:
-        // - Alumni
-        // - Tracer Study
-        // - Contact
     });
 });
 
@@ -283,6 +299,34 @@ Route::middleware(['api', 'auth:sanctum', 'permission:admin-panel', 'throttle:ad
         'update' => 'admin.testimonials.update',
         'destroy' => 'admin.testimonials.destroy',
     ]);
+
+    // Admin alumni management
+    Route::apiResource('alumni', AlumniController::class)->names([
+        'index' => 'admin.alumni.index',
+        'store' => 'admin.alumni.store',
+        'show' => 'admin.alumni.show',
+        'update' => 'admin.alumni.update',
+        'destroy' => 'admin.alumni.destroy',
+    ]);
+
+    Route::prefix('alumni')->group(function () {
+        Route::post('/{alumni}/toggle-featured', [AlumniController::class, 'toggleFeatured'])->name('admin.alumni.toggle-featured');
+        Route::post('/{alumni}/toggle-public', [AlumniController::class, 'togglePublic'])->name('admin.alumni.toggle-public');
+    });
+
+    // Admin achievements management
+    Route::apiResource('achievements', AchievementController::class)->names([
+        'index' => 'admin.achievements.index',
+        'store' => 'admin.achievements.store',
+        'show' => 'admin.achievements.show',
+        'update' => 'admin.achievements.update',
+        'destroy' => 'admin.achievements.destroy',
+    ]);
+
+    Route::prefix('achievements')->group(function () {
+        Route::post('/{achievement}/toggle-featured', [AchievementController::class, 'toggleFeatured'])->name('admin.achievements.toggle-featured');
+        Route::post('/{achievement}/toggle-active', [AchievementController::class, 'toggleActive'])->name('admin.achievements.toggle-active');
+    });
 
     // Analytics
     Route::prefix('analytics')->group(function () {

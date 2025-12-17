@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
-import { getLatestPosts, getFeaturedAnnouncements, getSliders } from '@/lib/api'
+import { getLatestPosts, getFeaturedAnnouncements, getSliders, getFeaturedAchievements, getFeaturedAlumni, getGalleries } from '@/lib/api'
 import { HomePage } from '@/components/homepage'
-import type { Post, Slider } from '@/lib/api'
+import type { Post, Slider, Achievement, Alumni, Gallery } from '@/lib/api'
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://sman1denpasar.sch.id'
 
@@ -167,15 +167,18 @@ export default async function Home() {
   let posts = dummyPosts
   let announcements = dummyAnnouncements
   let slides: Slider[] = []
+  let achievements: Achievement[] = []
+  let alumni: Alumni[] = []
+  let galleries: Gallery[] = []
 
   // Try to fetch from API
   try {
-    const postsResponse = await getLatestPosts(3)
+    const postsResponse = await getLatestPosts(4)
     if (postsResponse.data && postsResponse.data.length > 0) {
       posts = postsResponse.data
     }
   } catch {
-    console.log('Using dummy data for posts')
+    // Using dummy data for posts
   }
 
   try {
@@ -184,7 +187,7 @@ export default async function Home() {
       announcements = announcementsResponse.data
     }
   } catch {
-    console.log('Using dummy data for announcements')
+    // Using dummy data for announcements
   }
 
   try {
@@ -193,10 +196,47 @@ export default async function Home() {
       slides = slidersResponse.data
     }
   } catch {
-    console.log('Using default slides for hero section')
+    // Using default slides for hero section
+  }
+
+  // Fetch achievements for homepage carousel
+  try {
+    const achievementsResponse = await getFeaturedAchievements(6)
+    if (achievementsResponse.data && achievementsResponse.data.length > 0) {
+      achievements = achievementsResponse.data
+    }
+  } catch {
+    // Using default achievements for carousel
+  }
+
+  // Fetch featured alumni for homepage carousel
+  try {
+    const alumniResponse = await getFeaturedAlumni(6)
+    if (alumniResponse.data && alumniResponse.data.length > 0) {
+      alumni = alumniResponse.data
+    }
+  } catch {
+    // Using default alumni for carousel
+  }
+
+  // Fetch galleries for homepage gallery preview
+  try {
+    const galleriesResponse = await getGalleries({ featured: true, per_page: 6 })
+    if (galleriesResponse.data && galleriesResponse.data.length > 0) {
+      galleries = galleriesResponse.data
+    }
+  } catch {
+    // Using default galleries for preview
   }
 
   return (
-    <HomePage posts={posts} announcements={announcements} slides={slides} />
+    <HomePage
+      posts={posts}
+      announcements={announcements}
+      slides={slides}
+      achievements={achievements}
+      alumni={alumni}
+      galleries={galleries}
+    />
   )
 }

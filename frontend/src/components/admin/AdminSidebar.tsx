@@ -17,6 +17,8 @@ import {
     Presentation,
     Newspaper,
     Trophy,
+    Award,
+    GraduationCap,
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { cn } from '@/lib/utils'
@@ -27,7 +29,9 @@ const navigation = [
     { name: 'Slider', href: '/admin/sliders', icon: Presentation },
     { name: 'Berita', href: '/admin/berita', icon: Newspaper },
     { name: 'Pengumuman', href: '/admin/pengumuman', icon: Megaphone },
-    { name: 'Prestasi', href: '/admin/prestasi', icon: Trophy },
+    { name: 'Prestasi Artikel', href: '/admin/prestasi', icon: Trophy },
+    { name: 'Prestasi Carousel', href: '/admin/achievements', icon: Award },
+    { name: 'Alumni', href: '/admin/alumni', icon: GraduationCap },
     { name: 'Galeri', href: '/admin/galleries', icon: Image },
     { name: 'Ekstrakurikuler', href: '/admin/extras', icon: Dumbbell },
     { name: 'Fasilitas', href: '/admin/facilities', icon: Building2 },
