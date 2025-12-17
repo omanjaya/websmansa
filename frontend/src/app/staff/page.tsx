@@ -286,7 +286,7 @@ export default async function Page({ searchParams }: PageProps) {
   }
 
   // Try to fetch from API with pagination (12 per page for performance)
-  let pagination = { current: 1, total: 1, perPage: 12 }
+  let pagination = { currentPage: 1, total: 0, perPage: 12, lastPage: 1 }
   try {
     const response = await getStaff({
       type: params.type,
@@ -298,9 +298,10 @@ export default async function Page({ searchParams }: PageProps) {
       staff = response.data
       if (response.meta) {
         pagination = {
-          current: response.meta.current_page || 1,
-          total: response.meta.last_page || 1,
+          currentPage: response.meta.current_page || 1,
+          total: response.meta.total || 0,
           perPage: 12,
+          lastPage: response.meta.last_page || 1,
         }
       }
     }

@@ -5,10 +5,16 @@ import { MobileView } from './MobileView'
 import { DesktopView } from './DesktopView'
 import { useState, useEffect } from 'react'
 
-export function StaffPage({ staff, categories, currentCategory }: { 
+export function StaffPage({ staff, categories, currentCategory, pagination }: { 
     staff: Staff[] 
     categories: string[] 
     currentCategory?: string 
+    pagination?: {
+        currentPage: number
+        total: number
+        perPage: number
+        lastPage: number
+    }
 }) {
     const isMobile = useIsMobile()
     const [mounted, setMounted] = useState(false)
