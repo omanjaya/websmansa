@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
+import { Staff } from '@/lib/api'
 
 const typeLabels: Record<string, string> = {
     principal: 'Kepala Sekolah',
