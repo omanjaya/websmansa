@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { getStaffMember, getStaff } from '@/lib/api'
 import { Badge } from '@/components/ui'
+import { PageClientEnhancements } from './PageClientEnhancements'
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -182,6 +183,9 @@ export default async function StaffDetailPage({ params }: PageProps) {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Client-side enhancements */}
+      <PageClientEnhancements title={staff.attributes.name} />
+
       {/* Header */}
       <div className="bg-gradient-to-r from-indigo-600 to-indigo-800 py-12">
         <div className="container mx-auto px-4">

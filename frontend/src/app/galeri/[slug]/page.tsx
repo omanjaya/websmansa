@@ -9,6 +9,7 @@ import { format } from 'date-fns'
 import { id } from 'date-fns/locale'
 import { Section, Waves, DotPattern, GlowSpot } from '@/components/shared'
 import { Badge } from '@/components/ui'
+import { PageClientEnhancements } from './PageClientEnhancements'
 
 interface GalleryDetailPageProps {
     params: Promise<{ slug: string }>
@@ -92,6 +93,9 @@ export default async function GalleryDetailPage({
 
     return (
         <div className="-mt-16 lg:-mt-20 min-h-screen bg-white dark:bg-slate-950">
+            {/* Client-side enhancements */}
+            <PageClientEnhancements title={gallery.title} />
+
             {/* Fixed Background Pattern */}
             <div className="fixed inset-0 z-0 pointer-events-none">
                 <DotPattern variant="scattered" className="opacity-30 dark:opacity-20" />
@@ -120,7 +124,7 @@ export default async function GalleryDetailPage({
 
                 {/* Content */}
                 <div className="relative z-10 h-full flex items-end">
-                    <div className="container mx-auto px-4 pb-20 pt-32 lg:pt-40">
+                    <div className="container mx-auto px-4 pb-40 pt-32 lg:pt-40">
                         {/* Breadcrumb */}
                         <nav className="flex items-center gap-2 text-sm text-white/70 mb-6">
                             <Link href="/" className="hover:text-white transition-colors">Beranda</Link>

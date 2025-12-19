@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
+import './tiptap.css'
 import { ConditionalLayout } from '@/components/layout'
 import { QueryProvider, ThemeProvider } from '@/providers'
 import { SchoolJsonLd, WebsiteJsonLd, SiteNavigationJsonLd } from '@/components/seo'

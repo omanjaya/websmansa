@@ -110,8 +110,8 @@ export function PageHero({
                 <div className={`absolute inset-0 ${overlayVariants[overlay]}`} />
             </div>
 
-            {/* Content - pt-20 lg:pt-24 accounts for header height, pb-8 gives bottom space */}
-            <div className={`relative z-10 w-full pt-20 lg:pt-24 pb-8 md:pb-12 ${align === 'center' ? 'text-center' : 'text-left'}`}>
+            {/* Content - pt-32 lg:pt-40 positions text higher, pb-32 md:pb-40 gives bottom space for wave */}
+            <div className={`relative z-10 w-full pt-32 lg:pt-40 pb-32 md:pb-40 ${align === 'center' ? 'text-center' : 'text-left'}`}>
                 <div className="container mx-auto px-4">
                     {/* Breadcrumbs */}
                     {breadcrumbs && breadcrumbs.length > 0 && (

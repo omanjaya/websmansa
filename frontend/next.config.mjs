@@ -196,8 +196,10 @@ const nextConfig = {
     ]
   },
 
-  // Production optimizations
-  swcMinify: true,
+  // Production optimizations removed - swcMinify is no longer needed in Next.js 16
+
+  // Turbopack config (Next.js 16 default)
+  turbopack: {},
 
   webpack: (config, { dev }) => {
     if (dev) {

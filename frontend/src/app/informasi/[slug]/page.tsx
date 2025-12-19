@@ -6,7 +6,8 @@ import { getPost, getLatestPosts } from '@/lib/api'
 import { Badge } from '@/components/ui'
 import { sanitizeHTML } from '@/lib/sanitize'
 import { Section, Waves, DotPattern, GlowSpot } from '@/components/shared'
-import { Calendar, Clock, Eye, Heart, ArrowLeft, Share2, User, ChevronRight } from 'lucide-react'
+import { Calendar, Clock, Eye, Heart, ArrowLeft, User, ChevronRight } from 'lucide-react'
+import { ArticleClientEnhancements } from './ArticleClientEnhancements'
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -154,6 +155,9 @@ export default async function PostDetailPage({ params }: PageProps) {
 
   return (
     <div className="-mt-16 lg:-mt-20 min-h-screen bg-white dark:bg-slate-950">
+      {/* Client-side enhancements */}
+      <ArticleClientEnhancements title={post.attributes.title} />
+
       {/* Fixed Background Pattern */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <DotPattern variant="scattered" className="opacity-30 dark:opacity-20" />
@@ -162,7 +166,7 @@ export default async function PostDetailPage({ params }: PageProps) {
       </div>
 
       {/* Hero Section */}
-      <div className="relative min-h-[50vh] md:min-h-[60vh] overflow-hidden">
+      <div className="relative min-h-[50vh] md:min-h-[55vh] overflow-hidden">
         {/* Background Image */}
         {post.attributes.featured_image ? (
           <Image
@@ -182,7 +186,7 @@ export default async function PostDetailPage({ params }: PageProps) {
 
         {/* Content */}
         <div className="relative z-10 h-full flex items-end">
-          <div className="container mx-auto px-4 pb-20 pt-32 lg:pt-40">
+          <div className="container mx-auto px-4 pb-40 pt-32 lg:pt-40">
             {/* Breadcrumb */}
             <nav className="flex items-center gap-2 text-sm text-white/70 mb-6">
               <Link href="/" className="hover:text-white transition-colors">Beranda</Link>
@@ -249,7 +253,29 @@ export default async function PostDetailPage({ params }: PageProps) {
       <Section background="white" padding="large" className="relative z-10">
         <div className="max-w-4xl mx-auto">
           {/* Article Content */}
-          <article className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 overflow-hidden -mt-20 relative z-30">
+          <article className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 overflow-hidden -mt-24 relative z-30">
+            {/* Featured Image */}
+            <div className="relative w-full aspect-video bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700">
+              {post.attributes.featured_image ? (
+                <Image
+                  src={post.attributes.featured_image}
+                  alt={post.attributes.title}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 896px"
+                  className="object-cover"
+                  priority
+                />
+              ) : (
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400 dark:text-slate-500">
+                  <svg className="w-16 h-16 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <span className="text-sm font-medium">Gambar Utama Berita</span>
+                  <span className="text-xs mt-1 text-slate-300 dark:text-slate-600">Upload melalui Admin Panel</span>
+                </div>
+              )}
+            </div>
+
             {/* Excerpt/Lead */}
             {post.attributes.excerpt && (
               <div className="p-6 md:p-8 border-b border-slate-100 dark:border-slate-800 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800/50 dark:to-slate-800/30">
@@ -278,15 +304,34 @@ export default async function PostDetailPage({ params }: PageProps) {
               />
             </div>
 
+            {/* Author Card */}
+            <div className="px-6 md:px-8 pb-8">
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800/50 dark:to-slate-800/30 rounded-2xl p-6 md:p-8 border border-blue-100 dark:border-slate-700">
+                <div className="flex items-start gap-4">
+                  <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full flex items-center justify-center text-white text-xl font-bold shrink-0 shadow-lg shadow-blue-500/30">
+                    {(post.relationships.author?.name || 'Admin').charAt(0).toUpperCase()}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-1">
+                      Ditulis oleh
+                    </p>
+                    <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-2">
+                      {post.relationships.author?.name || 'Admin'}
+                    </h4>
+                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                      Tim redaksi SMA Negeri 1 Denpasar yang berkomitmen menyajikan informasi terkini dan akurat.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Footer Actions */}
             <div className="px-6 md:px-8 py-6 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-100 dark:border-slate-800">
               <div className="flex flex-wrap items-center justify-between gap-4">
                 {/* Share Buttons */}
                 <div className="flex items-center gap-3">
-                  <span className="text-sm font-medium text-slate-600 dark:text-slate-400 flex items-center gap-2">
-                    <Share2 className="w-4 h-4" />
-                    Bagikan:
-                  </span>
+                  <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Bagikan:</span>
                   <div className="flex gap-2">
                     <button
                       className="w-9 h-9 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/25"
@@ -335,9 +380,9 @@ export default async function PostDetailPage({ params }: PageProps) {
                   <Link
                     key={relatedPost.id}
                     href={`/informasi/${relatedPost.attributes.slug}`}
-                    className="group bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-800 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                    className="group block bg-white dark:bg-slate-900 rounded-2xl overflow-hidden shadow-lg border border-slate-100 dark:border-slate-800 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300"
                   >
-                    <div className="h-48 bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-slate-800 dark:to-slate-700 relative overflow-hidden">
+                    <div className="relative h-48 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 overflow-hidden">
                       {relatedPost.attributes.featured_image ? (
                         <Image
                           src={relatedPost.attributes.featured_image}
@@ -354,24 +399,25 @@ export default async function PostDetailPage({ params }: PageProps) {
                           </svg>
                         </div>
                       )}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </div>
                     <div className="p-5">
-                      <h3 className="font-bold text-slate-900 dark:text-white line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-2">
+                      <div className="text-xs text-slate-500 dark:text-slate-400 mb-2">
+                        {new Date(relatedPost.attributes.published_at).toLocaleDateString('id-ID', {
+                          day: 'numeric',
+                          month: 'long',
+                          year: 'numeric',
+                        })}
+                      </div>
+                      <h3 className="font-bold text-slate-900 dark:text-white line-clamp-2 mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                         {relatedPost.attributes.title}
                       </h3>
-                      <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2 mb-3">
-                        {relatedPost.attributes.excerpt}
-                      </p>
-                      <div className="flex items-center gap-2 text-xs text-slate-400 dark:text-slate-500">
-                        <Calendar className="w-3.5 h-3.5" />
-                        <span>
-                          {new Date(relatedPost.attributes.published_at).toLocaleDateString('id-ID', {
-                            day: 'numeric',
-                            month: 'long',
-                            year: 'numeric',
-                          })}
-                        </span>
+                      <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2">{relatedPost.attributes.excerpt}</p>
+                      <div className="mt-4 flex items-center gap-2 text-sm font-semibold text-blue-600 dark:text-blue-400 group-hover:gap-3 transition-all">
+                        Baca selengkapnya
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
                       </div>
                     </div>
                   </Link>

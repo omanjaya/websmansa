@@ -9,6 +9,7 @@ import {
   ChevronRight, ArrowLeft, Users, MapPin, CheckCircle,
   Building2, Sparkles, Share2, Calendar, Bookmark
 } from 'lucide-react'
+import { PageClientEnhancements } from './PageClientEnhancements'
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -202,6 +203,9 @@ export default async function FacilityDetailPage({ params }: PageProps) {
 
   return (
     <div className="-mt-16 lg:-mt-20 min-h-screen bg-white dark:bg-slate-950">
+      {/* Client-side enhancements */}
+      <PageClientEnhancements title={facility.attributes.name} />
+
       {/* Fixed Background Pattern */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <DotPattern variant="scattered" className="opacity-30 dark:opacity-20" />
@@ -230,7 +234,7 @@ export default async function FacilityDetailPage({ params }: PageProps) {
 
         {/* Content */}
         <div className="relative z-10 h-full flex items-end">
-          <div className="container mx-auto px-4 pb-20 pt-32 lg:pt-40">
+          <div className="container mx-auto px-4 pb-40 pt-32 lg:pt-40">
             {/* Breadcrumb */}
             <nav className="flex items-center gap-2 text-sm text-white/70 mb-6">
               <Link href="/" className="hover:text-white transition-colors">Beranda</Link>

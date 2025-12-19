@@ -20,7 +20,7 @@ class Gallery extends Model implements HasMedia
     use HasFactory, HasUuid, InteractsWithMedia;
 
     protected $fillable = [
-        'name',
+        'title',
         'slug',
         'description',
         'type',
@@ -36,7 +36,7 @@ class Gallery extends Model implements HasMedia
     protected $appends = [
         'thumbnail_url',
         'items_count',
-        'title', // Alias for name
+        'name', // Alias for title (backward compatibility)
     ];
 
     /**
@@ -48,19 +48,19 @@ class Gallery extends Model implements HasMedia
     }
 
     /**
-     * Scope for featured galleries (returns all for now since is_featured column doesn't exist).
+     * Scope for featured galleries.
      */
     public function scopeFeatured(Builder $query): Builder
     {
-        return $query; // No is_featured column in current schema
+        return $query->where('is_featured', true);
     }
 
     /**
-     * Scope for galleries by type (not supported in current schema).
+     * Scope for galleries by type.
      */
     public function scopeOfType(Builder $query, string $type): Builder
     {
-        return $query; // No type column in current schema
+        return $query->where('type', $type);
     }
 
     /**
@@ -72,11 +72,11 @@ class Gallery extends Model implements HasMedia
     }
 
     /**
-     * Get title attribute (alias for name).
+     * Get name attribute (alias for title, backward compatibility).
      */
-    public function getTitleAttribute(): ?string
+    public function getNameAttribute(): ?string
     {
-        return $this->name;
+        return $this->title;
     }
 
     /**
@@ -214,10 +214,10 @@ class Gallery extends Model implements HasMedia
     {
         parent::boot();
 
-        // Auto-generate slug from name if not provided
+        // Auto-generate slug from title if not provided
         static::creating(function ($gallery) {
             if (!$gallery->slug) {
-                $gallery->slug = \Illuminate\Support\Str::slug($gallery->name);
+                $gallery->slug = \Illuminate\Support\Str::slug($gallery->title);
             }
         });
     }
