@@ -99,7 +99,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   try {
     const response = await getPost(slug)
-    const post = response.data
+    const post = response?.data
+
+    if (!post) {
+      return {
+        title: 'Berita Tidak Ditemukan | SMAN 1 Denpasar',
+        description: 'Berita yang Anda cari tidak ditemukan.',
+      }
+    }
 
     return {
       title: `${post.attributes.title} | SMAN 1 Denpasar`,
@@ -121,19 +128,21 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function PostDetailPage({ params }: PageProps) {
   const { slug } = await params
-  let post: LocalPost = dummyPost
+  let post: LocalPost | null = null
   let relatedPosts: LocalPost[] = []
 
   try {
     const response = await getPost(slug)
-    if (response.data) {
+    if (response?.data) {
       post = response.data as LocalPost
     }
   } catch {
-    // Use dummy data
-    if (slug !== dummyPost.attributes.slug) {
-      notFound()
-    }
+    // API error - post not found
+  }
+
+  // If no post found from API, show 404
+  if (!post) {
+    notFound()
   }
 
   // Get related posts

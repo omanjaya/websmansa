@@ -101,15 +101,22 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   try {
     const response = await getAnnouncement(slug)
-    const announcement = response.data
+    const announcement = response?.data
+
+    if (!announcement) {
+      return {
+        title: 'Pengumuman Tidak Ditemukan | SMAN 1 Denpasar',
+        description: 'Pengumuman yang Anda cari tidak ditemukan.',
+      }
+    }
 
     return {
-      title: announcement.attributes.title,
-      description: announcement.attributes.excerpt,
+      title: `${announcement.attributes.title} | SMAN 1 Denpasar`,
+      description: announcement.attributes.excerpt || announcement.attributes.title,
     }
   } catch {
     return {
-      title: 'Pengumuman',
+      title: 'Pengumuman | SMAN 1 Denpasar',
       description: 'Pengumuman dari SMA Negeri 1 Denpasar',
     }
   }
@@ -117,18 +124,21 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function AnnouncementDetailPage({ params }: PageProps) {
   const { slug } = await params
-  let announcement: LocalAnnouncement = dummyAnnouncement
+  let announcement: LocalAnnouncement | null = null
   let relatedAnnouncements: LocalAnnouncement[] = []
 
   try {
     const response = await getAnnouncement(slug)
-    if (response.data) {
+    if (response?.data) {
       announcement = response.data as LocalAnnouncement
     }
   } catch {
-    if (slug !== dummyAnnouncement.attributes.slug) {
-      notFound()
-    }
+    // API error - announcement not found
+  }
+
+  // If no announcement found from API, show 404
+  if (!announcement) {
+    notFound()
   }
 
   try {
