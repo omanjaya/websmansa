@@ -20,7 +20,7 @@ export function useExtras(params?: {
 
     return useQuery({
         queryKey: ['admin-extras', queryParams],
-        queryFn: () => getAdminExtras(paginate ? queryParams : { ...queryParams, per_page: 1000 }),
+        queryFn: () => getAdminExtras(paginate ? queryParams : { ...queryParams, per_page: 100 }),
         select: (data) => data.data,
     })
 }

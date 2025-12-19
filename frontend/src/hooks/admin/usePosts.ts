@@ -21,7 +21,7 @@ export function usePosts(params?: {
 
     return useQuery({
         queryKey: ['admin-posts', queryParams],
-        queryFn: () => getAdminPosts(paginate ? queryParams : { ...queryParams, per_page: 1000 }),
+        queryFn: () => getAdminPosts(paginate ? queryParams : { ...queryParams, per_page: 100 }),
         select: (data) => data.data,
     })
 }

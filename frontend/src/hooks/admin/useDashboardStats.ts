@@ -56,10 +56,10 @@ export function useDashboardStats() {
         queryFn: async (): Promise<DashboardStats> => {
             // Fetch all data in parallel
             const [galleries, posts, extras, facilities] = await Promise.all([
-                getAdminGalleries({ per_page: 1000 }).catch(() => ({ data: [], meta: { total: 0 } })),
-                getAdminPosts({ per_page: 1000 }).catch(() => ({ data: [], meta: { total: 0 } })),
-                getAdminExtras({ per_page: 1000 }).catch(() => ({ data: [], meta: { total: 0 } })),
-                getAdminFacilities({ per_page: 1000 }).catch(() => ({ data: [], meta: { total: 0 } })),
+                getAdminGalleries({ per_page: 100 }).catch(() => ({ data: [], meta: { total: 0 } })),
+                getAdminPosts({ per_page: 100 }).catch(() => ({ data: [], meta: { total: 0 } })),
+                getAdminExtras({ per_page: 100 }).catch(() => ({ data: [], meta: { total: 0 } })),
+                getAdminFacilities({ per_page: 100 }).catch(() => ({ data: [], meta: { total: 0 } })),
             ])
 
             // Calculate stats

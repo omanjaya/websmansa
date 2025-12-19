@@ -20,7 +20,7 @@ export function useFacilities(params?: {
 
     return useQuery({
         queryKey: ['admin-facilities', queryParams],
-        queryFn: () => getAdminFacilities(paginate ? queryParams : { ...queryParams, per_page: 1000 }),
+        queryFn: () => getAdminFacilities(paginate ? queryParams : { ...queryParams, per_page: 100 }),
         select: (data) => data.data,
     })
 }

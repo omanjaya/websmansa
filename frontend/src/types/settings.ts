@@ -94,9 +94,9 @@ export const defaultSettings: SiteSettings = {
   site_short_name: 'SMAN 1 Denpasar',
   site_tagline: 'Unggul dalam Prestasi, Berkarakter Pancasila',
   site_description: 'SMA Negeri 1 Denpasar adalah lembaga pendidikan menengah atas terkemuka di Denpasar, Bali yang berkomitmen untuk menghasilkan lulusan berkualitas, berkarakter, dan siap menghadapi tantangan global.',
-  site_logo: '/images/logo.png',
+  site_logo: '/logo.png',
   site_favicon: '/favicon.ico',
-  logo_url: '/images/logo.png',
+  logo_url: '/logo.png',
   established_year: 1950,
   founded_year: '1950',
 
