@@ -37,7 +37,7 @@ final class PostPolicy
     public function create(User $user): bool
     {
         // Hanya user dengan permission atau admin
-        return $user->hasPermissionTo('create-posts') || $user->hasRole('admin');
+        return $user->hasPermissionTo('add post') || $user->hasAnyRole(['admin', 'super admin']);
     }
 
     /**
@@ -46,7 +46,7 @@ final class PostPolicy
     public function update(User $user, Post $post): bool
     {
         // Owner atau admin dapat update
-        return $user->id === $post->user_id || $user->hasRole('admin');
+        return $user->id === $post->user_id || $user->hasAnyRole(['admin', 'super admin']);
     }
 
     /**
@@ -55,7 +55,7 @@ final class PostPolicy
     public function delete(User $user, Post $post): bool
     {
         // Owner atau admin dapat delete
-        return $user->id === $post->user_id || $user->hasRole('admin');
+        return $user->id === $post->user_id || $user->hasAnyRole(['admin', 'super admin']);
     }
 
     /**
@@ -63,7 +63,7 @@ final class PostPolicy
      */
     public function restore(User $user, Post $post): bool
     {
-        return $user->hasRole('admin');
+        return $user->hasAnyRole(['admin', 'super admin']);
     }
 
     /**
@@ -71,6 +71,6 @@ final class PostPolicy
      */
     public function forceDelete(User $user, Post $post): bool
     {
-        return $user->hasRole('admin');
+        return $user->hasAnyRole(['admin', 'super admin']);
     }
 }
