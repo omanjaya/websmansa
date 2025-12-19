@@ -56,6 +56,7 @@ export default function CreateFacilityPage() {
                 <Link
                     href="/admin/facilities"
                     className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                    aria-label="Kembali ke daftar fasilitas"
                 >
                     <ArrowLeft className="w-5 h-5" />
                 </Link>
@@ -63,33 +64,37 @@ export default function CreateFacilityPage() {
             </div>
 
             {error && (
-                <div className="mb-6 p-4 bg-red-50 text-red-600 rounded-lg">
+                <div className="mb-6 p-4 bg-red-50 text-red-600 rounded-lg" role="alert">
                     {error}
                 </div>
             )}
 
             <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor="facility-name" className="block text-sm font-medium text-gray-700 mb-1">
                         Nama Fasilitas *
                     </label>
                     <input
+                        id="facility-name"
                         type="text"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         required
+                        placeholder="Masukkan nama fasilitas"
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor="facility-category" className="block text-sm font-medium text-gray-700 mb-1">
                         Kategori *
                     </label>
                     <select
+                        id="facility-category"
                         value={formData.category}
                         onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        aria-label="Pilih kategori fasilitas"
                     >
                         {categories.map((cat) => (
                             <option key={cat.value} value={cat.value}>{cat.label}</option>
@@ -98,36 +103,41 @@ export default function CreateFacilityPage() {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor="facility-description" className="block text-sm font-medium text-gray-700 mb-1">
                         Deskripsi
                     </label>
                     <textarea
+                        id="facility-description"
                         value={formData.description}
                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         rows={4}
+                        placeholder="Masukkan deskripsi fasilitas"
                     />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label htmlFor="facility-capacity" className="block text-sm font-medium text-gray-700 mb-1">
                             Kapasitas (orang)
                         </label>
                         <input
+                            id="facility-capacity"
                             type="number"
                             value={formData.capacity}
                             onChange={(e) => setFormData({ ...formData, capacity: e.target.value })}
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             min="0"
+                            placeholder="0"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label htmlFor="facility-location" className="block text-sm font-medium text-gray-700 mb-1">
                             Lokasi
                         </label>
                         <input
+                            id="facility-location"
                             type="text"
                             value={formData.location}
                             onChange={(e) => setFormData({ ...formData, location: e.target.value })}
@@ -138,8 +148,9 @@ export default function CreateFacilityPage() {
                 </div>
 
                 <div className="flex items-center gap-4 flex-wrap">
-                    <label className="flex items-center gap-2 cursor-pointer">
+                    <label htmlFor="facility-is-active" className="flex items-center gap-2 cursor-pointer">
                         <input
+                            id="facility-is-active"
                             type="checkbox"
                             checked={formData.is_active}
                             onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
@@ -147,8 +158,9 @@ export default function CreateFacilityPage() {
                         />
                         <span className="text-sm text-gray-700">Aktif</span>
                     </label>
-                    <label className="flex items-center gap-2 cursor-pointer">
+                    <label htmlFor="facility-is-featured" className="flex items-center gap-2 cursor-pointer">
                         <input
+                            id="facility-is-featured"
                             type="checkbox"
                             checked={formData.is_featured}
                             onChange={(e) => setFormData({ ...formData, is_featured: e.target.checked })}
@@ -156,8 +168,9 @@ export default function CreateFacilityPage() {
                         />
                         <span className="text-sm text-gray-700">Unggulan</span>
                     </label>
-                    <label className="flex items-center gap-2 cursor-pointer">
+                    <label htmlFor="facility-is-bookable" className="flex items-center gap-2 cursor-pointer">
                         <input
+                            id="facility-is-bookable"
                             type="checkbox"
                             checked={formData.is_bookable}
                             onChange={(e) => setFormData({ ...formData, is_bookable: e.target.checked })}
