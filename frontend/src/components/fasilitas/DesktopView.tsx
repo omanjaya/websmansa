@@ -2,6 +2,13 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
+import { Facility } from '@/lib/api'
+
+interface DesktopViewProps {
+    facilities: Facility[]
+    categories: string[]
+    currentCategory?: string
+}
 
 const categoryLabels: Record<string, string> = {
     pembelajaran: 'Pembelajaran',
@@ -39,14 +46,14 @@ const categoryIcons: Record<string, JSX.Element> = {
     ),
 }
 
-export function DesktopView({ facilities, categories, currentCategory }: any) {
+export function DesktopView({ facilities, categories: _categories, currentCategory }: DesktopViewProps) {
     const filteredFacilities = currentCategory
-        ? facilities.filter((f: any) => f.attributes?.category === currentCategory)
+        ? facilities.filter((f) => f.attributes?.category === currentCategory)
         : facilities
 
     // Group facilities by category for display
-    const featuredFacilities = filteredFacilities.filter((f: any) => f.attributes?.is_featured)
-    const regularFacilities = filteredFacilities.filter((f: any) => !f.attributes?.is_featured)
+    const featuredFacilities = filteredFacilities.filter((f) => f.attributes?.is_featured)
+    const regularFacilities = filteredFacilities.filter((f) => !f.attributes?.is_featured)
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-slate-950">
@@ -114,7 +121,7 @@ export function DesktopView({ facilities, categories, currentCategory }: any) {
                                 Fasilitas Unggulan
                             </h2>
                             <div className="grid md:grid-cols-2 gap-6">
-                                {featuredFacilities.slice(0, 2).map((item: any) => (
+                                {featuredFacilities.slice(0, 2).map((item) => (
                                     <Link
                                         key={item.id}
                                         href={`/fasilitas/${item.attributes?.slug || item.slug}`}
@@ -125,7 +132,7 @@ export function DesktopView({ facilities, categories, currentCategory }: any) {
                                             {item.attributes?.images?.[0] ? (
                                                 <Image
                                                     src={item.attributes.images[0]}
-                                                    alt={item.attributes?.name || item.name}
+                                                    alt={item.attributes?.name || item.name || 'Fasilitas'}
                                                     fill
                                                     className="object-cover group-hover:scale-110 transition-transform duration-700"
                                                 />
@@ -187,7 +194,7 @@ export function DesktopView({ facilities, categories, currentCategory }: any) {
                             </h2>
                         )}
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-                            {(currentCategory ? filteredFacilities : regularFacilities).map((item: any) => (
+                            {(currentCategory ? filteredFacilities : regularFacilities).map((item) => (
                                 <Link
                                     key={item.id}
                                     href={`/fasilitas/${item.attributes?.slug || item.slug}`}
@@ -198,7 +205,7 @@ export function DesktopView({ facilities, categories, currentCategory }: any) {
                                         {item.attributes?.images?.[0] ? (
                                             <Image
                                                 src={item.attributes.images[0]}
-                                                alt={item.attributes?.name || item.name}
+                                                alt={item.attributes?.name || item.name || 'Fasilitas'}
                                                 fill
                                                 className="object-cover group-hover:scale-105 transition-transform duration-500"
                                             />

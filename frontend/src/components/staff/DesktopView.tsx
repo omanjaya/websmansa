@@ -125,10 +125,10 @@ function StaffCard({ item, index, isLeadership = false }: { item: Staff; index: 
     )
 }
 
-export function DesktopView({ staff, categories, currentCategory }: { 
-    staff: Staff[] 
-    categories: string[] 
-    currentCategory?: string 
+export function DesktopView({ staff, categories: _categories, currentCategory }: {
+    staff: Staff[]
+    categories: string[]
+    currentCategory?: string
 }) {
     const filteredStaff = currentCategory
         ? staff.filter((s: Staff) => s.attributes?.type === currentCategory || s.attributes?.department === currentCategory)

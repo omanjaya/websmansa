@@ -1,9 +1,41 @@
 'use client'
 
+import { useState, Suspense } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Newspaper, Clock, Eye, ArrowRight, Calendar, TrendingUp } from 'lucide-react'
 import type { Post, Category } from '@/lib/api'
-import { ScrollReveal, StaggerContainer, StaggerItem } from '@/components/ui/Motion'
+import { PageHero } from '@/components/shared/PageHero'
+import { Section } from '@/components/shared/Section'
+import { FilterBar } from '@/components/shared/FilterBar'
+import {
+    StaggerContainer,
+    StaggerItem,
+    FadeInOnScroll,
+    HoverScale,
+} from '@/components/shared/Animations'
+import {
+    CardSkeleton,
+    ArticleListSkeleton,
+} from '@/components/shared/Skeletons'
+import {
+    GradientBorderCard,
+    AnimatedImageCard,
+    FeatureCard,
+} from '@/components/shared/EnhancedCards'
+import {
+    FloatingShapes,
+    GradientOrbs,
+    Waves,
+    DotPattern,
+    HexagonPattern,
+    GlowSpot,
+} from '@/components/shared/Decorations'
+import {
+    MobileFilterSheet,
+} from '@/components/shared/MobileFilter'
 
 interface ResponsiveViewProps {
     posts: Post[]
@@ -11,200 +43,430 @@ interface ResponsiveViewProps {
     currentCategory?: string
 }
 
-export function ResponsiveView({ posts, categories, currentCategory }: ResponsiveViewProps) {
-    return (
-        <div className="min-h-screen bg-gray-50 dark:bg-slate-950">
-            {/* Hero Section - Enhanced */}
-            <section className="relative -mt-16 lg:-mt-20 pt-28 lg:pt-32 pb-16 md:pb-24 hero-gradient overflow-hidden">
-                {/* Decorative Elements */}
-                <div className="hero-pattern" />
-                <div className="decorative-grid" />
-                <div className="absolute top-0 right-0 w-1/3 h-full bg-white/5 skew-x-12 translate-x-20" />
-                <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary-400/30 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2" />
-                <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2" />
+// Format date helper
+function formatDate(dateString: string): string {
+    const date = new Date(dateString)
+    return date.toLocaleDateString('id-ID', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+    })
+}
 
-                <div className="relative container mx-auto px-4">
-                    <div className="max-w-3xl">
-                        <span className="text-primary-200 font-bold tracking-wider uppercase text-sm flex items-center gap-2 mb-4">
-                            <span className="w-10 h-[2px] bg-primary-300"></span>
-                            Berita & Artikel
-                        </span>
-                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 leading-tight">
-                            Informasi
-                        </h1>
-                        <p className="text-lg md:text-xl text-primary-100 max-w-2xl">
-                            Berita dan informasi terbaru dari SMA Negeri 1 Denpasar
-                        </p>
+// Featured Post Card Component
+function FeaturedPostCard({ post, index }: { post: Post; index: number }) {
+    const imageUrl = post.attributes.featured_image || '/placeholder.jpg'
+    const category = post.relationships?.categories?.[0]?.name || 'Berita'
+
+    return (
+        <motion.article
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: index * 0.1 }}
+            className="group relative"
+        >
+            <Link href={`/informasi/${post.attributes.slug}`}>
+                <div className="relative aspect-[21/9] md:aspect-[21/8] rounded-2xl md:rounded-3xl overflow-hidden">
+                    {/* Image with parallax effect */}
+                    <motion.div
+                        className="absolute inset-0"
+                        whileHover={{ scale: 1.05 }}
+                        transition={{ duration: 0.6 }}
+                    >
+                        <Image
+                            src={imageUrl}
+                            alt={post.attributes.title}
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 768px) 100vw, 80vw"
+                            priority
+                        />
+                    </motion.div>
+
+                    {/* Gradient overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+
+                    {/* Shine effect on hover */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+
+                    {/* Content */}
+                    <div className="absolute inset-x-0 bottom-0 p-5 md:p-8 lg:p-10">
+                        {/* Badge */}
+                        <motion.div
+                            className="inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mb-4"
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.3 }}
+                        >
+                            <TrendingUp className="w-3.5 h-3.5 text-white" />
+                            <span className="text-xs font-bold text-white uppercase tracking-wide">
+                                {category}
+                            </span>
+                        </motion.div>
+
+                        {/* Title */}
+                        <motion.h2
+                            className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-3 line-clamp-2 group-hover:text-blue-300 transition-colors"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.4 }}
+                        >
+                            {post.attributes.title}
+                        </motion.h2>
+
+                        {/* Excerpt */}
+                        <motion.p
+                            className="text-sm md:text-base text-white/80 line-clamp-2 max-w-3xl mb-4"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.5 }}
+                        >
+                            {post.attributes.excerpt}
+                        </motion.p>
+
+                        {/* Meta */}
+                        <motion.div
+                            className="flex flex-wrap items-center gap-4 text-sm text-white/70"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.6 }}
+                        >
+                            <div className="flex items-center gap-1.5">
+                                <Calendar className="w-4 h-4" />
+                                <span>{formatDate(post.attributes.published_at)}</span>
+                            </div>
+                            {post.meta?.reading_time && (
+                                <div className="flex items-center gap-1.5">
+                                    <Clock className="w-4 h-4" />
+                                    <span>{post.meta.reading_time} menit</span>
+                                </div>
+                            )}
+                            {post.attributes.views > 0 && (
+                                <div className="flex items-center gap-1.5">
+                                    <Eye className="w-4 h-4" />
+                                    <span>{post.attributes.views.toLocaleString()}</span>
+                                </div>
+                            )}
+                            <div className="flex items-center gap-1 text-blue-300 ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
+                                <span className="font-medium">Baca selengkapnya</span>
+                                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                            </div>
+                        </motion.div>
                     </div>
+
+                    {/* Border glow on hover */}
+                    <div className="absolute inset-0 rounded-2xl md:rounded-3xl ring-2 ring-white/0 group-hover:ring-blue-500/50 transition-all duration-500" />
                 </div>
-            </section>
+            </Link>
+        </motion.article>
+    )
+}
+
+// Regular Post Card Component
+function PostCard({ post, index }: { post: Post; index: number }) {
+    const imageUrl = post.attributes.featured_image || '/placeholder.jpg'
+    const category = post.relationships?.categories?.[0]?.name || 'Berita'
+
+    return (
+        <motion.article
+            initial={{ opacity: 0, y: 30, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{
+                duration: 0.5,
+                delay: index * 0.08,
+                type: 'spring',
+                stiffness: 100,
+            }}
+            className="group h-full"
+        >
+            <Link href={`/informasi/${post.attributes.slug}`} className="block h-full">
+                <div className="relative h-full bg-white dark:bg-slate-800 rounded-xl md:rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-700 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/10">
+                    {/* Image */}
+                    <div className="relative aspect-[16/10] overflow-hidden">
+                        <motion.div
+                            className="absolute inset-0"
+                            whileHover={{ scale: 1.1 }}
+                            transition={{ duration: 0.5 }}
+                        >
+                            <Image
+                                src={imageUrl}
+                                alt={post.attributes.title}
+                                fill
+                                className="object-cover"
+                                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                            />
+                        </motion.div>
+
+                        {/* Gradient overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+
+                        {/* Category badge */}
+                        <div className="absolute top-3 left-3">
+                            <span className="px-2.5 py-1 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm text-xs font-semibold text-slate-700 dark:text-slate-300 rounded-full">
+                                {category}
+                            </span>
+                        </div>
+
+                        {/* Quick read indicator */}
+                        {post.meta?.reading_time && post.meta.reading_time <= 3 && (
+                            <div className="absolute top-3 right-3">
+                                <span className="px-2.5 py-1 bg-green-500/90 backdrop-blur-sm text-xs font-semibold text-white rounded-full">
+                                    Quick Read
+                                </span>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Content */}
+                    <div className="p-4 md:p-5">
+                        {/* Title */}
+                        <h3 className="text-base md:text-lg font-bold text-slate-900 dark:text-white mb-2 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                            {post.attributes.title}
+                        </h3>
+
+                        {/* Excerpt */}
+                        <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mb-4">
+                            {post.attributes.excerpt}
+                        </p>
+
+                        {/* Footer */}
+                        <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-500">
+                            <div className="flex items-center gap-3">
+                                <div className="flex items-center gap-1">
+                                    <Calendar className="w-3.5 h-3.5" />
+                                    <span>{formatDate(post.attributes.published_at)}</span>
+                                </div>
+                                {post.meta?.reading_time && (
+                                    <div className="flex items-center gap-1">
+                                        <Clock className="w-3.5 h-3.5" />
+                                        <span>{post.meta.reading_time}m</span>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Arrow on hover */}
+                            <div className="flex items-center gap-1 text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <span className="font-medium">Baca</span>
+                                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Bottom gradient line on hover */}
+                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-blue-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
+                </div>
+            </Link>
+        </motion.article>
+    )
+}
+
+export function ResponsiveView({ posts, categories, currentCategory }: ResponsiveViewProps) {
+    const router = useRouter()
+    const searchParams = useSearchParams()
+    const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '')
+    const [isLoading, setIsLoading] = useState(false)
+
+    // Convert categories to filter format - filter out any with empty names
+    const filterOptions = categories
+        .filter(cat => cat.name && cat.name.trim() !== '')
+        .map(cat => ({
+            label: cat.name,
+            value: cat.slug,
+        }))
+
+    // Handle filter change with loading animation
+    const handleFilterChange = (value: string) => {
+        setIsLoading(true)
+        if (value) {
+            router.push(`/informasi?category=${value}`)
+        } else {
+            router.push('/informasi')
+        }
+        // Simulate loading state
+        setTimeout(() => setIsLoading(false), 500)
+    }
+
+    // Handle search
+    const handleSearch = (query: string) => {
+        setSearchQuery(query)
+        if (query) {
+            router.push(`/informasi?search=${encodeURIComponent(query)}`)
+        } else {
+            router.push('/informasi')
+        }
+    }
+
+    // Get featured post (first one if exists)
+    const featuredPost = posts.find(p => p.attributes.is_featured) || posts[0]
+    const otherPosts = posts.filter(p => p !== featuredPost)
+
+    return (
+        // -mt-16 lg:-mt-20 pulls page behind fixed header so hero background shows behind it
+        <div className="min-h-screen bg-white dark:bg-slate-950 -mt-16 lg:-mt-20 relative">
+            {/* Global Background decorations - extends across entire page for seamless effect */}
+            <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+                <DotPattern variant="animated" opacity={0.35} className="dark:opacity-25" />
+                <GlowSpot color="bg-blue-500" size="xl" position={{ top: '30%', left: '-10%' }} />
+                <GlowSpot color="bg-purple-500" size="lg" position={{ top: '70%', right: '-5%' }} />
+            </div>
+
+            {/* Hero Section with enhanced decorations */}
+            <div className="relative overflow-hidden">
+                <PageHero
+                    title="Informasi"
+                    subtitle="Berita dan informasi terbaru dari SMA Negeri 1 Denpasar"
+                    badge={{
+                        icon: Newspaper,
+                        label: 'Berita & Artikel',
+                        color: 'blue',
+                    }}
+                    backgroundImage="/hero-bg.png"
+                    height="medium"
+                    overlay="gradient"
+                    align="center"
+                    breadcrumbs={[
+                        { label: 'Informasi', href: '/informasi' },
+                    ]}
+                />
+
+                {/* Wave divider */}
+                <Waves
+                    color="fill-white dark:fill-slate-950"
+                    position="bottom"
+                    className="absolute bottom-0 z-20"
+                />
+            </div>
 
             {/* Content Section */}
-            <section className="py-8 md:py-16">
-                <div className="container mx-auto px-4">
-                    {/* Category Filter - Enhanced */}
-                    <div className="mb-8 md:mb-12">
-                        <div className="flex flex-wrap gap-2 md:gap-3">
-                            <Link
-                                href="/informasi"
-                                className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-semibold text-sm md:text-base transition-all duration-300 ${
-                                    !currentCategory
-                                        ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
-                                        : 'bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-slate-700 border border-gray-200 dark:border-slate-700'
-                                }`}
+            <Section background="white" padding="large" className="relative z-10">
+                <div className="relative z-10">
+                    {/* Filter Bar - Desktop */}
+                    <FadeInOnScroll delay={0.2} className="mb-8 md:mb-10">
+                        <div className="hidden md:block">
+                            <FilterBar
+                                filters={filterOptions}
+                                currentFilter={currentCategory}
+                                onFilterChange={handleFilterChange}
+                                searchPlaceholder="Cari berita..."
+                                searchValue={searchQuery}
+                                onSearchChange={handleSearch}
+                                showSearch={true}
+                                showAllOption={true}
+                                allLabel="Semua"
+                            />
+                        </div>
+
+                        {/* Mobile Filter */}
+                        <div className="md:hidden flex gap-3">
+                            <MobileFilterSheet
+                                filters={filterOptions}
+                                currentFilter={currentCategory}
+                                onFilterChange={handleFilterChange}
+                                title="Kategori"
+                                showSearch={true}
+                                searchPlaceholder="Cari berita..."
+                                searchValue={searchQuery}
+                                onSearchChange={handleSearch}
+                            />
+                        </div>
+                    </FadeInOnScroll>
+
+                    {/* Posts Content with AnimatePresence for filter transitions */}
+                    <AnimatePresence mode="wait">
+                        {isLoading ? (
+                            <motion.div
+                                key="loading"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"
                             >
-                                Semua
-                            </Link>
-                            {categories.map((category) => (
-                                <Link
-                                    key={category.id}
-                                    href={`/informasi?category=${category.slug}`}
-                                    className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-semibold text-sm md:text-base transition-all duration-300 ${
-                                        currentCategory === category.slug
-                                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
-                                            : 'bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-slate-700 border border-gray-200 dark:border-slate-700'
-                                    }`}
-                                >
-                                    {category.name}
-                                </Link>
-                            ))}
-                        </div>
-                    </div>
+                                {[...Array(6)].map((_, i) => (
+                                    <CardSkeleton key={i} />
+                                ))}
+                            </motion.div>
+                        ) : posts.length > 0 ? (
+                            <motion.div
+                                key="content"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className="space-y-8 md:space-y-10"
+                            >
+                                {/* Featured Post */}
+                                {featuredPost && (
+                                    <FeaturedPostCard post={featuredPost} index={0} />
+                                )}
 
-                    {/* Posts Grid - Enhanced */}
-                    {posts.length > 0 ? (
-                        <StaggerContainer staggerDelay={0.1} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
-                            {posts.map((post, index) => (
-                                <StaggerItem
-                                    key={post.id}
-                                    className={index === 0 ? 'sm:col-span-2 lg:col-span-2 lg:row-span-2' : ''}
-                                >
-                                    <Link
-                                        href={`/informasi/${post.attributes.slug}`}
-                                        className="group block h-full glass-card overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
+                                {/* Section Title */}
+                                {otherPosts.length > 0 && (
+                                    <FadeInOnScroll delay={0.2}>
+                                        <div className="flex items-center gap-4">
+                                            <h2 className="text-lg md:text-xl font-bold text-slate-900 dark:text-white">
+                                                Berita Lainnya
+                                            </h2>
+                                            <div className="flex-1 h-px bg-gradient-to-r from-slate-200 to-transparent dark:from-slate-700" />
+                                        </div>
+                                    </FadeInOnScroll>
+                                )}
+
+                                {/* Other Posts Grid with stagger animation */}
+                                {otherPosts.length > 0 && (
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                                        {otherPosts.map((post, index) => (
+                                            <PostCard key={post.id} post={post} index={index} />
+                                        ))}
+                                    </div>
+                                )}
+                            </motion.div>
+                        ) : (
+                            // Empty State with enhanced design
+                            <motion.div
+                                key="empty"
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.95 }}
+                                className="relative text-center py-16 md:py-20 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 rounded-2xl md:rounded-3xl border border-slate-200 dark:border-slate-700 overflow-hidden"
+                            >
+                                {/* Background decoration */}
+                                <GradientOrbs className="opacity-20" />
+
+                                <div className="relative z-10">
+                                    <motion.div
+                                        className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-500/30"
+                                        animate={{
+                                            scale: [1, 1.05, 1],
+                                            rotate: [0, 5, -5, 0]
+                                        }}
+                                        transition={{
+                                            duration: 4,
+                                            repeat: Infinity
+                                        }}
                                     >
-                                    {/* Image */}
-                                    <div className={`relative overflow-hidden ${index === 0 ? 'h-48 sm:h-64 lg:h-80' : 'h-40 md:h-52'}`}>
-                                        {post.attributes.featured_image ? (
-                                            <Image
-                                                src={post.attributes.featured_image}
-                                                alt={post.attributes.title}
-                                                fill
-                                                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                                                className="object-cover group-hover:scale-110 transition-transform duration-700"
-                                                loading="lazy"
-                                            />
-                                        ) : (
-                                            <div className="w-full h-full bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 flex items-center justify-center">
-                                                <svg className="w-12 h-12 md:w-16 md:h-16 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                                </svg>
-                                            </div>
-                                        )}
-
-                                        {/* Gradient Overlay */}
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-
-                                        {/* Category Badge */}
-                                        {post.relationships.categories && post.relationships.categories[0] && (
-                                            <div className="absolute top-3 left-3 md:top-4 md:left-4">
-                                                <span className="px-3 py-1.5 bg-white/95 dark:bg-slate-800/95 backdrop-blur text-blue-600 dark:text-blue-400 text-xs md:text-sm font-bold rounded-full shadow-lg">
-                                                    {post.relationships.categories[0].name}
-                                                </span>
-                                            </div>
-                                        )}
-
-                                        {/* Featured Badge */}
-                                        {post.attributes.is_featured && (
-                                            <div className="absolute top-3 right-3 md:top-4 md:right-4">
-                                                <span className="px-3 py-1.5 bg-yellow-500 text-white text-xs font-bold rounded-full shadow-lg flex items-center gap-1">
-                                                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-                                                    <span className="hidden md:inline">Unggulan</span>
-                                                </span>
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    {/* Content */}
-                                    <div className="p-4 md:p-6">
-                                        {/* Date */}
-                                        <div className="flex items-center gap-2 text-xs md:text-sm text-gray-500 dark:text-gray-400 mb-3">
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                            </svg>
-                                            {new Date(post.attributes.published_at).toLocaleDateString('id-ID', {
-                                                day: 'numeric',
-                                                month: 'long',
-                                                year: 'numeric',
-                                            })}
-                                        </div>
-
-                                        {/* Title */}
-                                        <h3 className={`font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 mb-3 ${
-                                            index === 0 ? 'text-lg md:text-2xl' : 'text-base md:text-lg'
-                                        }`}>
-                                            {post.attributes.title}
-                                        </h3>
-
-                                        {/* Excerpt */}
-                                        <p className={`text-gray-600 dark:text-gray-400 line-clamp-2 md:line-clamp-3 mb-4 ${
-                                            index === 0 ? 'text-sm md:text-base' : 'text-xs md:text-sm'
-                                        }`}>
-                                            {post.attributes.excerpt}
-                                        </p>
-
-                                        {/* Meta Info */}
-                                        <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-slate-800">
-                                            <div className="flex items-center gap-4 text-xs md:text-sm text-gray-500 dark:text-gray-400">
-                                                <span className="flex items-center gap-1">
-                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                                    </svg>
-                                                    {post.attributes.views}
-                                                </span>
-                                                <span className="flex items-center gap-1">
-                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                                    </svg>
-                                                    {post.attributes.likes}
-                                                </span>
-                                            </div>
-                                            <span className="text-blue-600 dark:text-blue-400 font-semibold text-xs md:text-sm flex items-center gap-1 group-hover:gap-2 transition-all">
-                                                Baca
-                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                                                </svg>
-                                            </span>
-                                        </div>
-                                    </div>
+                                        <Newspaper className="w-8 h-8 md:w-10 md:h-10 text-white" />
+                                    </motion.div>
+                                    <h3 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white mb-2">
+                                        Tidak ada berita
+                                    </h3>
+                                    <p className="text-slate-600 dark:text-slate-400 max-w-md mx-auto mb-6">
+                                        Belum ada berita untuk kategori ini. Silakan pilih kategori lain atau kembali lagi nanti.
+                                    </p>
+                                    <Link
+                                        href="/informasi"
+                                        className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-105"
+                                    >
+                                        Lihat Semua Berita
+                                        <ArrowRight className="w-4 h-4" />
                                     </Link>
-                                </StaggerItem>
-                            ))}
-                        </StaggerContainer>
-                    ) : (
-                        // Empty State - Enhanced
-                        <div className="text-center py-20 glass-card-strong">
-                            <div className="w-20 h-20 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
-                                <svg className="w-10 h-10 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-                                </svg>
-                            </div>
-                            <h3 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                                Tidak ada berita
-                            </h3>
-                            <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto">
-                                Belum ada berita untuk kategori ini. Silakan pilih kategori lain atau kembali lagi nanti.
-                            </p>
-                        </div>
-                    )}
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
-            </section>
+            </Section>
 
             {/* Bottom Spacing */}
-            <div className="h-12 md:h-20" />
+            <div className="h-8 md:h-12 bg-white dark:bg-slate-950 relative z-10" />
         </div>
     )
 }

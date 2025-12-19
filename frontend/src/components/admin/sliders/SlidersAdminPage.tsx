@@ -3,7 +3,7 @@
 import { AdminCRUDTable } from '@/components/admin/shared/AdminCRUDTable'
 import { useSliders, useDeleteSlider } from '@/hooks/admin/useSliders'
 import { sliderColumns } from './columns'
-import { Image, CheckCircle, XCircle, ArrowUpDown } from 'lucide-react'
+import { Image as ImageIcon, CheckCircle, XCircle, ArrowUpDown } from 'lucide-react'
 
 export function SlidersAdminPage() {
     const { data: sliders, isLoading, error, refetch } = useSliders({ paginate: false })
@@ -44,7 +44,7 @@ export function SlidersAdminPage() {
                 {
                     label: 'Total Slider',
                     value: (data) => data.length,
-                    icon: <Image className="w-6 h-6" />,
+                    icon: <ImageIcon className="w-6 h-6" aria-hidden="true" />,
                     color: 'bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400',
                 },
                 {

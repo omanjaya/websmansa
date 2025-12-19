@@ -37,7 +37,7 @@ const item = {
 }
 
 export function MobileView() {
-    const [sliders, setSliders] = useState<Slider[]>([])
+    const [sliders, _setSliders] = useState<Slider[]>([])
     const [loading, setLoading] = useState(true)
     const [search, setSearch] = useState('')
 

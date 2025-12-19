@@ -4,30 +4,37 @@ import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
 import {
-    Users,
-    GraduationCap,
-    Award,
-    TrendingUp,
     Bell,
     BookOpen,
     Image as ImageIcon,
     MapPin,
     ChevronRight,
-    Calendar,
-    ArrowRight
+    Calendar
 } from 'lucide-react'
-import { useCountUp } from '@/hooks/useCountUp'
 import { useSiteConfig } from '@/contexts/SiteConfigContext'
-import { Post, Slider, Achievement, Alumni, Gallery } from '@/lib/api'
-import { Badge } from '@/components/ui/badge'
+import { Post, Achievement, Alumni, Slider, Gallery } from '@/lib/api'
+import { InfiniteMarqueeAchievements } from './components/InfiniteMarqueeAchievements'
+import { InfiniteMarqueeAlumni } from './components/InfiniteMarqueeAlumni'
+
+// Simplified announcement type for homepage display
+interface HomeAnnouncement {
+    id: number
+    type: string
+    attributes: {
+        title: string
+        slug: string
+        type: string
+        published_at: string
+    }
+}
 
 // Mobile Hero - Clean & Minimal
 function MobileHero() {
     const { settings } = useSiteConfig()
-    const heroImage = (settings as any).hero_image || '/hero-bg.png'
+    const heroImage = settings.hero_image || '/hero-bg.png'
 
     return (
-        <div className="relative h-[85vh] overflow-hidden -mt-16">
+        <div className="relative h-[100dvh] overflow-hidden">
             {/* Background */}
             <div className="absolute inset-0">
                 <Image
@@ -48,9 +55,9 @@ function MobileHero() {
                     transition={{ duration: 0.8 }}
                     className="space-y-4"
                 >
-                    <Badge className="bg-white/20 hover:bg-white/30 text-white border-white/20 backdrop-blur-md">
+                    <span className="inline-flex px-3 py-1 text-sm font-medium rounded-full bg-white/20 hover:bg-white/30 text-white border border-white/20 backdrop-blur-md">
                         Terakreditasi A (Unggul)
-                    </Badge>
+                    </span>
                     <h1 className="font-display text-4xl font-semibold text-white leading-tight">
                         {settings.site_name}
                     </h1>
@@ -60,53 +67,6 @@ function MobileHero() {
                 </motion.div>
             </div>
         </div>
-    )
-}
-
-// Stats - Compact Grid
-function StatItem({ label, value, icon: Icon }: { label: string; value: number; icon: React.ComponentType<{ className?: string }> }) {
-    const { count, ref } = useCountUp(value, 2000)
-
-    return (
-        <div ref={ref} className="text-center">
-            <div className="w-10 h-10 mx-auto mb-2 bg-blue-50 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
-                <Icon className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-            </div>
-            <div className="font-display text-2xl font-semibold text-slate-900 dark:text-white">
-                {count > 1000 ? `${(count / 1000).toFixed(0)}k` : count}+
-            </div>
-            <div className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                {label}
-            </div>
-        </div>
-    )
-}
-
-function MobileStats() {
-    const { settings } = useSiteConfig()
-
-    const stats = [
-        { label: 'Siswa', value: parseInt(settings.total_students) || 1200, icon: Users },
-        { label: 'Guru', value: parseInt(settings.total_teachers) || 120, icon: GraduationCap },
-        { label: 'Ekskul', value: 45, icon: Award },
-        { label: 'Alumni', value: parseInt(settings.total_alumni) || 50000, icon: TrendingUp },
-    ]
-
-    return (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="px-4 -mt-10 mb-8 relative z-10"
-        >
-            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-700 p-5">
-                <div className="grid grid-cols-4 gap-2">
-                    {stats.map((stat) => (
-                        <StatItem key={stat.label} label={stat.label} value={stat.value} icon={stat.icon} />
-                    ))}
-                </div>
-            </div>
-        </motion.div>
     )
 }
 
@@ -120,8 +80,8 @@ function MobileQuickAccess() {
     ]
 
     return (
-        <div className="px-4 mb-8">
-            <h2 className="font-display text-xl font-semibold text-slate-900 dark:text-white mb-4">Akses Cepat</h2>
+        <div className="px-4 mb-6">
+            <h2 className="font-display text-lg font-semibold text-slate-900 dark:text-white mb-3">Akses Cepat</h2>
             <div className="grid grid-cols-4 gap-3">
                 {quickLinks.map((link, index) => {
                     const Icon = link.icon
@@ -156,8 +116,8 @@ function MobilePrincipal() {
     const { settings } = useSiteConfig()
 
     return (
-        <div className="px-4 mb-8">
-            <h2 className="font-display text-xl font-semibold text-slate-900 dark:text-white mb-4">Sambutan Kepala Sekolah</h2>
+        <div className="px-4 mb-6">
+            <h2 className="font-display text-lg font-semibold text-slate-900 dark:text-white mb-3">Sambutan Kepala Sekolah</h2>
 
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -166,7 +126,7 @@ function MobilePrincipal() {
                 className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 overflow-hidden shadow-sm"
             >
                 {/* Image */}
-                <div className="relative aspect-[16/9] bg-slate-100 dark:bg-slate-700">
+                <div className="relative aspect-[2/1] bg-slate-100 dark:bg-slate-700">
                     <Image
                         src={settings.principal_photo || '/principal.png'}
                         alt={settings.principal_name}
@@ -176,7 +136,7 @@ function MobilePrincipal() {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent" />
                     <div className="absolute bottom-4 left-4 right-4">
-                        <h3 className="font-display text-xl font-semibold text-white">
+                        <h3 className="font-display text-lg font-semibold text-white">
                             {settings.principal_name}
                         </h3>
                         <p className="text-white/80 text-sm">
@@ -186,9 +146,9 @@ function MobilePrincipal() {
                 </div>
 
                 {/* Quote */}
-                <div className="p-5">
-                    <p className="font-display text-lg italic text-slate-600 dark:text-slate-300 leading-relaxed">
-                        "{settings.principal_message}"
+                <div className="p-4">
+                    <p className="font-display text-base italic text-slate-600 dark:text-slate-300 leading-relaxed">
+                        &ldquo;{settings.principal_message}&rdquo;
                     </p>
                 </div>
             </motion.div>
@@ -199,9 +159,9 @@ function MobilePrincipal() {
 // News Section - List Style
 function MobileNews({ posts }: { posts: Post[] }) {
     return (
-        <div className="px-4 mb-8">
-            <div className="flex items-center justify-between mb-4">
-                <h2 className="font-display text-xl font-semibold text-slate-900 dark:text-white">Berita Terkini</h2>
+        <div className="px-4 mb-6">
+            <div className="flex items-center justify-between mb-3">
+                <h2 className="font-display text-lg font-semibold text-slate-900 dark:text-white">Berita Terkini</h2>
                 <Link href="/informasi" className="text-sm font-medium text-blue-600 dark:text-blue-400 flex items-center gap-1">
                     Semua <ChevronRight className="w-4 h-4" />
                 </Link>
@@ -258,68 +218,59 @@ function MobileNews({ posts }: { posts: Post[] }) {
     )
 }
 
-// Achievements - Horizontal Scroll
+// Achievements - Horizontal Scroll with Images
 function MobileAchievements({ achievements }: { achievements?: Achievement[] }) {
     const defaultAchievements = [
-        { title: 'Medali Emas OSN Fisika', category: 'Akademik', level: 'national' },
-        { title: 'Juara 1 DBL Basketball', category: 'Olahraga', level: 'regional' },
-        { title: 'Best Delegation MUN', category: 'Internasional', level: 'international' },
-        { title: 'Juara 1 FLS2N Tari', category: 'Seni', level: 'regional' },
+        { title: 'Medali Emas OSN Fisika', image_url: '/achievements/osn-fisika.jpg' },
+        { title: 'Juara 1 DBL Basketball', image_url: '/achievements/popda.jpg' },
+        { title: 'Best Delegation MUN', image_url: '/achievements/mun.jpg' },
+        { title: 'Juara 1 FLS2N Tari', image_url: '/achievements/choir.jpg' },
     ]
 
     const displayAchievements = achievements && achievements.length > 0
         ? achievements.slice(0, 6)
         : defaultAchievements.map((item, index) => ({
             id: index + 1,
-            uuid: `default-${index}`,
-            slug: `default-${index}`,
             title: item.title,
-            category: item.category,
-            level: item.level as 'school' | 'regional' | 'national' | 'international',
-            description: '',
-            image_url: undefined,
-            year: new Date().getFullYear(),
-            published_at: new Date().toISOString(),
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-            is_featured: false,
-            is_active: true,
-            order: index,
-            color: '#3B82F6',
-            glow_color: '#DBEAFE',
+            image_url: item.image_url,
         }))
 
     return (
-        <div className="mb-8">
-            <div className="px-4 flex items-center justify-between mb-4">
-                <h2 className="font-display text-xl font-semibold text-slate-900 dark:text-white">Prestasi</h2>
-                <Link href="/prestasi" className="text-sm font-medium text-blue-600 dark:text-blue-400 flex items-center gap-1">
+        <div className="mb-6">
+            <div className="px-4 flex items-center justify-between mb-3">
+                <h2 className="font-display text-lg font-semibold text-slate-900 dark:text-white">Prestasi</h2>
+                <Link href="/prestasi" className="text-sm font-medium text-amber-600 dark:text-amber-400 flex items-center gap-1">
                     Semua <ChevronRight className="w-4 h-4" />
                 </Link>
             </div>
 
-            <div className="flex gap-4 overflow-x-auto px-4 pb-4 scrollbar-hide">
-                {displayAchievements.map((achievement: Achievement, index: number) => (
+            <div className="flex gap-3 overflow-x-auto px-4 pb-3 scrollbar-hide">
+                {displayAchievements.map((achievement, index: number) => (
                     <motion.div
                         key={index}
                         initial={{ opacity: 0, scale: 0.95 }}
                         whileInView={{ opacity: 1, scale: 1 }}
                         viewport={{ once: true }}
-                        transition={{ delay: 0.1 * index }}
-                        className="flex-shrink-0 w-64"
+                        transition={{ delay: 0.05 * index }}
+                        className="flex-shrink-0 w-44"
                     >
-                        <div className="p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700">
-                            <div className="flex items-center gap-3 mb-3">
-                                <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-900/30 flex items-center justify-center">
-                                    <Award className="w-5 h-5 text-amber-600 dark:text-amber-400" />
-                                </div>
-                                <Badge variant="secondary" className="text-xs">
-                                    {achievement.level || achievement.category}
-                                </Badge>
+                        <div className="relative aspect-[4/3] rounded-xl overflow-hidden shadow-md group">
+                            <Image
+                                src={achievement.image_url || '/achievements/default.jpg'}
+                                alt={achievement.title}
+                                fill
+                                className="object-cover transition-transform duration-500 group-active:scale-110"
+                                sizes="176px"
+                            />
+                            {/* Overlay */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+
+                            {/* Caption */}
+                            <div className="absolute bottom-0 left-0 right-0 p-3">
+                                <h3 className="font-semibold text-white text-sm leading-snug line-clamp-2">
+                                    {achievement.title}
+                                </h3>
                             </div>
-                            <h3 className="font-semibold text-sm text-slate-900 dark:text-white line-clamp-2">
-                                {achievement.title}
-                            </h3>
                         </div>
                     </motion.div>
                 ))}
@@ -328,71 +279,65 @@ function MobileAchievements({ achievements }: { achievements?: Achievement[] }) 
     )
 }
 
-// Alumni - Testimonial Cards
+
+// Alumni - Cards with Photos
 function MobileAlumni({ alumni }: { alumni?: Alumni[] }) {
     const defaultAlumni = [
-        { name: 'Dr. I Wayan Sudana', profession: 'Dokter Spesialis', year: '2008', quote: 'SMANSA mengajarkan saya untuk selalu berpikir kritis.' },
-        { name: 'Ni Made Dewi', profession: 'CEO Startup', year: '2012', quote: 'Fondasi yang kuat untuk meraih mimpi besar.' },
+        { name: 'Dr. I Wayan Sudana', occupation: 'Dokter Spesialis', year: 1985, photo_url: '/alumni/alumni-1.jpg' },
+        { name: 'Ni Made Dewi', occupation: 'CEO Startup', year: 1992, photo_url: '/alumni/alumni-2.jpg' },
+        { name: 'I Gede Putra', occupation: 'Diplomat', year: 2005, photo_url: '/alumni/alumni-3.jpg' },
+        { name: 'Kadek Ayu', occupation: 'Data Scientist', year: 2010, photo_url: '/alumni/alumni-4.jpg' },
     ]
 
-    const displayAlumni = alumni && alumni.length > 0 
-        ? alumni.slice(0, 4) 
+    const displayAlumni = alumni && alumni.length > 0
+        ? alumni.slice(0, 4)
         : defaultAlumni.map((item, index) => ({
             id: index + 1,
-            uuid: `default-${index}`,
             name: item.name,
-            profession: item.profession,
-            graduation_year: parseInt(item.year),
-            quote: item.quote,
-            is_public: true,
-            is_verified: false,
-            is_featured: false,
-            order: index,
-            color: '#3B82F6',
-            glow_color: '#DBEAFE',
-            image_url: undefined,
-            company: '',
-            linkedin_url: '',
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
+            current_occupation: item.occupation,
+            graduation_year: item.year,
+            photo_url: item.photo_url,
         }))
 
     return (
-        <div className="mb-8">
-            <div className="px-4 flex items-center justify-between mb-4">
-                <h2 className="font-display text-xl font-semibold text-slate-900 dark:text-white">Alumni</h2>
-                <Link href="/alumni" className="text-sm font-medium text-blue-600 dark:text-blue-400 flex items-center gap-1">
+        <div className="mb-6">
+            <div className="px-4 flex items-center justify-between mb-3">
+                <h2 className="font-display text-lg font-semibold text-slate-900 dark:text-white">Alumni</h2>
+                <Link href="/alumni" className="text-sm font-medium text-purple-600 dark:text-purple-400 flex items-center gap-1">
                     Semua <ChevronRight className="w-4 h-4" />
                 </Link>
             </div>
 
-            <div className="flex gap-4 overflow-x-auto px-4 pb-4 scrollbar-hide">
-                {displayAlumni.map((person: Alumni, index: number) => (
+            <div className="flex gap-3 overflow-x-auto px-4 pb-3 scrollbar-hide">
+                {displayAlumni.map((person, index: number) => (
                     <motion.div
                         key={index}
                         initial={{ opacity: 0, x: 20 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
-                        transition={{ delay: 0.1 * index }}
-                        className="flex-shrink-0 w-72"
+                        transition={{ delay: 0.05 * index }}
+                        className="flex-shrink-0 w-36"
                     >
-                        <div className="p-5 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700">
-                            <div className="flex items-center gap-3 mb-4">
-                                <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-                                    <GraduationCap className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                                </div>
-                                <div>
-                                    <h4 className="font-semibold text-sm text-slate-900 dark:text-white">
-                                        {person.name}
-                                    </h4>
-                                    <p className="text-xs text-slate-500 dark:text-slate-400">
-                                        {person.current_occupation} • Alumni {person.graduation_year}
-                                    </p>
-                                </div>
+                        <div className="relative aspect-[3/4] rounded-xl overflow-hidden shadow-md group">
+                            <Image
+                                src={person.photo_url || '/alumni/default.jpg'}
+                                alt={person.name}
+                                fill
+                                className="object-cover object-top transition-transform duration-500 group-active:scale-110"
+                                sizes="144px"
+                            />
+                            {/* Overlay */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+
+                            {/* Caption */}
+                            <div className="absolute bottom-0 left-0 right-0 p-3">
+                                <h3 className="font-semibold text-white text-sm leading-snug line-clamp-1">
+                                    {person.name}
+                                </h3>
+                                <p className="text-xs text-gray-300 mt-0.5">
+                                    Alumni {person.graduation_year}
+                                </p>
                             </div>
-                            <p className="font-display text-sm italic text-slate-600 dark:text-slate-300">
-                                "{person.quote}"
-                            </p>
                         </div>
                     </motion.div>
                 ))}
@@ -401,60 +346,30 @@ function MobileAlumni({ alumni }: { alumni?: Alumni[] }) {
     )
 }
 
-// CTA Section
-function MobileCTA() {
-    const { settings } = useSiteConfig()
-
-    return (
-        <div className="px-4 mb-8">
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 dark:from-slate-800 dark:to-slate-900 rounded-2xl text-center relative overflow-hidden"
-            >
-                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl" />
-
-                <div className="relative">
-                    <h3 className="font-display text-2xl font-semibold text-white mb-2">
-                        Bergabung Bersama Kami
-                    </h3>
-                    <p className="text-slate-300 text-sm mb-6">
-                        Jadilah bagian dari keluarga besar {settings.site_short_name}
-                    </p>
-                    <Link
-                        href="/ppdb"
-                        className="inline-flex items-center gap-2 px-6 py-3 bg-white text-slate-900 rounded-full font-semibold text-sm hover:bg-slate-100 transition-colors"
-                    >
-                        Info Pendaftaran
-                        <ArrowRight className="w-4 h-4" />
-                    </Link>
-                </div>
-            </motion.div>
-        </div>
-    )
-}
-
 interface MobileViewProps {
-    posts: any[]
-    announcements: any[]
-    slides?: any[]
-    achievements?: any[]
-    alumni?: any[]
-    galleries?: any[]
+    posts: Post[]
+    announcements?: HomeAnnouncement[]
+    slides?: Slider[]
+    achievements?: Achievement[]
+    alumni?: Alumni[]
+    galleries?: Gallery[]
 }
 
 export function MobileView({ posts, achievements, alumni }: MobileViewProps) {
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
             <MobileHero />
-            <MobileStats />
             <MobileQuickAccess />
+            <div className="section-divider" />
             <MobilePrincipal />
+            <div className="section-divider" />
             <MobileNews posts={posts} />
-            <MobileAchievements achievements={achievements} />
-            <MobileAlumni alumni={alumni} />
-            <MobileCTA />
+            <div className="section-divider" />
+
+            {/* Using unified spotlight carousel components */}
+            <InfiniteMarqueeAchievements achievements={achievements} />
+            <div className="section-divider" />
+            <InfiniteMarqueeAlumni alumni={alumni} />
 
             {/* Bottom Spacing */}
             <div className="h-20" />

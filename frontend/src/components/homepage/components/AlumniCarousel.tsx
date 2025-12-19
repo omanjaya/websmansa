@@ -402,7 +402,7 @@ export function AlumniCarousel({ alumni: propAlumni }: AlumniCarouselProps) {
 
                                             <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-700/50">
                                                 <p className="text-base text-gray-600 dark:text-gray-300 italic leading-relaxed line-clamp-4">
-                                                    "{person.quote}"
+                                                    &ldquo;{person.quote}&rdquo;
                                                 </p>
                                             </div>
                                         </div>

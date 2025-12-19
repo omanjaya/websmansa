@@ -213,6 +213,8 @@ export interface Announcement {
 export interface Extra {
   id: number
   type: string
+  slug?: string
+  name?: string
   attributes: {
     name: string
     slug: string
@@ -228,7 +230,7 @@ export interface Extra {
     member_count: number
     is_featured: boolean
     is_active: boolean
-    image?: string
+    image?: string | null
     created_at: string
     updated_at: string
   }
@@ -237,6 +239,8 @@ export interface Extra {
 export interface Facility {
   id: number
   type: string
+  slug?: string
+  name?: string
   attributes: {
     name: string
     slug: string
@@ -1195,17 +1199,8 @@ export async function reorderSliders(sliders: Array<{ id: number; order: number 
 // ============ Public Settings API ============
 
 import { SiteSettings, SettingItem } from '@/types/settings'
-import { 
-  PaginatedResponse, 
-  SettingValue, 
-  SettingResponse, 
-  SettingsListResponse, 
-  UploadResponse, 
-  SuccessResponse, 
-  CreatedResponse, 
-  UpdatedResponse, 
-  DeletedResponse, 
-  ToggleResponse 
+import {
+  UpdatedResponse
 } from '@/types/api'
 
 /**
@@ -1225,8 +1220,8 @@ export async function getSettingsByGroup(group: string): Promise<{ data: Partial
 /**
  * Get a single setting by key (no auth required)
  */
-export async function getSettingByKey(key: string): Promise<{ data: { key: string; value: any; type: string } }> {
-  return fetchApi<{ data: { key: string; value: any; type: string } }>(`/settings/${key}`)
+export async function getSettingByKey(key: string): Promise<{ data: { key: string; value: string | boolean | number | null; type: string } }> {
+  return fetchApi<{ data: { key: string; value: string | boolean | number | null; type: string } }>(`/settings/${key}`)
 }
 
 // ============ Admin Settings API ============
@@ -1257,9 +1252,9 @@ export async function getSettingGroups(): Promise<{ data: string[] }> {
  * Batch update multiple settings (admin only)
  */
 export async function updateSettings(
-  settings: Array<{ key: string; value: any; type?: string; group?: string }>
-): Promise<{ message: string; data: any }> {
-  return fetchAdminApi<{ message: string; data: any }>('/settings', {
+  settings: Array<{ key: string; value: string | boolean | number | null; type?: string; group?: string }>
+): Promise<{ message: string; data: Record<string, unknown> }> {
+  return fetchAdminApi<{ message: string; data: Record<string, unknown> }>('/settings', {
     method: 'PUT',
     body: JSON.stringify({ settings }),
   })

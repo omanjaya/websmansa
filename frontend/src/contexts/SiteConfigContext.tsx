@@ -52,6 +52,7 @@ export function SiteConfigProvider({
         if (!initialSettings) {
             fetchSettings()
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const refetch = async () => {

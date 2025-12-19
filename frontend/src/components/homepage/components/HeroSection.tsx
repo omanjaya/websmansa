@@ -54,7 +54,7 @@ export function HeroSection({ slides }: HeroSectionProps) {
     )
 
     return (
-        <section className="relative w-full h-[100dvh] -mt-16 lg:-mt-20">
+        <section className="relative w-full h-[100dvh]">
             {/* Background Slider - full viewport behind header */}
             <div className="absolute inset-0 z-0 overflow-hidden" ref={emblaRef}>
                 <div className="flex h-full">
@@ -143,11 +143,10 @@ export function HeroSection({ slides }: HeroSectionProps) {
                         <button
                             key={index}
                             onClick={() => scrollTo(index)}
-                            className={`transition-all duration-300 rounded-full ${
-                                index === selectedIndex
+                            className={`transition-all duration-300 rounded-full ${index === selectedIndex
                                     ? 'w-10 h-3 bg-white'
                                     : 'w-3 h-3 bg-white/50 hover:bg-white/70'
-                            }`}
+                                }`}
                             aria-label={`Go to slide ${index + 1}`}
                         />
                     ))}

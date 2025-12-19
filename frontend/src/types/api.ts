@@ -136,12 +136,14 @@ export function isApiError(response: unknown): response is ApiError {
   )
 }
 
-export function isPaginatedResponse<T>(response: any): response is PaginatedResponse<T> {
+export function isPaginatedResponse<T>(response: unknown): response is PaginatedResponse<T> {
   return (
+    typeof response === 'object' &&
+    response !== null &&
     'meta' in response &&
-    typeof response.meta === 'object' &&
-    response.meta !== null &&
-    'total' in response.meta &&
-    Array.isArray(response.data)
+    typeof (response as Record<string, unknown>).meta === 'object' &&
+    (response as Record<string, unknown>).meta !== null &&
+    'total' in ((response as Record<string, unknown>).meta as Record<string, unknown>) &&
+    Array.isArray((response as Record<string, unknown>).data)
   )
 }

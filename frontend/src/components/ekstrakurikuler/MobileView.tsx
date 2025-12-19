@@ -4,6 +4,13 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { MobilePageHeader } from '@/components/mobile-shared/MobilePageHeader'
 import { Smile, Users, Clock } from 'lucide-react'
+import { Extra } from '@/lib/api'
+
+interface MobileViewProps {
+    extras: Extra[]
+    categories: string[]
+    currentCategory?: string
+}
 
 const categoryLabels: Record<string, string> = {
     olahraga: 'Olahraga',
@@ -23,9 +30,9 @@ const categoryColors: Record<string, { bg: string; text: string; gradient: strin
     teknologi: { bg: 'bg-cyan-100 dark:bg-cyan-900/30', text: 'text-cyan-600 dark:text-cyan-400', gradient: 'from-cyan-500 to-teal-500' },
 }
 
-export function MobileView({ extras, categories, currentCategory }: any) {
+export function MobileView({ extras, categories: _categories, currentCategory }: MobileViewProps) {
     const filteredExtras = currentCategory
-        ? extras.filter((e: any) => e.attributes?.category === currentCategory)
+        ? extras.filter((e) => e.attributes?.category === currentCategory)
         : extras
 
     return (
@@ -71,7 +78,7 @@ export function MobileView({ extras, categories, currentCategory }: any) {
             {filteredExtras.length > 0 ? (
                 <div className="px-4 mb-6">
                     <div className="grid grid-cols-2 gap-3">
-                        {filteredExtras.map((item: any) => {
+                        {filteredExtras.map((item) => {
                             const color = categoryColors[item.attributes?.category] || categoryColors.olahraga
                             return (
                                 <Link
@@ -84,7 +91,7 @@ export function MobileView({ extras, categories, currentCategory }: any) {
                                         {item.attributes?.image ? (
                                             <Image
                                                 src={item.attributes.image}
-                                                alt={item.attributes?.name || item.name}
+                                                alt={item.attributes?.name || item.name || 'Ekstrakurikuler'}
                                                 fill
                                                 className="object-cover"
                                             />

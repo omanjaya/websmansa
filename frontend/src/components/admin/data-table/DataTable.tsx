@@ -11,6 +11,8 @@ import {
     ColumnFiltersState,
     RowSelectionState,
     useReactTable,
+    Table as ReactTable,
+    Row,
 } from '@tanstack/react-table'
 import { useState, useMemo } from 'react'
 import { Input } from '@/components/ui/input'
@@ -34,12 +36,6 @@ import {
     Download,
 } from 'lucide-react'
 import { Checkbox } from '@/components/ui/checkbox'
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
@@ -49,7 +45,6 @@ interface DataTableProps<TData, TValue> {
     enableRowSelection?: boolean
     onBulkDelete?: (selectedRows: TData[]) => Promise<void>
     onExport?: () => void
-    exportFormats?: Array<'csv' | 'json'>
 }
 
 export function DataTable<TData, TValue>({
@@ -60,7 +55,6 @@ export function DataTable<TData, TValue>({
     enableRowSelection = false,
     onBulkDelete,
     onExport,
-    exportFormats = ['csv', 'json'],
 }: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -72,7 +66,7 @@ export function DataTable<TData, TValue>({
             ? [
                 {
                     id: 'select',
-                    header: ({ table }: any) => (
+                    header: ({ table }: { table: ReactTable<TData> }) => (
                         <Checkbox
                             checked={table.getIsAllPageRowsSelected()}
                             onCheckedChange={(value) =>
@@ -81,7 +75,7 @@ export function DataTable<TData, TValue>({
                             aria-label="Select all"
                         />
                     ),
-                    cell: ({ row }: any) => (
+                    cell: ({ row }: { row: Row<TData> }) => (
                         <Checkbox
                             checked={row.getIsSelected()}
                             onCheckedChange={(value) => row.toggleSelected(!!value)}

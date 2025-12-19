@@ -55,8 +55,8 @@ export function MobileView() {
             await adminApi.post('/announcements', data)
             router.push('/admin/announcements')
             router.refresh()
-        } catch (err: any) {
-            setError(err.message || 'Terjadi kesalahan saat menyimpan data')
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Terjadi kesalahan saat menyimpan data')
         } finally {
             setIsSubmitting(false)
         }
@@ -114,7 +114,7 @@ export function MobileView() {
 
                 <MobileFormField label="Tipe">
                     <Select
-                        onValueChange={(value: any) => setValue('type', value)}
+                        onValueChange={(value) => setValue('type', value as 'info' | 'event' | 'warning' | 'success')}
                         defaultValue={watch('type')}
                     >
                         <SelectTrigger className="min-h-12">
@@ -131,7 +131,7 @@ export function MobileView() {
 
                 <MobileFormField label="Prioritas">
                     <Select
-                        onValueChange={(value: any) => setValue('priority', value)}
+                        onValueChange={(value) => setValue('priority', value as 'low' | 'medium' | 'high' | 'urgent')}
                         defaultValue={watch('priority')}
                     >
                         <SelectTrigger className="min-h-12">

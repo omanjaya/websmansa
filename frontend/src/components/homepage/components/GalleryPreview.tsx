@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useCallback, useEffect } from 'react'
-import Image from 'next/image'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight, X, Camera, Images, ZoomIn } from 'lucide-react'
@@ -61,6 +60,13 @@ export function GalleryPreview({ galleries: propGalleries }: GalleryPreviewProps
         (currentPage + 1) * ITEMS_PER_PAGE
     )
 
+    const changePage = useCallback((newPage: number) => {
+        if (isTransitioning) return
+        setIsTransitioning(true)
+        setCurrentPage(newPage)
+        setTimeout(() => setIsTransitioning(false), 500)
+    }, [isTransitioning])
+
     // Auto-advance page
     useEffect(() => {
         if (selectedImage !== null || totalPages <= 1) return
@@ -70,14 +76,7 @@ export function GalleryPreview({ galleries: propGalleries }: GalleryPreviewProps
         }, 6000)
 
         return () => clearInterval(timer)
-    }, [selectedImage, totalPages, currentPage])
-
-    const changePage = (newPage: number) => {
-        if (isTransitioning) return
-        setIsTransitioning(true)
-        setCurrentPage(newPage)
-        setTimeout(() => setIsTransitioning(false), 500)
-    }
+    }, [selectedImage, totalPages, currentPage, changePage])
 
     const goToPage = (page: number) => {
         changePage(page)

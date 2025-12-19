@@ -38,9 +38,9 @@ export default function CreatePengumumanPage() {
 
             toast.success('Pengumuman berhasil dibuat!')
             router.push('/admin/pengumuman')
-        } catch (error: any) {
+        } catch (error) {
             console.error('Error creating pengumuman:', error)
-            toast.error(error.message || 'Gagal membuat pengumuman')
+            toast.error(error instanceof Error ? error.message : 'Gagal membuat pengumuman')
         } finally {
             setLoading(false)
         }

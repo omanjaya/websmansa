@@ -107,10 +107,10 @@ function MobileStaffCard({ item, index }: { item: Staff; index: number }) {
     )
 }
 
-export function MobileView({ staff, categories, currentCategory }: { 
-    staff: Staff[] 
-    categories: string[] 
-    currentCategory?: string 
+export function MobileView({ staff, categories: _categories, currentCategory }: {
+    staff: Staff[]
+    categories: string[]
+    currentCategory?: string
 }) {
     const filteredStaff = currentCategory
         ? staff.filter((s: Staff) => s.attributes?.type === currentCategory || s.attributes?.department === currentCategory)

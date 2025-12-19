@@ -4,7 +4,6 @@ import { memo, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Badge } from '@/components/ui/badge'
 import { ChevronRight, Calendar, User, Eye, Heart, Clock } from 'lucide-react'
 
 export interface MobileCardProps {
@@ -29,7 +28,7 @@ export interface MobileCardProps {
 }
 
 export const MobileCard = memo(function MobileCard({
-    variant,
+    variant: _variant,
     title,
     subtitle,
     description,

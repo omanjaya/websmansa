@@ -3,7 +3,7 @@
 import { AdminCRUDTable } from '@/components/admin/shared/AdminCRUDTable'
 import { useGalleries, useDeleteGallery } from '@/hooks/admin/useGalleries'
 import { galleryColumns } from './columns'
-import { Image, Calendar, MapPin, Star } from 'lucide-react'
+import { Image as ImageIcon, Calendar, MapPin, Star } from 'lucide-react'
 
 export function GalleriesAdminPage() {
     const { data: galleries, isLoading, error, refetch } = useGalleries({ paginate: false })
@@ -44,7 +44,7 @@ export function GalleriesAdminPage() {
                 {
                     label: 'Total Galeri',
                     value: (data) => data.length,
-                    icon: <Image className="w-6 h-6" />,
+                    icon: <ImageIcon className="w-6 h-6" aria-hidden="true" />,
                     color: 'bg-purple-100 text-purple-600 dark:bg-purple-900/20 dark:text-purple-400',
                 },
                 {

@@ -52,7 +52,7 @@ function useHasAuthToken() {
  * Generic admin API client
  */
 const adminApi = {
-  async get(endpoint: string, params?: Record<string, any>) {
+  async get(endpoint: string, params?: Record<string, string | number | boolean | undefined>) {
     const url = new URL(`${API_BASE_URL}${endpoint}`)
     if (params) {
       Object.entries(params).forEach(([key, value]) => {
@@ -74,7 +74,7 @@ const adminApi = {
     return response.json()
   },
 
-  async post(endpoint: string, data: any) {
+  async post(endpoint: string, data: Record<string, unknown>) {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: 'POST',
       headers: getAuthHeaders(),
@@ -89,7 +89,7 @@ const adminApi = {
     return response.json()
   },
 
-  async put(endpoint: string, data: any) {
+  async put(endpoint: string, data: Record<string, unknown>) {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: 'PUT',
       headers: getAuthHeaders(),
@@ -128,7 +128,7 @@ const adminApi = {
  */
 export function useAdminResource<T>(
   resource: string,
-  params?: Record<string, any>
+  params?: Record<string, string | number | boolean | undefined>
 ) {
   const hasToken = useHasAuthToken()
 

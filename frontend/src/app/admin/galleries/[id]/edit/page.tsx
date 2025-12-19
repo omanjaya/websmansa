@@ -43,8 +43,7 @@ export default function EditGalleryPage({ params }: EditGalleryPageProps) {
         setError(null)
 
         try {
-            const response = await updateGallery(params.id, data)
-            // Gallery updated: response.data
+            await updateGallery(params.id, data)
 
             // Show success message
             alert('Galeri berhasil diperbarui!')

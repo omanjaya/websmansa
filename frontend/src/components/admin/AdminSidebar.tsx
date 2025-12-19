@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation'
 import {
     LayoutDashboard,
     Image,
-    FileText,
     Megaphone,
     Dumbbell,
     Building2,
@@ -23,6 +22,11 @@ import {
 import { useState, useEffect } from 'react'
 import { cn } from '@/lib/utils'
 import { logout, getUser } from '@/lib/api'
+
+interface AuthUser {
+    name?: string
+    email?: string
+}
 
 const navigation = [
     { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
@@ -42,7 +46,7 @@ const navigation = [
 export default function AdminSidebar() {
     const pathname = usePathname()
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-    const [user, setUser] = useState<any>(null)
+    const [user, setUser] = useState<AuthUser | null>(null)
 
     useEffect(() => {
         setUser(getUser())

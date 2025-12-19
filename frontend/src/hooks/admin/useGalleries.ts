@@ -23,7 +23,7 @@ export interface Gallery {
     updated_at: string
   }
   relationships?: {
-    media?: any[]
+    media?: Array<{ id: number; url: string; caption?: string }>
   }
 }
 

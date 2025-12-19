@@ -31,7 +31,7 @@ export interface Staff {
     updated_at: string
   }
   relationships?: {
-    user?: any
+    user?: { id: number; name: string; email: string }
   }
 }
 

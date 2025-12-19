@@ -56,8 +56,8 @@ export function MobileView() {
             await adminApi.post('/staff', data)
             router.push('/admin/staff')
             router.refresh()
-        } catch (err: any) {
-            setError(err.message || 'Terjadi kesalahan saat menyimpan data')
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Terjadi kesalahan saat menyimpan data')
         } finally {
             setIsSubmitting(false)
         }

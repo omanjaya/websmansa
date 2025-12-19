@@ -4,12 +4,12 @@ import { Gallery } from '@/lib/api'
 import GalleryGrid from '@/components/gallery/GalleryGrid'
 import GalleryFilters from '@/components/gallery/GalleryFilters'
 import { Suspense } from 'react'
-import { Image } from 'lucide-react'
+import { Image as ImageIcon, LucideIcon } from 'lucide-react'
 
 interface DesktopViewProps {
     galleries: Gallery[]
     stats: Array<{
-        icon: any
+        icon: LucideIcon
         label: string
         value: number
         color: string
@@ -88,7 +88,7 @@ export function DesktopView({ galleries, stats, meta, search }: DesktopViewProps
                         ) : (
                             <div className="text-center py-20 bg-white dark:bg-slate-900 rounded-3xl border border-gray-100 dark:border-slate-800">
                                 <div className="w-20 h-20 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
-                                    <Image className="w-10 h-10 text-primary-600 dark:text-primary-400" />
+                                    <ImageIcon className="w-10 h-10 text-primary-600 dark:text-primary-400" aria-hidden="true" />
                                 </div>
                                 <h3 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-2">
                                     Galeri Tidak Ditemukan

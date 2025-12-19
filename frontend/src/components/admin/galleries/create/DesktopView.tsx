@@ -52,8 +52,8 @@ export function DesktopView() {
             await adminApi.post('/galleries', data)
             router.push('/admin/galleries')
             router.refresh()
-        } catch (err: any) {
-            setError(err.message || 'Terjadi kesalahan saat menyimpan data')
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Terjadi kesalahan saat menyimpan data')
         } finally {
             setIsSubmitting(false)
         }

@@ -42,9 +42,9 @@ export function DesktopView() {
 
             toast.success('Slider berhasil dibuat!')
             router.push('/admin/sliders')
-        } catch (error: any) {
+        } catch (error) {
             console.error('Error creating slider:', error)
-            toast.error(error.message || 'Gagal membuat slider')
+            toast.error(error instanceof Error ? error.message : 'Gagal membuat slider')
         } finally {
             setLoading(false)
         }

@@ -30,8 +30,8 @@ export default function LoginPage() {
 
             // Force full page reload to ensure fresh state
             window.location.href = '/admin'
-        } catch (error: any) {
-            toast.error(error.message || 'Email atau password salah')
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : 'Email atau password salah')
             setLoading(false)
         }
     }

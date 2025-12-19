@@ -4,6 +4,13 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { MobilePageHeader } from '@/components/mobile-shared/MobilePageHeader'
 import { Building, MapPin, Users } from 'lucide-react'
+import { Facility } from '@/lib/api'
+
+interface MobileViewProps {
+    facilities: Facility[]
+    categories: string[]
+    currentCategory?: string
+}
 
 const categoryLabels: Record<string, string> = {
     pembelajaran: 'Pembelajaran',
@@ -13,9 +20,9 @@ const categoryLabels: Record<string, string> = {
     ibadah: 'Ibadah',
 }
 
-export function MobileView({ facilities, categories, currentCategory }: any) {
+export function MobileView({ facilities, categories: _categories, currentCategory }: MobileViewProps) {
     const filteredFacilities = currentCategory
-        ? facilities.filter((f: any) => f.attributes?.category === currentCategory)
+        ? facilities.filter((f) => f.attributes?.category === currentCategory)
         : facilities
 
     return (
@@ -61,7 +68,7 @@ export function MobileView({ facilities, categories, currentCategory }: any) {
             {filteredFacilities.length > 0 ? (
                 <div className="px-4 mb-6">
                     <div className="grid grid-cols-2 gap-3">
-                        {filteredFacilities.map((item: any) => (
+                        {filteredFacilities.map((item) => (
                             <Link
                                 key={item.id}
                                 href={`/fasilitas/${item.attributes?.slug || item.slug}`}
@@ -72,7 +79,7 @@ export function MobileView({ facilities, categories, currentCategory }: any) {
                                     {item.attributes?.images?.[0] ? (
                                         <Image
                                             src={item.attributes.images[0]}
-                                            alt={item.attributes?.name || item.name}
+                                            alt={item.attributes?.name || item.name || 'Fasilitas'}
                                             fill
                                             className="object-cover"
                                         />

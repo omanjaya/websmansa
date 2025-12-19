@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Search, Plus, Download, Trash2, Eye, Edit, RefreshCw } from 'lucide-react'
+import { Search, Plus, Trash2, Eye, Edit, RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui'
 
 export interface Column<T> {
@@ -82,9 +82,14 @@ export function AdminCRUDTable<T>({
 
     // Filter data based on search
     const filteredData = searchQuery && searchKey
-        ? data.filter((item: any) => {
-            const value = searchKey.split('.').reduce((obj, key) => obj?.[key], item)
-            return value?.toLowerCase().includes(searchQuery.toLowerCase())
+        ? data.filter((item) => {
+            const value = searchKey.split('.').reduce<unknown>((obj, key) => {
+                if (obj && typeof obj === 'object' && key in obj) {
+                    return (obj as Record<string, unknown>)[key]
+                }
+                return undefined
+            }, item as unknown)
+            return typeof value === 'string' && value.toLowerCase().includes(searchQuery.toLowerCase())
         })
         : data
 
@@ -124,7 +129,7 @@ export function AdminCRUDTable<T>({
         try {
             await onBulkDelete(Array.from(selectedIds))
             setSelectedIds(new Set())
-        } catch (err) {
+        } catch {
             alert('Gagal menghapus data')
         } finally {
             setIsDeleting(false)
@@ -140,7 +145,7 @@ export function AdminCRUDTable<T>({
         setIsDeleting(true)
         try {
             await onDelete(id)
-        } catch (err) {
+        } catch {
             alert('Gagal menghapus data')
         } finally {
             setIsDeleting(false)
@@ -304,7 +309,7 @@ export function AdminCRUDTable<T>({
                                                 <td key={column.key} className="px-4 py-3 text-sm text-gray-900 dark:text-gray-300">
                                                     {column.render
                                                         ? column.render(item)
-                                                        : String((item as any)[column.key] || '-')}
+                                                        : String((item as Record<string, unknown>)[column.key] ?? '-')}
                                                 </td>
                                             ))}
                                             {(detailUrl || editUrl || onDelete) && (

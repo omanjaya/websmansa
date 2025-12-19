@@ -38,9 +38,9 @@ export default function CreatePrestasiPage() {
 
             toast.success('Prestasi berhasil dibuat!')
             router.push('/admin/prestasi')
-        } catch (error: any) {
+        } catch (error) {
             console.error('Error creating prestasi:', error)
-            toast.error(error.message || 'Gagal membuat prestasi')
+            toast.error(error instanceof Error ? error.message : 'Gagal membuat prestasi')
         } finally {
             setLoading(false)
         }

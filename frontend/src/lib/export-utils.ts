@@ -2,7 +2,7 @@
  * Export utility functions for data export
  */
 
-export function exportToCSV<T extends Record<string, any>>(
+export function exportToCSV<T extends Record<string, unknown>>(
     data: T[],
     filename: string,
     columns: { key: keyof T; label: string }[]
@@ -19,12 +19,12 @@ export function exportToCSV<T extends Record<string, any>>(
     const rows = data.map((row) => {
         return columns
             .map((col) => {
-                let value: any = row[col.key]
+                let value: unknown = row[col.key]
 
                 // Handle nested object values (e.g., attributes.title)
                 if (col.key.toString().includes('.')) {
                     const keys = col.key.toString().split('.')
-                    value = keys.reduce((obj, key) => obj?.[key], row as any)
+                    value = keys.reduce((obj: Record<string, unknown>, key) => (obj as Record<string, unknown>)?.[key] as Record<string, unknown>, row as Record<string, unknown>)
                 }
 
                 // Handle different data types

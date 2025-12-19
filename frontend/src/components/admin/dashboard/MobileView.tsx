@@ -5,7 +5,6 @@ import {
     FileText,
     Megaphone,
     Users,
-    TrendingUp,
     Eye,
     Calendar,
     Activity,

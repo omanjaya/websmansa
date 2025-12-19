@@ -3,12 +3,12 @@
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Users, GraduationCap, Award, Building, ArrowRight, MapPin, Phone, Mail } from 'lucide-react'
-import { SectionHeader, StatsBar, NewsCard } from '@/components/shared'
+import { ArrowRight, MapPin, Phone, Mail } from 'lucide-react'
+import { SectionHeader, NewsCard } from '@/components/shared'
 import { Post, Slider, Achievement, Alumni, Gallery } from '@/lib/api'
 import { GalleryPreview } from './components/GalleryPreview'
-import { AchievementsCarousel } from './components/AchievementsCarousel'
-import { AlumniCarousel } from './components/AlumniCarousel'
+import { InfiniteMarqueeAchievements } from './components/InfiniteMarqueeAchievements'
+import { InfiniteMarqueeAlumni } from './components/InfiniteMarqueeAlumni'
 import { HeroSection } from './components/HeroSection'
 import { useSiteConfig } from '@/contexts/SiteConfigContext'
 
@@ -87,13 +87,6 @@ const slideInRight = {
     }
 }
 
-const typeLabels: Record<string, string> = {
-    general: 'Umum',
-    academic: 'Akademik',
-    event: 'Kegiatan',
-    urgent: 'Penting',
-}
-
 interface DesktopViewProps {
     posts: Post[]
     announcements: Array<{
@@ -115,27 +108,13 @@ interface DesktopViewProps {
 export function DesktopView({ posts, announcements, slides, achievements, alumni, galleries }: DesktopViewProps) {
     const { settings } = useSiteConfig()
 
-    const stats = [
-        { value: parseInt(settings.total_students) || 1200, label: 'Siswa', icon: Users },
-        { value: parseInt(settings.total_teachers) || 120, label: 'Guru', icon: GraduationCap },
-        { value: 45, label: 'Ekstrakurikuler', icon: Award },
-        { value: parseInt(settings.total_alumni) || 50000, label: 'Alumni', icon: Building },
-    ]
-
     return (
         <main id="main-content" className="min-h-screen bg-white dark:bg-slate-950 overflow-hidden">
             {/* Hero Section */}
             <HeroSection slides={slides} />
 
-            {/* Floating Stats Bar */}
-            <section className="relative z-20 -mt-20">
-                <div className="container mx-auto px-4">
-                    <StatsBar stats={stats} variant="floating" />
-                </div>
-            </section>
-
             {/* Principal Welcome Section - Centered & Symmetrical */}
-            <section className="py-24 md:py-32 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-950 relative overflow-hidden">
+            <section className="py-10 md:py-12 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-950 relative overflow-hidden">
                 {/* Subtle Pattern Background */}
                 <motion.div
                     className="absolute inset-0 pattern-dots opacity-50"
@@ -161,53 +140,43 @@ export function DesktopView({ posts, announcements, slides, achievements, alumni
                             />
                         </motion.div>
 
-                        {/* Principal Card - Centered */}
+                        {/* Principal Layout - Photo outside, Quote in card */}
                         <motion.div
                             variants={fadeInScale}
                             initial="hidden"
                             whileInView="visible"
                             viewport={{ once: true, margin: "-50px" }}
-                            className="principal-card p-8 md:p-12"
+                            className="flex flex-col md:flex-row gap-8 items-center"
                         >
-                            <div className="grid md:grid-cols-5 gap-8 md:gap-12 items-center">
-                                {/* Photo - 2 columns */}
-                                <div className="md:col-span-2">
-                                    <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl">
-                                        <Image
-                                            src={settings.principal_photo || '/principal.png'}
-                                            alt={settings.principal_name}
-                                            fill
-                                            className="object-cover object-top"
-                                            sizes="(max-width: 768px) 100vw, 40vw"
-                                        />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/30 to-transparent" />
-                                    </div>
+                            {/* Left: Photo + Caption (Outside Card) */}
+                            <div className="flex-shrink-0 w-full md:w-72 lg:w-80 text-center">
+                                {/* Photo */}
+                                <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-xl mb-4 mx-auto w-56 md:w-full">
+                                    <Image
+                                        src={settings.principal_photo || '/principal.png'}
+                                        alt={settings.principal_name}
+                                        fill
+                                        className="object-cover object-top"
+                                        sizes="(max-width: 768px) 224px, 320px"
+                                    />
                                 </div>
+                                {/* Caption */}
+                                <h4 className="font-display text-lg font-semibold text-slate-900 dark:text-white">
+                                    {settings.principal_name}
+                                </h4>
+                                <p className="text-slate-500 dark:text-slate-400 text-sm">
+                                    {settings.principal_title}
+                                </p>
+                            </div>
 
-                                {/* Content - 3 columns */}
-                                <div className="md:col-span-3 space-y-6">
-                                    <div className="elegant-quote">
-                                        {settings.principal_message}
-                                    </div>
-
-                                    <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
-                                        {settings.principal_description}
-                                    </p>
-
-                                    <div className="flex items-center gap-4 pt-4 border-t border-slate-100 dark:border-slate-700">
-                                        <div className="w-14 h-14 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-                                            <GraduationCap className="w-7 h-7 text-blue-600 dark:text-blue-400" />
-                                        </div>
-                                        <div>
-                                            <h4 className="font-display text-xl font-semibold text-slate-900 dark:text-white">
-                                                {settings.principal_name}
-                                            </h4>
-                                            <p className="text-slate-500 dark:text-slate-400 text-sm">
-                                                {settings.principal_title} {settings.site_name}
-                                            </p>
-                                        </div>
-                                    </div>
+                            {/* Right: Quote Card */}
+                            <div className="flex-1 principal-card p-6 md:p-8">
+                                <div className="elegant-quote mb-4">
+                                    {settings.principal_message}
                                 </div>
+                                <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-sm">
+                                    {settings.principal_description}
+                                </p>
                             </div>
                         </motion.div>
                     </div>
@@ -218,10 +187,10 @@ export function DesktopView({ posts, announcements, slides, achievements, alumni
             <div className="section-divider" />
 
             {/* News & Announcements Section - Symmetrical Grid */}
-            <section className="py-20 md:py-28 bg-white dark:bg-slate-950">
+            <section className="py-10 md:py-14 bg-white dark:bg-slate-950">
                 <div className="container mx-auto px-4">
                     <motion.div
-                        className="flex flex-col md:flex-row md:items-end md:justify-between mb-12"
+                        className="flex flex-col md:flex-row md:items-end md:justify-between mb-8"
                         variants={staggerContainer}
                         initial="hidden"
                         whileInView="visible"
@@ -304,35 +273,14 @@ export function DesktopView({ posts, announcements, slides, achievements, alumni
             {/* Divider */}
             <div className="section-divider" />
 
-            {/* Achievements Section */}
-            <section className="py-20 md:py-28 bg-slate-50 dark:bg-slate-900">
-                <div className="container mx-auto px-4">
-                    <motion.div
-                        variants={fadeInUp}
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true, margin: "-100px" }}
-                    >
-                        <SectionHeader
-                            label="Prestasi"
-                            title="Kebanggaan Kami"
-                            subtitle="Berbagai pencapaian gemilang siswa-siswi dalam bidang akademik, olahraga, dan seni"
-                            align="center"
-                        />
-                    </motion.div>
-                </div>
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    viewport={{ once: true, margin: "-50px" }}
-                    transition={{ duration: 0.8, delay: 0.2 }}
-                >
-                    <AchievementsCarousel achievements={achievements} />
-                </motion.div>
-            </section>
+            {/* Achievements Section - Infinite Marquee */}
+            <InfiniteMarqueeAchievements achievements={achievements} />
+
+            {/* Divider */}
+            <div className="section-divider" />
 
             {/* Gallery Section */}
-            <section className="py-20 md:py-28 bg-white dark:bg-slate-950">
+            <section className="py-10 md:py-14 bg-white dark:bg-slate-950">
                 <div className="container mx-auto px-4">
                     <motion.div
                         variants={fadeInUp}
@@ -361,107 +309,14 @@ export function DesktopView({ posts, announcements, slides, achievements, alumni
             {/* Divider */}
             <div className="section-divider" />
 
-            {/* Alumni Section */}
-            <section className="py-20 md:py-28 bg-slate-50 dark:bg-slate-900">
-                <div className="container mx-auto px-4">
-                    <motion.div
-                        variants={fadeInUp}
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true, margin: "-100px" }}
-                    >
-                        <SectionHeader
-                            label="Alumni"
-                            title="Jejak Sukses Alumni"
-                            subtitle="Kisah inspiratif alumni yang telah berkontribusi di berbagai bidang"
-                            align="center"
-                        />
-                    </motion.div>
-                </div>
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    viewport={{ once: true, margin: "-50px" }}
-                    transition={{ duration: 0.8, delay: 0.2 }}
-                >
-                    <AlumniCarousel alumni={alumni} />
-                </motion.div>
-            </section>
+            {/* Alumni Section - Infinite Marquee */}
+            <InfiniteMarqueeAlumni alumni={alumni} />
 
-            {/* CTA Section - Symmetrical */}
-            <section className="py-20 md:py-28 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 relative overflow-hidden">
-                {/* Decorative Elements */}
-                <motion.div
-                    className="absolute inset-0 pattern-grid opacity-10"
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 0.1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 1.5 }}
-                />
-                <motion.div
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-600/20 rounded-full blur-[120px]"
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    whileInView={{ scale: 1, opacity: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-                />
-
-                <div className="container mx-auto px-4 relative">
-                    <div className="max-w-3xl mx-auto text-center">
-                        <motion.div
-                            variants={staggerContainer}
-                            initial="hidden"
-                            whileInView="visible"
-                            viewport={{ once: true, margin: "-100px" }}
-                            className="space-y-6"
-                        >
-                            <motion.span
-                                variants={staggerItem}
-                                className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-white/80 text-sm"
-                            >
-                                <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                                Pendaftaran Dibuka
-                            </motion.span>
-
-                            <motion.h2
-                                variants={staggerItem}
-                                className="font-display text-4xl md:text-5xl lg:text-6xl font-semibold text-white"
-                            >
-                                Bergabunglah Bersama Kami
-                            </motion.h2>
-
-                            <motion.p
-                                variants={staggerItem}
-                                className="text-xl text-slate-300 max-w-xl mx-auto"
-                            >
-                                Jadilah bagian dari keluarga besar {settings.site_short_name} dan raih masa depan cemerlang
-                            </motion.p>
-
-                            <motion.div
-                                variants={staggerItem}
-                                className="flex flex-col sm:flex-row gap-4 justify-center pt-4"
-                            >
-                                <Link
-                                    href="/ppdb"
-                                    className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-slate-900 rounded-full font-semibold hover:bg-slate-100 transition-all duration-500 hover:shadow-xl hover:shadow-white/20 hover:-translate-y-1"
-                                >
-                                    Info Pendaftaran
-                                    <ArrowRight className="w-5 h-5" />
-                                </Link>
-                                <Link
-                                    href="/kontak"
-                                    className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-transparent border border-white/30 text-white rounded-full font-semibold hover:bg-white/10 transition-all duration-500 hover:-translate-y-1"
-                                >
-                                    Hubungi Kami
-                                </Link>
-                            </motion.div>
-                        </motion.div>
-                    </div>
-                </div>
-            </section>
+            {/* Divider */}
+            <div className="section-divider" />
 
             {/* Contact & Location Section - Symmetrical Grid */}
-            <section className="py-20 md:py-28 bg-white dark:bg-slate-950">
+            <section className="py-10 md:py-14 bg-white dark:bg-slate-950">
                 <div className="container mx-auto px-4">
                     <motion.div
                         variants={fadeInUp}

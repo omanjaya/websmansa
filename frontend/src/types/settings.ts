@@ -50,6 +50,7 @@ export interface SiteSettings {
   cta_subtitle: string;
   cta_button_text: string;
   cta_button_link: string;
+  hero_image?: string;
 
   // About Page Settings
   total_students: string;
@@ -197,7 +198,7 @@ export interface SettingItem {
   label?: string | null;
   description?: string | null;
   is_public: boolean;
-  options?: any | null;
+  options?: Record<string, unknown> | null;
   order: number;
   created_at: string;
   updated_at: string;
@@ -206,7 +207,7 @@ export interface SettingItem {
 // Settings update payload
 export interface SettingUpdatePayload {
   key: string;
-  value: any;
+  value: string | boolean | number | Record<string, unknown>;
   type?: string;
   group?: string;
 }

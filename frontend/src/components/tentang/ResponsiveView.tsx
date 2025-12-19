@@ -1,8 +1,26 @@
 'use client'
 
-import { School, Users, GraduationCap, Award } from 'lucide-react'
+import { useState, useEffect, useCallback } from 'react'
+import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
-import { ScrollReveal, StaggerContainer, StaggerItem } from '@/components/ui/Motion'
+import { School, Users, GraduationCap, Award, Eye, Target, Clock, ChevronRight, ChevronLeft, Camera, Image as ImageIcon } from 'lucide-react'
+import { PageHero } from '@/components/shared/PageHero'
+import { Section, SectionTitle } from '@/components/shared/Section'
+import { GlassCard } from '@/components/shared/cards/GlassCard'
+import { ProfileCard } from '@/components/shared/cards/ProfileCard'
+import {
+    FadeInOnScroll,
+    StaggerContainer,
+    StaggerItem,
+    AnimatedCounter,
+} from '@/components/shared/Animations'
+import {
+    DotPattern,
+    FloatingShapes,
+    GlowSpot,
+    Waves,
+    HexagonPattern,
+} from '@/components/shared/Decorations'
 
 interface ResponsiveViewProps {
     stats: Array<{ label: string; value: string }>
@@ -11,76 +29,280 @@ interface ResponsiveViewProps {
     leadership: Array<{ name: string; position: string; image: string | null }>
 }
 
+// Photo Milestone Slider Component
+const milestonePhotos = [
+    { year: '1950', title: 'Pendirian Sekolah', image: '/hero-bg.png', description: 'Awal mula berdirinya SMAN 1 Denpasar sebagai sekolah menengah atas pertama di Bali.' },
+    { year: '1965', title: 'Renovasi Gedung', image: '/hero-bg.png', description: 'Pembangunan gedung baru yang lebih modern dan representatif.' },
+    { year: '1980', title: 'Akreditasi A', image: '/hero-bg.png', description: 'Meraih akreditasi A pertama kali sebagai bukti kualitas pendidikan.' },
+    { year: '2000', title: 'Era Digital', image: '/hero-bg.png', description: 'Integrasi teknologi informasi dalam proses pembelajaran.' },
+    { year: '2024', title: 'Sekolah Unggulan', image: '/hero-bg.png', description: 'Status sebagai sekolah unggulan tingkat nasional.' },
+]
+
+function PhotoMilestoneSlider() {
+    const [currentIndex, setCurrentIndex] = useState(0)
+    const [isAutoPlaying, setIsAutoPlaying] = useState(true)
+
+    const nextSlide = useCallback(() => {
+        setCurrentIndex((prev) => (prev + 1) % milestonePhotos.length)
+    }, [])
+
+    const prevSlide = useCallback(() => {
+        setCurrentIndex((prev) => (prev - 1 + milestonePhotos.length) % milestonePhotos.length)
+    }, [])
+
+    // Auto-advance
+    useEffect(() => {
+        if (!isAutoPlaying) return
+        const interval = setInterval(nextSlide, 6000)
+        return () => clearInterval(interval)
+    }, [isAutoPlaying, nextSlide])
+
+    const currentPhoto = milestonePhotos[currentIndex]
+
+    return (
+        <motion.div
+            className="relative overflow-hidden rounded-2xl md:rounded-3xl shadow-2xl"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            onMouseEnter={() => setIsAutoPlaying(false)}
+            onMouseLeave={() => setIsAutoPlaying(true)}
+        >
+            {/* Main Image */}
+            <div className="relative aspect-[16/9] md:aspect-[21/9]">
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={currentIndex}
+                        initial={{ opacity: 0, scale: 1.1 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        transition={{ duration: 0.7 }}
+                        className="absolute inset-0"
+                    >
+                        <Image
+                            src={currentPhoto.image}
+                            alt={currentPhoto.title}
+                            fill
+                            className="object-cover"
+                            sizes="100vw"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                    </motion.div>
+                </AnimatePresence>
+            </div>
+
+            {/* Content Overlay */}
+            <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-10">
+                {/* Year Badge */}
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={`year-${currentIndex}`}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.4 }}
+                    >
+                        <span className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full text-white font-bold text-sm md:text-base mb-3 shadow-lg">
+                            <Camera className="w-4 h-4" />
+                            {currentPhoto.year}
+                        </span>
+                        <h3 className="text-2xl md:text-4xl font-bold text-white mb-2">
+                            {currentPhoto.title}
+                        </h3>
+                        <p className="text-white/80 text-sm md:text-base max-w-2xl line-clamp-2">
+                            {currentPhoto.description}
+                        </p>
+                    </motion.div>
+                </AnimatePresence>
+
+                {/* Navigation */}
+                <div className="flex items-center justify-between mt-6">
+                    {/* Dots */}
+                    <div className="flex items-center gap-2">
+                        {milestonePhotos.map((_, index) => (
+                            <button
+                                key={index}
+                                onClick={() => setCurrentIndex(index)}
+                                className={`transition-all ${index === currentIndex
+                                    ? 'w-10 h-2 bg-amber-500 rounded-full'
+                                    : 'w-2 h-2 bg-white/40 hover:bg-white/60 rounded-full'
+                                    }`}
+                                aria-label={`Lihat foto ${milestonePhotos[index].year}`}
+                            />
+                        ))}
+                    </div>
+
+                    {/* Arrows */}
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={prevSlide}
+                            className="w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm flex items-center justify-center text-white transition-colors"
+                            aria-label="Foto sebelumnya"
+                        >
+                            <ChevronLeft className="w-5 h-5" />
+                        </button>
+                        <button
+                            onClick={nextSlide}
+                            className="w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm flex items-center justify-center text-white transition-colors"
+                            aria-label="Foto selanjutnya"
+                        >
+                            <ChevronRight className="w-5 h-5" />
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* Progress Bar */}
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/10">
+                <motion.div
+                    className="h-full bg-amber-500"
+                    initial={{ width: '0%' }}
+                    animate={{ width: isAutoPlaying ? '100%' : '0%' }}
+                    transition={{ duration: 6, ease: 'linear' }}
+                    key={`${currentIndex}-${isAutoPlaying}`}
+                />
+            </div>
+        </motion.div>
+    )
+}
+
 export function ResponsiveView({ stats, visiMisi, sejarah, leadership }: ResponsiveViewProps) {
     const statIcons = [School, Users, GraduationCap, Award]
 
+    // Scroll-driven animations for timeline
+    const { scrollYProgress } = useScroll()
+
+    const timelineOpacity = useTransform(scrollYProgress, [0.2, 0.4], [0, 1])
+    const timelineY = useTransform(scrollYProgress, [0.2, 0.4], [50, 0])
+
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-slate-950">
-            {/* Hero Section - Enhanced */}
-            <section className="relative -mt-16 lg:-mt-20 pt-28 lg:pt-32 pb-16 md:pb-24 hero-gradient overflow-hidden">
-                {/* Decorative Elements */}
-                <div className="hero-pattern" />
-                <div className="decorative-grid" />
-                <div className="absolute top-0 right-0 w-1/3 h-full bg-white/5 skew-x-12 translate-x-20" />
-                <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary-400/30 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2" />
-                <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2" />
+        // -mt-16 lg:-mt-20 pulls page behind fixed header so hero background shows behind it
+        <div className="min-h-screen bg-white dark:bg-slate-950 -mt-16 lg:-mt-20 relative">
+            {/* Global Background decorations */}
+            <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+                <DotPattern variant="animated" opacity={0.35} className="dark:opacity-25" />
+                <GlowSpot color="bg-blue-500" size="xl" position={{ top: '30%', left: '-10%' }} />
+                <GlowSpot color="bg-cyan-500" size="lg" position={{ top: '70%', right: '-5%' }} />
+            </div>
 
-                <div className="relative container mx-auto px-4">
-                    <div className="max-w-3xl">
-                        <span className="text-primary-200 font-bold tracking-wider uppercase text-sm flex items-center gap-2 mb-4">
-                            <span className="w-10 h-[2px] bg-primary-300"></span>
-                            Profil Sekolah
-                        </span>
-                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 leading-tight">
-                            Tentang Kami
-                        </h1>
-                        <p className="text-lg md:text-xl text-primary-100 max-w-2xl">
-                            Profil dan sejarah SMA Negeri 1 Denpasar sejak tahun 1950
-                        </p>
-                    </div>
-                </div>
-            </section>
+            {/* Hero Section */}
+            <div className="relative overflow-hidden">
+                <PageHero
+                    title="Tentang Kami"
+                    subtitle="Profil dan sejarah SMA Negeri 1 Denpasar, sekolah unggulan di Bali sejak tahun 1950"
+                    badge={{
+                        icon: School,
+                        label: 'Profil Sekolah',
+                        color: 'blue',
+                    }}
+                    backgroundImage="/hero-bg.png"
+                    height="medium"
+                    overlay="gradient"
+                    align="center"
+                    breadcrumbs={[
+                        { label: 'Tentang', href: '/tentang' },
+                    ]}
+                />
 
-            {/* Stats Section */}
-            <section className="py-8 md:py-12 bg-white dark:bg-slate-900 border-b dark:border-slate-800">
-                <div className="container mx-auto px-4">
-                    <StaggerContainer staggerDelay={0.1} className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
-                        {stats.map((stat, index) => {
-                            const Icon = statIcons[index]
-                            return (
-                                <StaggerItem key={stat.label}>
-                                    <div className="text-center p-4 md:p-6 glass-card-strong">
-                                        <div className="w-14 h-14 md:w-16 md:h-16 bg-primary-100 dark:bg-primary-900/30 rounded-2xl flex items-center justify-center text-primary-600 dark:text-primary-400 mx-auto mb-3 md:mb-4">
-                                            <Icon className="w-7 h-7 md:w-8 md:h-8" />
-                                        </div>
-                                        <div className="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white mb-1">
-                                            {stat.value}
-                                        </div>
-                                        <div className="text-xs md:text-sm text-gray-600 dark:text-gray-400 font-medium">
-                                            {stat.label}
-                                        </div>
+                {/* Wave divider */}
+                <Waves
+                    color="fill-white dark:fill-slate-950"
+                    position="bottom"
+                    className="absolute bottom-0 z-20"
+                />
+            </div>
+
+            {/* Stats Section - Glassmorphism */}
+            <Section background="white" padding="medium" className="relative z-10">
+                <StaggerContainer className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 relative z-10">
+                    {stats.map((stat, index) => {
+                        const Icon = statIcons[index] || School
+                        return (
+                            <StaggerItem key={stat.label}>
+                                <GlassCard
+                                    padding="medium"
+                                    glow
+                                    glowColor="blue"
+                                    className="text-center h-full"
+                                >
+                                    <div className="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl md:rounded-2xl flex items-center justify-center text-white mx-auto mb-3">
+                                        <Icon className="w-6 h-6 md:w-7 md:h-7" />
                                     </div>
-                                </StaggerItem>
-                            )
-                        })}
-                    </StaggerContainer>
-                </div>
-            </section>
+                                    <div className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-1">
+                                        {index === 0 ? (
+                                            // For "Tahun Berdiri", just display the year as is
+                                            stat.value
+                                        ) : (
+                                            // For other stats, extract number and use AnimatedCounter
+                                            (() => {
+                                                const numValue = parseInt(stat.value.replace(/[^\d]/g, ''))
+                                                const suffix = stat.value.match(/[^\d]+$/)?.[0] || ''
+                                                const prefix = stat.value.match(/^[^\d]+/)?.[0] || ''
 
-            {/* Main Content */}
-            <section className="py-8 md:py-16">
-                <div className="container mx-auto px-4">
-                    {/* Profile Section */}
-                    <div className="bg-white dark:bg-slate-900 rounded-2xl md:rounded-3xl p-6 md:p-10 shadow-lg border border-gray-100 dark:border-slate-800 mb-8 md:mb-12">
-                        <div className="flex items-center gap-3 mb-6">
-                            <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center">
-                                <School className="w-6 h-6 text-white" />
-                            </div>
-                            <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
-                                Profil Sekolah
-                            </h2>
+                                                return (
+                                                    <AnimatedCounter
+                                                        value={numValue}
+                                                        duration={2}
+                                                        prefix={prefix}
+                                                        suffix={suffix}
+                                                        formatter={(val) => val.toLocaleString('id-ID')}
+                                                    />
+                                                )
+                                            })()
+                                        )}
+                                    </div>
+                                    <div className="text-xs md:text-sm text-slate-600 dark:text-slate-400 font-medium">
+                                        {stat.label}
+                                    </div>
+                                </GlassCard>
+                            </StaggerItem>
+                        )
+                    })}
+                </StaggerContainer>
+            </Section>
+
+            {/* Profile Section */}
+            <Section background="slate" padding="large">
+                <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+                    {/* Image */}
+                    <motion.div
+                        initial={{ opacity: 0, x: -30 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6 }}
+                        className="relative aspect-[4/3] rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl order-2 lg:order-1"
+                    >
+                        <Image
+                            src="/hero-bg.png"
+                            alt="SMA Negeri 1 Denpasar"
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 1024px) 100vw, 50vw"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                        <div className="absolute bottom-4 left-4 right-4 md:bottom-6 md:left-6">
+                            <span className="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-white text-sm font-medium border border-white/30">
+                                Sejak 1950
+                            </span>
                         </div>
-                        <div className="space-y-4 text-base md:text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
+                    </motion.div>
+
+                    {/* Content */}
+                    <motion.div
+                        initial={{ opacity: 0, x: 30 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6 }}
+                        className="order-1 lg:order-2"
+                    >
+                        <SectionTitle
+                            badge={{ icon: School, label: 'Profil', color: 'blue' }}
+                            title="SMA Negeri 1"
+                            gradientText="Denpasar"
+                            align="left"
+                            className="mb-6"
+                        />
+                        <div className="space-y-4 text-slate-600 dark:text-slate-400 text-base md:text-lg leading-relaxed">
                             <p>
                                 SMA Negeri 1 Denpasar adalah salah satu sekolah menengah atas tertua dan paling bergengsi di Provinsi Bali. Didirikan pada tahun 1950, sekolah ini telah menghasilkan ribuan alumni yang berkontribusi di berbagai bidang.
                             </p>
@@ -88,130 +310,179 @@ export function ResponsiveView({ stats, visiMisi, sejarah, leadership }: Respons
                                 Berlokasi strategis di pusat Kota Denpasar, SMAN 1 Denpasar dilengkapi dengan fasilitas modern dan tenaga pengajar berkualitas yang berkomitmen untuk memberikan pendidikan terbaik.
                             </p>
                         </div>
-                    </div>
+                    </motion.div>
+                </div>
+            </Section>
 
-                    {/* Visi & Misi */}
-                    <div className="grid md:grid-cols-2 gap-6 md:gap-8 mb-12 md:mb-16">
-                        {/* Visi */}
-                        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl md:rounded-3xl p-6 md:p-8 border border-blue-100 dark:border-blue-800/30">
+            {/* Visi & Misi Section */}
+            <Section background="white" padding="large">
+                <SectionTitle
+                    badge={{ icon: Eye, label: 'Arah Tujuan', color: 'purple' }}
+                    title="Visi &"
+                    gradientText="Misi"
+                    subtitle="Panduan dan tujuan yang menjadi dasar pengembangan sekolah"
+                    align="center"
+                />
+
+                <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
+                    {/* Visi */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5 }}
+                    >
+                        <div className="h-full bg-gradient-to-br from-blue-50 via-blue-50/50 to-indigo-50 dark:from-blue-900/30 dark:via-blue-900/20 dark:to-indigo-900/20 rounded-2xl md:rounded-3xl p-6 md:p-8 border border-blue-100 dark:border-blue-800/30">
                             <div className="flex items-center gap-3 mb-6">
-                                <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center">
-                                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                    </svg>
+                                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                                    <Eye className="w-6 h-6 text-white" />
                                 </div>
                                 <h3 className="text-xl md:text-2xl font-bold text-blue-900 dark:text-blue-100">Visi</h3>
                             </div>
-                            <p className="text-base md:text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+                            <p className="text-base md:text-lg text-slate-700 dark:text-slate-300 leading-relaxed">
                                 {visiMisi.visi}
                             </p>
                         </div>
+                    </motion.div>
 
-                        {/* Misi */}
-                        <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl md:rounded-3xl p-6 md:p-8 border border-green-100 dark:border-green-800/30">
+                    {/* Misi */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5, delay: 0.1 }}
+                    >
+                        <div className="h-full bg-gradient-to-br from-green-50 via-green-50/50 to-emerald-50 dark:from-green-900/30 dark:via-green-900/20 dark:to-emerald-900/20 rounded-2xl md:rounded-3xl p-6 md:p-8 border border-green-100 dark:border-green-800/30">
                             <div className="flex items-center gap-3 mb-6">
-                                <div className="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center">
-                                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-                                    </svg>
+                                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
+                                    <Target className="w-6 h-6 text-white" />
                                 </div>
                                 <h3 className="text-xl md:text-2xl font-bold text-green-900 dark:text-green-100">Misi</h3>
                             </div>
-                            <ul className="space-y-4">
+                            <ul className="space-y-3">
                                 {visiMisi.misi.map((item, index) => (
-                                    <li key={index} className="flex items-start gap-3 text-base md:text-lg text-gray-700 dark:text-gray-300">
-                                        <span className="flex-shrink-0 w-7 h-7 bg-green-600 text-white rounded-full flex items-center justify-center text-sm font-bold mt-0.5">
+                                    <li key={index} className="flex items-start gap-3 text-sm md:text-base text-slate-700 dark:text-slate-300">
+                                        <span className="flex-shrink-0 w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold mt-0.5">
                                             {index + 1}
                                         </span>
-                                        <span>{item}</span>
+                                        <span className="leading-relaxed">{item}</span>
                                     </li>
                                 ))}
                             </ul>
                         </div>
-                    </div>
+                    </motion.div>
+                </div>
+            </Section>
 
-                    {/* History Timeline */}
-                    <div className="mb-12 md:mb-16">
-                        <div className="flex items-center gap-3 mb-8">
-                            <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center">
-                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            </div>
-                            <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
-                                Sejarah Singkat
-                            </h2>
-                        </div>
+            {/* History Timeline */}
+            <Section background="gradient" padding="large">
+                <SectionTitle
+                    badge={{ icon: Clock, label: 'Sejarah', color: 'gold' }}
+                    title="Perjalanan"
+                    gradientText="Sejarah"
+                    subtitle="Tonggak penting dalam perjalanan SMA Negeri 1 Denpasar"
+                    align="center"
+                />
+
+                <motion.div
+                    className="max-w-3xl mx-auto"
+                    style={{ opacity: timelineOpacity, y: timelineY }}
+                >
+                    <div className="relative">
+                        {/* Animated Timeline line */}
+                        <motion.div
+                            className="absolute left-8 md:left-10 top-0 w-0.5 bg-gradient-to-b from-yellow-400 via-orange-400 to-yellow-400/20"
+                            initial={{ height: 0 }}
+                            whileInView={{ height: "100%" }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 1.5, ease: "easeInOut" }}
+                        />
+
+                        {/* Timeline items */}
                         <div className="space-y-6 md:space-y-8">
                             {sejarah.map((item, index) => (
-                                <div key={index} className="flex gap-4 md:gap-8 group">
-                                    <div className="flex-shrink-0 relative">
-                                        <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-2xl flex items-center justify-center font-bold text-sm md:text-base shadow-lg group-hover:scale-105 transition-transform">
+                                <motion.div
+                                    key={index}
+                                    initial={{ opacity: 0, x: -20 }}
+                                    whileInView={{ opacity: 1, x: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: 0.1 * index }}
+                                    className="relative flex gap-4 md:gap-6 pl-2"
+                                >
+                                    {/* Year badge with hover animation */}
+                                    <motion.div
+                                        className="flex-shrink-0 relative z-10"
+                                        whileHover={{ scale: 1.1, rotate: 5 }}
+                                        transition={{ type: "spring", stiffness: 300 }}
+                                    >
+                                        <div className="w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-yellow-400 to-orange-500 text-white rounded-xl md:rounded-2xl flex items-center justify-center font-bold text-sm shadow-lg">
                                             {item.year}
                                         </div>
-                                        {index !== sejarah.length - 1 && (
-                                            <div className="absolute left-1/2 top-full w-0.5 h-6 md:h-8 bg-gradient-to-b from-blue-300 to-transparent -translate-x-1/2" />
-                                        )}
-                                    </div>
-                                    <div className="flex-1 pb-6 md:pb-8 pt-2">
-                                        <h3 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-2">
+                                    </motion.div>
+
+                                    {/* Content with hover effect */}
+                                    <motion.div
+                                        className="flex-1 bg-white dark:bg-slate-800 rounded-xl md:rounded-2xl p-4 md:p-6 shadow-lg border border-slate-100 dark:border-slate-700"
+                                        whileHover={{
+                                            scale: 1.02,
+                                            boxShadow: "0 20px 40px rgba(0,0,0,0.15)"
+                                        }}
+                                        transition={{ duration: 0.3 }}
+                                    >
+                                        <h3 className="text-lg md:text-xl font-bold text-slate-900 dark:text-white mb-2">
                                             {item.title}
                                         </h3>
-                                        <p className="text-base md:text-lg text-gray-600 dark:text-gray-400">
+                                        <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 leading-relaxed">
                                             {item.description}
                                         </p>
-                                    </div>
-                                </div>
+                                    </motion.div>
+                                </motion.div>
                             ))}
                         </div>
                     </div>
+                </motion.div>
+            </Section>
 
-                    {/* Leadership */}
-                    <div>
-                        <div className="flex items-center gap-3 mb-8">
-                            <div className="w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center">
-                                <Users className="w-6 h-6 text-white" />
-                            </div>
-                            <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
-                                Kepemimpinan
-                            </h2>
-                        </div>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-                            {leadership.map((leader, index) => (
-                                <div key={index} className="group text-center">
-                                    <div className="relative w-full aspect-square bg-gradient-to-br from-gray-100 to-gray-200 dark:from-slate-800 dark:to-slate-700 rounded-2xl md:rounded-3xl mb-4 overflow-hidden shadow-lg group-hover:shadow-xl transition-shadow">
-                                        {leader.image ? (
-                                            <Image
-                                                src={leader.image}
-                                                alt={leader.name}
-                                                fill
-                                                sizes="(max-width: 768px) 50vw, 25vw"
-                                                className="object-cover group-hover:scale-105 transition-transform duration-500"
-                                            />
-                                        ) : (
-                                            <div className="w-full h-full flex items-center justify-center">
-                                                <svg className="w-16 h-16 md:w-20 md:h-20 text-gray-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                                </svg>
-                                            </div>
-                                        )}
-                                    </div>
-                                    <h3 className="font-bold text-gray-900 dark:text-white text-sm md:text-lg mb-1">
-                                        {leader.name}
-                                    </h3>
-                                    <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400">
-                                        {leader.position}
-                                    </p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+            {/* Photo Milestone Section */}
+            <Section background="white" padding="large">
+                <SectionTitle
+                    badge={{ icon: Camera, label: 'Galeri', color: 'gold' }}
+                    title="Momen"
+                    gradientText="Bersejarah"
+                    subtitle="Perjalanan visual SMA Negeri 1 Denpasar dari masa ke masa"
+                    align="center"
+                />
+                <FadeInOnScroll delay={0.2}>
+                    <PhotoMilestoneSlider />
+                </FadeInOnScroll>
+            </Section>
+
+            {/* Leadership Section */}
+            <Section background="slate" padding="large">
+                <SectionTitle
+                    badge={{ icon: Users, label: 'Pimpinan', color: 'purple' }}
+                    title="Tim"
+                    gradientText="Kepemimpinan"
+                    subtitle="Para pemimpin yang menggerakkan roda pendidikan di SMAN 1 Denpasar"
+                    align="center"
+                />
+
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                    {leadership.map((leader, index) => (
+                        <ProfileCard
+                            key={index}
+                            name={leader.name}
+                            role={leader.position}
+                            imageUrl={leader.image || undefined}
+                            variant="default"
+                            index={index}
+                        />
+                    ))}
                 </div>
-            </section>
+            </Section>
 
-            {/* Bottom Spacing */}
-            <div className="h-12 md:h-20" />
+            {/* Bottom Spacing for Footer */}
+            <div className="h-8 md:h-12 bg-white dark:bg-slate-950 relative z-10" />
         </div>
     )
 }

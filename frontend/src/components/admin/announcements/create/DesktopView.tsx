@@ -59,8 +59,8 @@ export function DesktopView() {
             await adminApi.post('/announcements', data)
             router.push('/admin/announcements')
             router.refresh()
-        } catch (err: any) {
-            setError(err.message || 'Terjadi kesalahan saat menyimpan data')
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Terjadi kesalahan saat menyimpan data')
         } finally {
             setIsSubmitting(false)
         }
@@ -136,7 +136,7 @@ export function DesktopView() {
                             <div className="space-y-2">
                                 <Label htmlFor="type">Tipe</Label>
                                 <Select
-                                    onValueChange={(value: any) => setValue('type', value)}
+                                    onValueChange={(value) => setValue('type', value as 'info' | 'event' | 'warning' | 'success')}
                                     defaultValue={watch('type')}
                                 >
                                     <SelectTrigger>
@@ -154,7 +154,7 @@ export function DesktopView() {
                             <div className="space-y-2">
                                 <Label htmlFor="priority">Prioritas</Label>
                                 <Select
-                                    onValueChange={(value: any) => setValue('priority', value)}
+                                    onValueChange={(value) => setValue('priority', value as 'low' | 'medium' | 'high' | 'urgent')}
                                     defaultValue={watch('priority')}
                                 >
                                     <SelectTrigger>

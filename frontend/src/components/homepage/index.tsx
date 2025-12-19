@@ -7,7 +7,8 @@ import { useState, useEffect } from 'react'
 
 import { Post, Slider, Achievement, Alumni, Gallery } from '@/lib/api'
 
-interface Announcement {
+// Simplified announcement type for homepage display
+interface HomeAnnouncement {
     id: number
     type: string
     attributes: {
@@ -20,7 +21,7 @@ interface Announcement {
 
 interface HomePageProps {
     posts: Post[]
-    announcements: Announcement[]
+    announcements: HomeAnnouncement[]
     slides?: Slider[]
     achievements?: Achievement[]
     alumni?: Alumni[]

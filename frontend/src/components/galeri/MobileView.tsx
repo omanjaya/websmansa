@@ -32,7 +32,7 @@ export function MobileView({ galleries, stats }: MobileViewProps) {
             {galleries.length > 0 ? (
                 <div className="px-4 mb-6">
                     <div className="grid grid-cols-2 gap-3">
-                        {galleries.map((gallery, index) => (
+                        {galleries.map((gallery) => (
                             <Link
                                 key={gallery.id}
                                 href={`/galeri/${gallery.slug}`}

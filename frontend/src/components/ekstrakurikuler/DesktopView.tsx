@@ -2,6 +2,13 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
+import { Extra } from '@/lib/api'
+
+interface DesktopViewProps {
+    extras: Extra[]
+    categories: string[]
+    currentCategory?: string
+}
 
 const categoryLabels: Record<string, string> = {
     olahraga: 'Olahraga',
@@ -21,13 +28,13 @@ const categoryColors: Record<string, { bg: string; text: string; gradient: strin
     teknologi: { bg: 'bg-cyan-100 dark:bg-cyan-900/30', text: 'text-cyan-600 dark:text-cyan-400', gradient: 'from-cyan-500 to-teal-500' },
 }
 
-export function DesktopView({ extras, categories, currentCategory }: any) {
+export function DesktopView({ extras, categories: _categories, currentCategory }: DesktopViewProps) {
     const filteredExtras = currentCategory
-        ? extras.filter((e: any) => e.attributes?.category === currentCategory)
+        ? extras.filter((e) => e.attributes?.category === currentCategory)
         : extras
 
-    const featuredExtras = filteredExtras.filter((e: any) => e.attributes?.is_featured)
-    const regularExtras = filteredExtras.filter((e: any) => !e.attributes?.is_featured)
+    const featuredExtras = filteredExtras.filter((e) => e.attributes?.is_featured)
+    const regularExtras = filteredExtras.filter((e) => !e.attributes?.is_featured)
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-slate-950">
@@ -95,7 +102,7 @@ export function DesktopView({ extras, categories, currentCategory }: any) {
                                 Ekskul Unggulan
                             </h2>
                             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {featuredExtras.map((item: any) => {
+                                {featuredExtras.map((item) => {
                                     const color = categoryColors[item.attributes?.category] || categoryColors.olahraga
                                     return (
                                         <Link
@@ -108,7 +115,7 @@ export function DesktopView({ extras, categories, currentCategory }: any) {
                                                 {item.attributes?.image ? (
                                                     <Image
                                                         src={item.attributes.image}
-                                                        alt={item.attributes?.name || item.name}
+                                                        alt={item.attributes?.name || item.name || 'Ekstrakurikuler'}
                                                         fill
                                                         className="object-cover group-hover:scale-110 transition-transform duration-700"
                                                     />
@@ -177,7 +184,7 @@ export function DesktopView({ extras, categories, currentCategory }: any) {
                             </h2>
                         )}
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-                            {(currentCategory ? filteredExtras : regularExtras).map((item: any) => {
+                            {(currentCategory ? filteredExtras : regularExtras).map((item) => {
                                 const color = categoryColors[item.attributes?.category] || categoryColors.olahraga
                                 return (
                                     <Link
@@ -190,7 +197,7 @@ export function DesktopView({ extras, categories, currentCategory }: any) {
                                             {item.attributes?.image ? (
                                                 <Image
                                                     src={item.attributes.image}
-                                                    alt={item.attributes?.name || item.name}
+                                                    alt={item.attributes?.name || item.name || 'Ekstrakurikuler'}
                                                     fill
                                                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                                                 />

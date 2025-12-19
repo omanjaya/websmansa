@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import { Badge } from '@/components/ui'
 
 type Announcement = {
     id: number
@@ -24,20 +23,9 @@ type Announcement = {
 interface DesktopViewProps {
     announcements: Announcement[]
     types: string[]
-    typeColors: Record<string, any>
+    typeColors: Record<string, string>
     typeLabels: Record<string, string>
     currentType?: string
-}
-
-const getBadgeVariant = (color: string): 'default' | 'secondary' | 'destructive' | 'outline' => {
-    const variantMap: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
-        primary: 'default',
-        success: 'secondary',
-        warning: 'outline',
-        danger: 'destructive',
-        info: 'default'
-    }
-    return variantMap[color] || 'default'
 }
 
 const getTypeIcon = (type: string) => {
@@ -69,7 +57,7 @@ const getTypeIcon = (type: string) => {
 export function DesktopView({
     announcements,
     types,
-    typeColors,
+    typeColors: _typeColors,
     typeLabels,
     currentType
 }: DesktopViewProps) {

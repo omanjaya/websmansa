@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { getAdminPosts, deletePost } from '@/lib/api'
+import { getAdminPosts, deletePost, Post } from '@/lib/api'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Plus, Search, Edit, Trash2, Eye } from 'lucide-react'
 import { toast } from 'sonner'
@@ -104,14 +104,14 @@ export default function BeritaPage() {
                                     </td>
                                 </tr>
                             ) : (
-                                data?.data.map((post: any) => (
+                                data?.data.map((post: Post) => (
                                     <tr key={post.id} className="hover:bg-gray-50 dark:hover:bg-slate-700/50">
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
-                                                {post.featured_image_url && (
+                                                {post.attributes.featured_image && (
                                                     <Image
-                                                        src={post.featured_image_url}
-                                                        alt={post.title}
+                                                        src={post.attributes.featured_image}
+                                                        alt={post.attributes.title}
                                                         width={64}
                                                         height={64}
                                                         className="w-16 h-16 rounded-lg object-cover"
@@ -119,9 +119,9 @@ export default function BeritaPage() {
                                                 )}
                                                 <div>
                                                     <div className="font-medium text-gray-900 dark:text-white">
-                                                        {post.title}
+                                                        {post.attributes.title}
                                                     </div>
-                                                    {post.is_featured && (
+                                                    {post.attributes.is_featured && (
                                                         <span className="inline-block mt-1 px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded">
                                                             Featured
                                                         </span>
@@ -131,23 +131,23 @@ export default function BeritaPage() {
                                         </td>
                                         <td className="px-6 py-4">
                                             <span
-                                                className={`inline-block px-3 py-1 rounded-full text-sm ${post.status === 'published'
+                                                className={`inline-block px-3 py-1 rounded-full text-sm ${post.attributes.status === 'published'
                                                         ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
                                                         : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
                                                     }`}
                                             >
-                                                {post.status === 'published' ? 'Published' : 'Draft'}
+                                                {post.attributes.status === 'published' ? 'Published' : 'Draft'}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-gray-600 dark:text-gray-400">
-                                            {post.published_at
-                                                ? format(new Date(post.published_at), 'dd MMM yyyy', { locale: idLocale })
+                                            {post.attributes.published_at
+                                                ? format(new Date(post.attributes.published_at), 'dd MMM yyyy', { locale: idLocale })
                                                 : '-'}
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex items-center justify-end gap-2">
                                                 <Link
-                                                    href={`/berita/${post.slug}`}
+                                                    href={`/berita/${post.attributes.slug}`}
                                                     target="_blank"
                                                     className="p-2 text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"
                                                     title="Lihat"
@@ -162,7 +162,7 @@ export default function BeritaPage() {
                                                     <Edit className="w-5 h-5" />
                                                 </Link>
                                                 <button
-                                                    onClick={() => handleDelete(post.id, post.title)}
+                                                    onClick={() => handleDelete(post.id, post.attributes.title)}
                                                     className="p-2 text-gray-600 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
                                                     title="Hapus"
                                                 >

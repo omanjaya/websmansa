@@ -30,6 +30,7 @@ export default function AdminLayout({
             setAuthState('unauthenticated')
             router.replace('/admin/login')
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []) // Empty dependency - only run once on mount
 
     // Handle pathname changes separately
@@ -41,6 +42,7 @@ export default function AdminLayout({
             setAuthState('unauthenticated')
             router.replace('/admin/login')
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pathname])
 
     // Login page - just render children

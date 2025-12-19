@@ -25,13 +25,10 @@ export default function Footer() {
     settings.instagram_url && { name: 'Instagram', icon: Instagram, href: settings.instagram_url, color: 'hover:bg-pink-600' },
     settings.youtube_url && { name: 'YouTube', icon: Youtube, href: settings.youtube_url, color: 'hover:bg-red-600' },
     settings.tiktok_url && { name: 'TikTok', icon: FaTiktok, href: settings.tiktok_url, color: 'hover:bg-gray-800' },
-  ].filter(Boolean) as Array<{ name: string; icon: any; href: string; color: string }>
+  ].filter(Boolean) as Array<{ name: string; icon: React.ComponentType<{ className?: string }>; href: string; color: string }>
 
   return (
-    <footer className="relative overflow-hidden text-gray-300">
-      {/* Linear gradient background from top center */}
-      <div className="absolute inset-0 bg-gradient-to-b from-slate-50 via-slate-300 to-slate-900 
-          dark:from-[#111827] dark:via-slate-700 dark:to-slate-900" />
+    <footer className="relative overflow-hidden text-gray-300 bg-slate-900 dark:bg-slate-950">
 
       <div className="relative container mx-auto px-4 pt-24 pb-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
