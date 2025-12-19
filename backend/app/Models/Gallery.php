@@ -23,6 +23,11 @@ class Gallery extends Model implements HasMedia
         'name',
         'slug',
         'description',
+        'type',
+        'is_featured',
+        'is_active',
+        'thumbnail',
+        'order',
         'created_by',
     ];
 

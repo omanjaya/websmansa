@@ -74,13 +74,19 @@ final class GalleryController extends Controller
 
             $data = $request->validated();
 
+            // Map title to name (database column is 'name', input is 'title')
+            if (isset($data['title'])) {
+                $data['name'] = $data['title'];
+            }
+
             // Generate slug if not provided
             if (empty($data['slug'])) {
-                $data['slug'] = Str::slug($data['title']);
+                $data['slug'] = Str::slug($data['name'] ?? $data['title']);
             }
 
             // Don't set thumbnail field - will use Media Library instead
             unset($data['thumbnail']);
+            unset($data['title']); // Remove title as model uses 'name'
 
             $gallery = Gallery::create($data);
 
