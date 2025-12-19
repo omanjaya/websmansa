@@ -311,6 +311,7 @@ export function GalleryPreview({ galleries: propGalleries }: GalleryPreviewProps
                         {/* Close Button */}
                         <button
                             onClick={closeLightbox}
+                            aria-label="Tutup lightbox"
                             className="absolute top-4 right-4 z-50 w-12 h-12 bg-white/10 backdrop-blur-sm rounded-full
                                 flex items-center justify-center hover:bg-white/20 transition-colors"
                         >
@@ -323,6 +324,7 @@ export function GalleryPreview({ galleries: propGalleries }: GalleryPreviewProps
                                 e.stopPropagation()
                                 goToPrevImage()
                             }}
+                            aria-label="Gambar sebelumnya"
                             className="absolute left-4 z-50 w-14 h-14 bg-white/10 backdrop-blur-sm rounded-full
                                 flex items-center justify-center hover:bg-white/20 transition-colors"
                         >
@@ -334,6 +336,7 @@ export function GalleryPreview({ galleries: propGalleries }: GalleryPreviewProps
                                 e.stopPropagation()
                                 goToNextImage()
                             }}
+                            aria-label="Gambar selanjutnya"
                             className="absolute right-4 z-50 w-14 h-14 bg-white/10 backdrop-blur-sm rounded-full
                                 flex items-center justify-center hover:bg-white/20 transition-colors"
                         >

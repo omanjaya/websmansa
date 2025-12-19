@@ -772,7 +772,7 @@ export function ResponsiveView({ contactInfo, departments }: ResponsiveViewProps
                                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3944.2089073567747!2d115.2190339!3d-8.6551831!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd240815f96fc3d%3A0x634ef8d0ff3b79f3!2sSMA%20Negeri%201%20Denpasar!5e0!3m2!1sen!2sid!4v1702800000000!5m2!1sen!2sid"
                                     width="100%"
                                     height="100%"
-                                    style={{ border: 0 }}
+                                    className="border-0"
                                     allowFullScreen
                                     loading="lazy"
                                     referrerPolicy="no-referrer-when-downgrade"
