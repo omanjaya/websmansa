@@ -1447,3 +1447,544 @@ export async function toggleAchievementActive(id: string | number): Promise<{ da
     method: 'POST',
   })
 }
+
+// ============ Activity Logs API ============
+
+export interface ActivityLog {
+  id: number
+  uuid: string
+  user_id: number | null
+  action: string
+  model_type: string | null
+  model_id: number | null
+  description: string
+  old_values: Record<string, unknown> | null
+  new_values: Record<string, unknown> | null
+  metadata: Record<string, unknown> | null
+  ip_address: string | null
+  user_agent: string | null
+  created_at: string
+  updated_at: string
+  user?: {
+    id: number
+    name: string
+    email: string
+  }
+  action_label?: string
+  model_type_label?: string
+  icon?: string
+  color?: string
+}
+
+export interface ActivityLogStats {
+  total: number
+  by_action: Record<string, number>
+  by_user: Array<{ user: string; count: number }>
+  by_model: Array<{ model: string; count: number }>
+  daily_trend: Record<string, number>
+}
+
+export async function getActivityLogs(params?: {
+  action?: string
+  user_id?: number
+  model_type?: string
+  date_from?: string
+  date_to?: string
+  search?: string
+  page?: number
+  per_page?: number
+}): Promise<{ data: ActivityLog[]; meta: { current_page: number; last_page: number; per_page: number; total: number } }> {
+  const query = buildQueryString({
+    action: params?.action,
+    user_id: params?.user_id,
+    model_type: params?.model_type,
+    date_from: params?.date_from,
+    date_to: params?.date_to,
+    search: params?.search,
+    page: params?.page,
+    per_page: params?.per_page,
+  })
+
+  return fetchAdminApi(`/activity-logs${query}`)
+}
+
+export async function getActivityLogStats(days?: number): Promise<{ data: ActivityLogStats }> {
+  const query = buildQueryString({ days })
+  return fetchAdminApi(`/activity-logs/stats${query}`)
+}
+
+export async function getActivityLogActions(): Promise<{ data: Array<{ value: string; label: string }> }> {
+  return fetchAdminApi('/activity-logs/actions')
+}
+
+export async function getRecentActivities(limit?: number): Promise<{ data: ActivityLog[] }> {
+  const query = buildQueryString({ limit })
+  return fetchAdminApi(`/activity-logs/recent${query}`)
+}
+
+// ============ Contact Messages API ============
+
+export interface ContactMessage {
+  id: number
+  uuid: string
+  name: string
+  email: string
+  phone: string | null
+  subject: string
+  message: string
+  status: 'unread' | 'read' | 'replied' | 'archived'
+  admin_notes: string | null
+  replied_by: number | null
+  replied_at: string | null
+  ip_address: string | null
+  user_agent: string | null
+  created_at: string
+  updated_at: string
+  replied_by_user?: {
+    id: number
+    name: string
+  }
+  status_label?: string
+  status_color?: string
+}
+
+export interface ContactMessageStats {
+  total: number
+  unread: number
+  read: number
+  replied: number
+  archived: number
+  today: number
+  this_week: number
+  this_month: number
+}
+
+export async function getContactMessages(params?: {
+  status?: string
+  search?: string
+  date_from?: string
+  date_to?: string
+  page?: number
+  per_page?: number
+}): Promise<{ data: ContactMessage[]; meta: { current_page: number; last_page: number; per_page: number; total: number } }> {
+  const query = buildQueryString({
+    status: params?.status,
+    search: params?.search,
+    date_from: params?.date_from,
+    date_to: params?.date_to,
+    page: params?.page,
+    per_page: params?.per_page,
+  })
+
+  return fetchAdminApi(`/contact-messages${query}`)
+}
+
+export async function getContactMessage(id: number): Promise<{ data: ContactMessage }> {
+  return fetchAdminApi(`/contact-messages/${id}`)
+}
+
+export async function getContactMessageStats(): Promise<{ data: ContactMessageStats }> {
+  return fetchAdminApi('/contact-messages/stats')
+}
+
+export async function markMessageAsRead(id: number): Promise<{ message: string; data: ContactMessage }> {
+  return fetchAdminApi(`/contact-messages/${id}/mark-as-read`, { method: 'POST' })
+}
+
+export async function markMessageAsReplied(id: number, notes?: string): Promise<{ message: string; data: ContactMessage }> {
+  return fetchAdminApi(`/contact-messages/${id}/mark-as-replied`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ admin_notes: notes }),
+  })
+}
+
+export async function archiveMessage(id: number): Promise<{ message: string; data: ContactMessage }> {
+  return fetchAdminApi(`/contact-messages/${id}/archive`, { method: 'POST' })
+}
+
+export async function deleteContactMessage(id: number): Promise<{ message: string }> {
+  return fetchAdminApi(`/contact-messages/${id}`, { method: 'DELETE' })
+}
+
+export async function bulkUpdateMessageStatus(ids: number[], status: string): Promise<{ message: string }> {
+  return fetchAdminApi('/contact-messages/bulk-update-status', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ids, status }),
+  })
+}
+
+export async function bulkDeleteMessages(ids: number[]): Promise<{ message: string }> {
+  return fetchAdminApi('/contact-messages/bulk-delete', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ids }),
+  })
+}
+
+// Submit contact form (public)
+export async function submitContactForm(data: {
+  name: string
+  email: string
+  phone?: string
+  subject: string
+  message: string
+}): Promise<{ message: string; data: ContactMessage }> {
+  const response = await fetch(`${API_BASE_URL}/contact`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+    body: JSON.stringify(data),
+  })
+
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.message || 'Failed to send message')
+  }
+
+  return response.json()
+}
+
+// ============ Users API ============
+
+export interface User {
+  id: number
+  uuid: string
+  name: string
+  email: string
+  role: 'super_admin' | 'admin' | 'editor' | 'contributor'
+  avatar: string | null
+  phone: string | null
+  is_active: boolean
+  last_login_at: string | null
+  last_login_ip: string | null
+  email_verified_at: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface UserStats {
+  total: number
+  active: number
+  inactive: number
+  by_role: Record<string, number>
+  recently_active: number
+}
+
+export async function getUsers(params?: {
+  role?: string
+  is_active?: boolean
+  search?: string
+  page?: number
+  per_page?: number
+}): Promise<{ data: User[]; meta: { current_page: number; last_page: number; per_page: number; total: number } }> {
+  const query = buildQueryString({
+    role: params?.role,
+    is_active: params?.is_active,
+    search: params?.search,
+    page: params?.page,
+    per_page: params?.per_page,
+  })
+
+  return fetchAdminApi(`/users${query}`)
+}
+
+export async function getAdminUser(id: number): Promise<{ data: User }> {
+  return fetchAdminApi(`/users/${id}`)
+}
+
+export async function getUserRoles(): Promise<{ data: Array<{ value: string; label: string; description: string }> }> {
+  return fetchAdminApi('/users/roles')
+}
+
+export async function getUserStats(): Promise<{ data: UserStats }> {
+  return fetchAdminApi('/users/stats')
+}
+
+export async function createUser(data: FormData): Promise<{ message: string; data: User }> {
+  return fetchAdminApi('/users', {
+    method: 'POST',
+    body: data,
+  })
+}
+
+export async function updateUser(id: number, data: FormData): Promise<{ message: string; data: User }> {
+  return fetchAdminApi(`/users/${id}`, {
+    method: 'PUT',
+    body: data,
+  })
+}
+
+export async function deleteUser(id: number): Promise<{ message: string }> {
+  return fetchAdminApi(`/users/${id}`, { method: 'DELETE' })
+}
+
+export async function toggleUserActive(id: number): Promise<{ message: string; data: User }> {
+  return fetchAdminApi(`/users/${id}/toggle-active`, { method: 'POST' })
+}
+
+// ============ School Classes API ============
+
+export interface SchoolClass {
+  id: number
+  name: string
+  grade: string
+  major: string | null
+  homeroom_teacher_id: number | null
+  academic_year: string
+  is_active: boolean
+  created_at: string
+  updated_at: string
+  homeroom_teacher?: {
+    id: number
+    name: string
+    photo?: string
+  }
+  full_name?: string
+  grade_label?: string
+}
+
+export async function getSchoolClasses(params?: {
+  grade?: string
+  major?: string
+  academic_year?: string
+  active_only?: boolean
+  search?: string
+  page?: number
+  per_page?: number
+}): Promise<{ data: SchoolClass[]; meta: { current_page: number; last_page: number; per_page: number; total: number } }> {
+  const query = buildQueryString({
+    grade: params?.grade,
+    major: params?.major,
+    academic_year: params?.academic_year,
+    active_only: params?.active_only,
+    search: params?.search,
+    page: params?.page,
+    per_page: params?.per_page,
+  })
+
+  return fetchAdminApi(`/classes${query}`)
+}
+
+export async function getSchoolClass(id: number): Promise<{ data: SchoolClass }> {
+  return fetchAdminApi(`/classes/${id}`)
+}
+
+export async function getClassGrades(): Promise<{ data: Array<{ value: string; label: string }> }> {
+  return fetchAdminApi('/classes/grades')
+}
+
+export async function getClassMajors(): Promise<{ data: Array<{ value: string; label: string }> }> {
+  return fetchAdminApi('/classes/majors')
+}
+
+export async function createSchoolClass(data: Partial<SchoolClass>): Promise<{ message: string; data: SchoolClass }> {
+  return fetchAdminApi('/classes', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  })
+}
+
+export async function updateSchoolClass(id: number, data: Partial<SchoolClass>): Promise<{ message: string; data: SchoolClass }> {
+  return fetchAdminApi(`/classes/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  })
+}
+
+export async function deleteSchoolClass(id: number): Promise<{ message: string }> {
+  return fetchAdminApi(`/classes/${id}`, { method: 'DELETE' })
+}
+
+// ============ Subjects API ============
+
+export interface Subject {
+  id: number
+  code: string
+  name: string
+  category: string | null
+  credit_hours: number
+  is_active: boolean
+  created_at: string
+  updated_at: string
+  category_label?: string
+  full_name?: string
+}
+
+export async function getSubjects(params?: {
+  category?: string
+  active_only?: boolean
+  search?: string
+  page?: number
+  per_page?: number
+}): Promise<{ data: Subject[]; meta: { current_page: number; last_page: number; per_page: number; total: number } }> {
+  const query = buildQueryString({
+    category: params?.category,
+    active_only: params?.active_only,
+    search: params?.search,
+    page: params?.page,
+    per_page: params?.per_page,
+  })
+
+  return fetchAdminApi(`/subjects${query}`)
+}
+
+export async function getSubject(id: number): Promise<{ data: Subject }> {
+  return fetchAdminApi(`/subjects/${id}`)
+}
+
+export async function getSubjectCategories(): Promise<{ data: Array<{ value: string; label: string }> }> {
+  return fetchAdminApi('/subjects/categories')
+}
+
+export async function createSubject(data: Partial<Subject>): Promise<{ message: string; data: Subject }> {
+  return fetchAdminApi('/subjects', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  })
+}
+
+export async function updateSubject(id: number, data: Partial<Subject>): Promise<{ message: string; data: Subject }> {
+  return fetchAdminApi(`/subjects/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  })
+}
+
+export async function deleteSubject(id: number): Promise<{ message: string }> {
+  return fetchAdminApi(`/subjects/${id}`, { method: 'DELETE' })
+}
+
+// ============ Schedules API ============
+
+export interface Schedule {
+  id: number
+  uuid: string
+  class_id: number
+  subject_id: number
+  teacher_id: number | null
+  day: 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday'
+  start_time: string
+  end_time: string
+  room: string | null
+  academic_year: string
+  semester: 'odd' | 'even'
+  is_active: boolean
+  created_at: string
+  updated_at: string
+  school_class?: SchoolClass
+  subject?: Subject
+  teacher?: {
+    id: number
+    name: string
+    photo?: string
+  }
+  day_label?: string
+  semester_label?: string
+  time_range?: string
+  duration?: number
+}
+
+export interface ScheduleByDay {
+  day: string
+  label: string
+  schedules: Schedule[]
+}
+
+export async function getSchedules(params?: {
+  class_id?: number
+  teacher_id?: number
+  day?: string
+  academic_year?: string
+  semester?: string
+  active_only?: boolean
+  search?: string
+  page?: number
+  per_page?: number
+}): Promise<{ data: Schedule[]; meta: { current_page: number; last_page: number; per_page: number; total: number } }> {
+  const query = buildQueryString({
+    class_id: params?.class_id,
+    teacher_id: params?.teacher_id,
+    day: params?.day,
+    academic_year: params?.academic_year,
+    semester: params?.semester,
+    active_only: params?.active_only,
+    search: params?.search,
+    page: params?.page,
+    per_page: params?.per_page,
+  })
+
+  return fetchAdminApi(`/schedules${query}`)
+}
+
+export async function getScheduleByClass(classId: number, params?: {
+  academic_year?: string
+  semester?: string
+}): Promise<{ data: ScheduleByDay[]; meta: { academic_year: string; semester: string } }> {
+  const query = buildQueryString({
+    academic_year: params?.academic_year,
+    semester: params?.semester,
+  })
+
+  return fetchAdminApi(`/schedules/by-class/${classId}${query}`)
+}
+
+export async function getScheduleByTeacher(teacherId: number, params?: {
+  academic_year?: string
+  semester?: string
+}): Promise<{ data: ScheduleByDay[]; meta: { academic_year: string; semester: string } }> {
+  const query = buildQueryString({
+    academic_year: params?.academic_year,
+    semester: params?.semester,
+  })
+
+  return fetchAdminApi(`/schedules/by-teacher/${teacherId}${query}`)
+}
+
+export async function getSchedule(id: number): Promise<{ data: Schedule }> {
+  return fetchAdminApi(`/schedules/${id}`)
+}
+
+export async function getAcademicYears(): Promise<{ data: string[] }> {
+  return fetchAdminApi('/schedules/academic-years')
+}
+
+export async function getScheduleDays(): Promise<{ data: Array<{ value: string; label: string }> }> {
+  return fetchAdminApi('/schedules/days')
+}
+
+export async function createSchedule(data: Partial<Schedule>): Promise<{ message: string; data: Schedule }> {
+  return fetchAdminApi('/schedules', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  })
+}
+
+export async function updateSchedule(id: number, data: Partial<Schedule>): Promise<{ message: string; data: Schedule }> {
+  return fetchAdminApi(`/schedules/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  })
+}
+
+export async function deleteSchedule(id: number): Promise<{ message: string }> {
+  return fetchAdminApi(`/schedules/${id}`, { method: 'DELETE' })
+}
+
+export async function bulkDeleteSchedules(ids: number[]): Promise<{ message: string }> {
+  return fetchAdminApi('/schedules/bulk-delete', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ids }),
+  })
+}
+

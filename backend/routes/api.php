@@ -3,18 +3,24 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Api\AchievementController;
+use App\Http\Controllers\Api\ActivityLogController;
 use App\Http\Controllers\Api\AlumniController;
 use App\Http\Controllers\Api\AnnouncementController;
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\ContactMessageController;
 use App\Http\Controllers\Api\ExtraController;
 use App\Http\Controllers\Api\FacilityController;
 use App\Http\Controllers\Api\GalleryController;
 use App\Http\Controllers\Api\PostController;
+use App\Http\Controllers\Api\ScheduleController;
+use App\Http\Controllers\Api\SchoolClassController;
 use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\SliderController;
 use App\Http\Controllers\Api\StaffController;
+use App\Http\Controllers\Api\SubjectController;
 use App\Http\Controllers\Api\TestimonialController;
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -344,8 +350,78 @@ Route::middleware(['api', 'auth:sanctum', 'permission:admin-panel', 'throttle:ad
         Route::post('/upload', [SettingController::class, 'upload'])->name('admin.settings.upload');
     });
 
-    // Will add more admin endpoints later:
-    // - Users management
-    // - Categories management
-    // - Media library
+    // Activity Logs
+    Route::prefix('activity-logs')->group(function () {
+        Route::get('/', [ActivityLogController::class, 'index'])->name('admin.activity-logs.index');
+        Route::get('/stats', [ActivityLogController::class, 'stats'])->name('admin.activity-logs.stats');
+        Route::get('/actions', [ActivityLogController::class, 'actions'])->name('admin.activity-logs.actions');
+        Route::get('/recent', [ActivityLogController::class, 'recent'])->name('admin.activity-logs.recent');
+        Route::get('/{id}', [ActivityLogController::class, 'show'])->name('admin.activity-logs.show');
+    });
+
+    // Contact Messages
+    Route::prefix('contact-messages')->group(function () {
+        Route::get('/', [ContactMessageController::class, 'index'])->name('admin.contact-messages.index');
+        Route::get('/stats', [ContactMessageController::class, 'stats'])->name('admin.contact-messages.stats');
+        Route::get('/{id}', [ContactMessageController::class, 'show'])->name('admin.contact-messages.show');
+        Route::post('/{id}/mark-as-read', [ContactMessageController::class, 'markAsRead'])->name('admin.contact-messages.mark-as-read');
+        Route::post('/{id}/mark-as-replied', [ContactMessageController::class, 'markAsReplied'])->name('admin.contact-messages.mark-as-replied');
+        Route::post('/{id}/archive', [ContactMessageController::class, 'archive'])->name('admin.contact-messages.archive');
+        Route::delete('/{id}', [ContactMessageController::class, 'destroy'])->name('admin.contact-messages.destroy');
+        Route::post('/bulk-update-status', [ContactMessageController::class, 'bulkUpdateStatus'])->name('admin.contact-messages.bulk-update-status');
+        Route::post('/bulk-delete', [ContactMessageController::class, 'bulkDelete'])->name('admin.contact-messages.bulk-delete');
+    });
+
+    // Users Management
+    Route::prefix('users')->group(function () {
+        Route::get('/', [UserController::class, 'index'])->name('admin.users.index');
+        Route::get('/roles', [UserController::class, 'roles'])->name('admin.users.roles');
+        Route::get('/stats', [UserController::class, 'stats'])->name('admin.users.stats');
+        Route::get('/{id}', [UserController::class, 'show'])->name('admin.users.show');
+        Route::post('/', [UserController::class, 'store'])->name('admin.users.store');
+        Route::put('/{id}', [UserController::class, 'update'])->name('admin.users.update');
+        Route::delete('/{id}', [UserController::class, 'destroy'])->name('admin.users.destroy');
+        Route::post('/{id}/toggle-active', [UserController::class, 'toggleActive'])->name('admin.users.toggle-active');
+    });
+
+    // School Classes
+    Route::prefix('classes')->group(function () {
+        Route::get('/', [SchoolClassController::class, 'index'])->name('admin.classes.index');
+        Route::get('/grades', [SchoolClassController::class, 'grades'])->name('admin.classes.grades');
+        Route::get('/majors', [SchoolClassController::class, 'majors'])->name('admin.classes.majors');
+        Route::get('/{id}', [SchoolClassController::class, 'show'])->name('admin.classes.show');
+        Route::post('/', [SchoolClassController::class, 'store'])->name('admin.classes.store');
+        Route::put('/{id}', [SchoolClassController::class, 'update'])->name('admin.classes.update');
+        Route::delete('/{id}', [SchoolClassController::class, 'destroy'])->name('admin.classes.destroy');
+    });
+
+    // Subjects (Mata Pelajaran)
+    Route::prefix('subjects')->group(function () {
+        Route::get('/', [SubjectController::class, 'index'])->name('admin.subjects.index');
+        Route::get('/categories', [SubjectController::class, 'categories'])->name('admin.subjects.categories');
+        Route::get('/{id}', [SubjectController::class, 'show'])->name('admin.subjects.show');
+        Route::post('/', [SubjectController::class, 'store'])->name('admin.subjects.store');
+        Route::put('/{id}', [SubjectController::class, 'update'])->name('admin.subjects.update');
+        Route::delete('/{id}', [SubjectController::class, 'destroy'])->name('admin.subjects.destroy');
+    });
+
+    // Schedules (Jadwal Pelajaran)
+    Route::prefix('schedules')->group(function () {
+        Route::get('/', [ScheduleController::class, 'index'])->name('admin.schedules.index');
+        Route::get('/academic-years', [ScheduleController::class, 'academicYears'])->name('admin.schedules.academic-years');
+        Route::get('/days', [ScheduleController::class, 'days'])->name('admin.schedules.days');
+        Route::get('/by-class/{classId}', [ScheduleController::class, 'byClass'])->name('admin.schedules.by-class');
+        Route::get('/by-teacher/{teacherId}', [ScheduleController::class, 'byTeacher'])->name('admin.schedules.by-teacher');
+        Route::get('/{id}', [ScheduleController::class, 'show'])->name('admin.schedules.show');
+        Route::post('/', [ScheduleController::class, 'store'])->name('admin.schedules.store');
+        Route::put('/{id}', [ScheduleController::class, 'update'])->name('admin.schedules.update');
+        Route::delete('/{id}', [ScheduleController::class, 'destroy'])->name('admin.schedules.destroy');
+        Route::post('/bulk-delete', [ScheduleController::class, 'bulkDelete'])->name('admin.schedules.bulk-delete');
+    });
 });
+
+// Public Contact Form Submission
+Route::middleware(['api', 'throttle:api'])->prefix('v1')->group(function () {
+    Route::post('/contact', [ContactMessageController::class, 'store'])->name('contact.store');
+});
+

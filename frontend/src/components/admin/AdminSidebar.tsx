@@ -18,6 +18,10 @@ import {
     Trophy,
     Award,
     GraduationCap,
+    Activity,
+    Mail,
+    UserCog,
+    CalendarDays,
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { cn } from '@/lib/utils'
@@ -37,9 +41,13 @@ const navigation = [
     { name: 'Prestasi Carousel', href: '/admin/achievements', icon: Award },
     { name: 'Alumni', href: '/admin/alumni', icon: GraduationCap },
     { name: 'Galeri', href: '/admin/galleries', icon: Image },
+    { name: 'Jadwal Pelajaran', href: '/admin/schedules', icon: CalendarDays },
     { name: 'Ekstrakurikuler', href: '/admin/extras', icon: Dumbbell },
     { name: 'Fasilitas', href: '/admin/facilities', icon: Building2 },
     { name: 'Staff', href: '/admin/staff', icon: Users },
+    { name: 'Pesan Kontak', href: '/admin/contact-messages', icon: Mail },
+    { name: 'Activity Log', href: '/admin/activity-logs', icon: Activity },
+    { name: 'Pengguna', href: '/admin/users', icon: UserCog },
     { name: 'Pengaturan', href: '/admin/settings', icon: Settings },
 ]
 
