@@ -41,7 +41,7 @@ final class PostController extends Controller
     public function store(StorePostRequest $request): JsonResponse
     {
         $dto = CreatePostDTO::fromRequest($request);
-        $post = $this->postService->createPost($dto);
+        $post = $this->postService->createPost($dto, $request->file('featured_image'));
 
         return (new PostResource($post))
             ->response()

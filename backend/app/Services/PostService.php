@@ -57,52 +57,50 @@ final class PostService
         );
     }
 
-    public function createPost(CreatePostDTO $dto): Post
+    public function createPost(CreatePostDTO $dto, ?\Illuminate\Http\UploadedFile $featuredImage = null): Post
     {
-        return DB::transaction(function () use ($dto) {
+        return DB::transaction(function () use ($dto, $featuredImage) {
             // Generate slug if not provided
-            if (empty($dto->slug)) {
-                $dto = new CreatePostDTO(
-                    title: $dto->title,
-                    slug: Str::slug($dto->title),
-                    content: $dto->content,
-                    excerpt: $dto->excerpt,
-                    featured_image: $dto->featured_image,
-                    status: $dto->status,
-                    type: $dto->type,
-                    is_featured: $dto->is_featured,
-                    is_pinned: $dto->is_pinned,
-                    categories: $dto->categories,
-                    published_at: $dto->published_at,
-                );
+            $slug = $dto->slug;
+            if (empty($slug)) {
+                $slug = Str::slug($dto->title);
+            }
+            
+            // Ensure unique slug
+            $originalSlug = $slug;
+            $counter = 1;
+            while (Post::where('slug', $slug)->exists()) {
+                $slug = $originalSlug . '-' . $counter;
+                $counter++;
             }
 
-            // Handle featured image upload
-            if ($dto->featured_image && str_starts_with($dto->featured_image, 'data:image')) {
-                $dto = new CreatePostDTO(
-                    title: $dto->title,
-                    slug: $dto->slug,
-                    content: $dto->content,
-                    excerpt: $dto->excerpt,
-                    featured_image: $this->imageService->uploadBase64($dto->featured_image, 'posts'),
-                    status: $dto->status,
-                    type: $dto->type,
-                    is_featured: $dto->is_featured,
-                    is_pinned: $dto->is_pinned,
-                    categories: $dto->categories,
-                    published_at: $dto->published_at,
-                );
-            }
-
-            $data = $dto->toArray();
-            $data['user_id'] = auth()->id();
+            $data = [
+                'title' => $dto->title,
+                'slug' => $slug,
+                'content' => $dto->content,
+                'excerpt' => $dto->excerpt,
+                'status' => $dto->status,
+                'type' => $dto->type,
+                'is_featured' => $dto->is_featured,
+                'is_pinned' => $dto->is_pinned,
+                'published_at' => $dto->published_at,
+                'user_id' => auth()->id(),
+            ];
 
             $post = $this->postRepository->create($data);
 
+            // Handle featured image upload with Spatie Media Library
+            if ($featuredImage) {
+                $post->addMedia($featuredImage)
+                    ->toMediaCollection('featured_image');
+            }
+
             // Attach categories
             if (! empty($dto->categories)) {
-                $categories = $this->categoryRepository->getByIds($dto->categories);
-                $post->categories()->attach($categories);
+                $categoryIds = is_array($dto->categories) ? $dto->categories : [];
+                if (!empty($categoryIds)) {
+                    $post->categories()->attach($categoryIds);
+                }
             }
 
             // Clear only affected cache keys
