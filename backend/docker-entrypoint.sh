@@ -51,3 +51,4 @@ run_setup &
 
 echo "Starting PHP server on port ${PORT:-8000}..."
 exec php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
+# Updated: Fri Dec 19 06:16:33 PM WITA 2025
