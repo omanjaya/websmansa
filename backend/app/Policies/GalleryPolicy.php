@@ -30,7 +30,7 @@ final class GalleryPolicy
      */
     public function create(User $user): bool
     {
-        return $user->hasRole('admin') || $user->hasRole('super-admin');
+        return $user->hasAnyRole(['admin', 'super admin']);
     }
 
     /**
@@ -38,7 +38,7 @@ final class GalleryPolicy
      */
     public function update(User $user, Gallery $gallery): bool
     {
-        return $user->hasRole('admin') || $user->hasRole('super-admin');
+        return $user->hasAnyRole(['admin', 'super admin']);
     }
 
     /**
@@ -46,7 +46,7 @@ final class GalleryPolicy
      */
     public function delete(User $user, Gallery $gallery): bool
     {
-        return $user->hasRole('admin') || $user->hasRole('super-admin');
+        return $user->hasAnyRole(['admin', 'super admin']);
     }
 
     /**
@@ -54,7 +54,7 @@ final class GalleryPolicy
      */
     public function restore(User $user, Gallery $gallery): bool
     {
-        return $user->hasRole('admin') || $user->hasRole('super-admin');
+        return $user->hasAnyRole(['admin', 'super admin']);
     }
 
     /**
@@ -62,6 +62,6 @@ final class GalleryPolicy
      */
     public function forceDelete(User $user, Gallery $gallery): bool
     {
-        return $user->hasRole('admin') || $user->hasRole('super-admin');
+        return $user->hasAnyRole(['admin', 'super admin']);
     }
 }

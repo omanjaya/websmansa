@@ -27,7 +27,7 @@ class AnnouncementPolicy
         }
 
         // Draft/archived hanya bisa dilihat owner atau admin
-        return $user && ($user->id === $announcement->user_id || $user->hasRole('admin'));
+        return $user && ($user->id === $announcement->user_id || $user->hasAnyRole(['admin', 'super admin']));
     }
 
     /**
@@ -35,7 +35,7 @@ class AnnouncementPolicy
      */
     public function create(User $user): bool
     {
-        return $user->hasPermissionTo('create-announcements') || $user->hasRole('admin');
+        return $user->hasPermissionTo('add post') || $user->hasAnyRole(['admin', 'super admin']);
     }
 
     /**
@@ -43,7 +43,7 @@ class AnnouncementPolicy
      */
     public function update(User $user, Announcement $announcement): bool
     {
-        return $user->id === $announcement->user_id || $user->hasRole('admin');
+        return $user->id === $announcement->user_id || $user->hasAnyRole(['admin', 'super admin']);
     }
 
     /**
@@ -51,7 +51,7 @@ class AnnouncementPolicy
      */
     public function delete(User $user, Announcement $announcement): bool
     {
-        return $user->id === $announcement->user_id || $user->hasRole('admin');
+        return $user->id === $announcement->user_id || $user->hasAnyRole(['admin', 'super admin']);
     }
 
     /**
@@ -59,7 +59,7 @@ class AnnouncementPolicy
      */
     public function restore(User $user, Announcement $announcement): bool
     {
-        return $user->hasRole('admin');
+        return $user->hasAnyRole(['admin', 'super admin']);
     }
 
     /**
@@ -67,6 +67,6 @@ class AnnouncementPolicy
      */
     public function forceDelete(User $user, Announcement $announcement): bool
     {
-        return $user->hasRole('admin');
+        return $user->hasAnyRole(['admin', 'super admin']);
     }
 }
