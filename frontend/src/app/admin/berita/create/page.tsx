@@ -1,19 +1,39 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Loader2 } from 'lucide-react'
 import { RichTextEditor } from '@/components/ui/rich-text-editor'
-import { createPost } from '@/lib/api'
+import { createPost, getCategories, type Category } from '@/lib/api'
 import { toast } from 'sonner'
 import { getErrorMessage } from '@/lib/utils'
+import { Checkbox } from '@/components/ui/checkbox'
 
 export default function CreateBeritaPage() {
     const router = useRouter()
     const [loading, setLoading] = useState(false)
     const [content, setContent] = useState('')
     const [imagePreview, setImagePreview] = useState<string | null>(null)
+    const [categories, setCategories] = useState<Category[]>([])
+    const [selectedCategories, setSelectedCategories] = useState<number[]>([])
+    const [loadingCategories, setLoadingCategories] = useState(true)
+
+    useEffect(() => {
+        async function fetchCategories() {
+            try {
+                const response = await getCategories()
+                if (response.data) {
+                    setCategories(response.data)
+                }
+            } catch (error) {
+                console.error('Error fetching categories:', error)
+            } finally {
+                setLoadingCategories(false)
+            }
+        }
+        fetchCategories()
+    }, [])
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
@@ -26,6 +46,14 @@ export default function CreateBeritaPage() {
         }
     }
 
+    const handleCategoryToggle = (categoryId: number) => {
+        setSelectedCategories(prev =>
+            prev.includes(categoryId)
+                ? prev.filter(id => id !== categoryId)
+                : [...prev, categoryId]
+        )
+    }
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         setLoading(true)
@@ -34,6 +62,12 @@ export default function CreateBeritaPage() {
             const formData = new FormData(e.currentTarget)
             formData.set('content', content)
             formData.set('type', 'news')
+
+            // Remove the old categories field and add as array
+            formData.delete('categories')
+            selectedCategories.forEach(catId => {
+                formData.append('categories[]', catId.toString())
+            })
 
             await createPost(formData)
 
@@ -139,17 +173,44 @@ export default function CreateBeritaPage() {
                             )}
                         </div>
 
-                        {/* Categories */}
+                        {/* Categories - Checkboxes */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                                 Kategori
                             </label>
-                            <input
-                                name="categories"
-                                type="text"
-                                className="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                placeholder="Pisahkan dengan koma: Akademik, Olahraga, ..."
-                            />
+                            {loadingCategories ? (
+                                <div className="flex items-center gap-2 text-gray-500">
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                    <span>Memuat kategori...</span>
+                                </div>
+                            ) : categories.length === 0 ? (
+                                <p className="text-sm text-gray-500">Belum ada kategori. Silakan buat kategori terlebih dahulu.</p>
+                            ) : (
+                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                                    {categories.map((category) => (
+                                        <label
+                                            key={category.id}
+                                            className={`flex items-center gap-3 p-3 border rounded-xl cursor-pointer transition-all ${selectedCategories.includes(category.id)
+                                                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                                                    : 'border-gray-200 dark:border-slate-600 hover:border-blue-300'
+                                                }`}
+                                        >
+                                            <Checkbox
+                                                checked={selectedCategories.includes(category.id)}
+                                                onCheckedChange={() => handleCategoryToggle(category.id)}
+                                            />
+                                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                {category.name}
+                                            </span>
+                                        </label>
+                                    ))}
+                                </div>
+                            )}
+                            {selectedCategories.length > 0 && (
+                                <p className="mt-2 text-sm text-blue-600">
+                                    {selectedCategories.length} kategori dipilih
+                                </p>
+                            )}
                         </div>
 
                         {/* Meta */}

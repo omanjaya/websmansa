@@ -46,7 +46,10 @@ export function RichTextEditor({ content, onChange, placeholder = 'Tulis konten 
 
     const editor = useEditor({
         extensions: [
-            StarterKit,
+            StarterKit.configure({
+                // StarterKit doesn't include link or underline by default, 
+                // but configure to be explicit
+            }),
             Underline,
             Image.configure({
                 HTMLAttributes: {
